@@ -1,83 +1,58 @@
 {
-  "name": "OceanHub | Marine Intelligence & Blue Energy",
+  "id": "/OceanHub/",
+  "name": "OceanHub | Marine Intelligence",
   "short_name": "OceanHub",
-  "description": "Orchestrating the global transition to a sustainable blue energy future through data certainty and technical rigour.",
-  "start_url": "./",
-  "scope": "./",
+  "description": "A shared platform for offshore energy, marine monitoring and decision-ready technical intelligence.",
+  "start_url": "/OceanHub/",
+  "scope": "/OceanHub/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#060B14",
   "theme_color": "#060B14",
-  "dir": "auto",
-  "lang": "en-US",
-  "categories": [
-    "business",
-    "productivity",
-    "utilities",
-    "energy"
-  ],
+  "dir": "ltr",
+  "lang": "en",
+  "categories": ["business", "productivity", "energy"],
   "icons": [
     {
-      "src": "./icon-192.png",
+      "src": "/OceanHub/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-512.png",
+      "src": "/OceanHub/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon-512-maskable.png",
+      "src": "/OceanHub/icon-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    },
-    {
-      "src": "./favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
     }
   ],
   "shortcuts": [
     {
       "name": "Focus Areas",
       "short_name": "Focus Areas",
-      "description": "Explore strategic initiatives in CCUS, Offshore Wind, and Ecology",
-      "url": "./#focus-areas",
-      "icons": [
-        {
-          "src": "./icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "description": "Explore OceanHub offshore focus areas.",
+      "url": "/OceanHub/#focus-areas",
+      "icons": [{ "src": "/OceanHub/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
-      "name": "Intelligence Insights",
+      "name": "Marine Intelligence",
       "short_name": "Insights",
-      "description": "Strategic foresight and technology trends",
-      "url": "./insights",
-      "icons": [
-        {
-          "src": "./icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "description": "Read technical and strategic OceanHub insights.",
+      "url": "/OceanHub/insights/",
+      "icons": [{ "src": "/OceanHub/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
-      "name": "Our Ecosystem",
+      "name": "Platform Mission",
       "short_name": "About",
-      "description": "Discover our DNA and partner ecosystem",
-      "url": "./about",
-      "icons": [
-        {
-          "src": "./icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "description": "Understand the OceanHub collaboration model.",
+      "url": "/OceanHub/about/",
+      "icons": [{ "src": "/OceanHub/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }
