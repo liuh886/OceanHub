@@ -13,44 +13,75 @@ const { entry } = Astro.props;
 const { Content } = await entry.render();
 ---
 
-<Layout title={`${entry.data.title} | OceanHub Insights`} description={entry.data.description}>
-  <article class="max-w-3xl mx-auto px-4 py-20">
-    <header class="mb-12 text-center">
-      <div class="flex justify-center gap-2 mb-6">
+<Layout title={`${entry.data.title} | OceanHub Intelligence`} description={entry.data.description}>
+  <article class="max-w-4xl mx-auto px-6 py-16 md:py-24">
+    <!-- Header -->
+    <header class="mb-14 reveal">
+      <a href="/insights" class="inline-flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-widest mb-6 transition-colors">
+        <i class="fa-solid fa-arrow-left text-xs"></i>
+        <span>Back to Intelligence</span>
+      </a>
+
+      <!-- Tags & Meta -->
+      <div class="flex flex-wrap items-center gap-3 mb-6">
+        <span class="hud-badge text-[10px]">
+          <i class="fa-solid fa-file-lines"></i> BRIEFING
+        </span>
         {entry.data.tags.map((tag) => (
-          <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide">
+          <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono">
             {tag}
           </span>
         ))}
       </div>
-      <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-tight">{entry.data.title}</h1>
-      <div class="flex justify-center items-center text-slate-500 text-sm gap-4">
-        <span>By {entry.data.author}</span>
-        <span>•</span>
-        <time datetime={entry.data.publishDate.toISOString()}>
+
+      <!-- Title -->
+      <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-8 font-display leading-tight">
+        {entry.data.title}
+      </h1>
+
+      <!-- Author and Meta bar -->
+      <div class="flex flex-wrap items-center gap-6 py-4 border-y border-white/10 text-xs font-mono text-slate-400">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300 font-bold">
+            {entry.data.author.charAt(0)}
+          </div>
+          <span class="text-white font-semibold">{entry.data.author}</span>
+        </div>
+        <span class="text-slate-600">•</span>
+        <time datetime={entry.data.publishDate.toISOString()} class="text-cyan-400">
           {entry.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
         </time>
+        <span class="text-slate-600">•</span>
+        <span class="text-slate-400">DISTRIBUTION: OPEN ACCESS</span>
       </div>
     </header>
 
-    <div class="prose prose-slate prose-lg max-w-none">
+    <!-- Main Content -->
+    <div class="prose prose-invert prose-cyan max-w-none reveal">
       <Content />
     </div>
 
-    <div class="mt-20 pt-10 border-t border-slate-200 text-center">
-      <a href="/insights" class="text-blue-600 font-bold hover:underline">← Back to Insights</a>
+    <!-- Footer Action -->
+    <div class="mt-20 pt-10 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-6 reveal">
+      <a href="/insights" class="inline-flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-wider">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Return to Intelligence Archive</span>
+      </a>
+      <a href="mailto:info@oceanhub.com" class="px-6 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider transition-all">
+        Discuss this Research
+      </a>
     </div>
   </article>
 </Layout>
 
 <style is:global>
   @reference "../../styles/global.css";
-  
-  .prose h2 { @apply text-3xl font-bold text-slate-900 mt-12 mb-6; }
-  .prose h3 { @apply text-2xl font-bold text-slate-800 mt-8 mb-4; }
-  .prose p { @apply text-slate-600 leading-relaxed mb-6; }
-  .prose ul { @apply list-disc list-inside text-slate-600 space-y-2 mb-6; }
-  .prose li { @apply marker:text-blue-500; }
-  .prose strong { @apply text-slate-900 font-bold; }
-  .prose blockquote { @apply border-l-4 border-blue-500 pl-4 italic text-slate-700 bg-slate-50 py-4 pr-4 rounded-r-lg; }
+  /* Enhanced Prose Styling for Tech Dark Mode */
+  .prose h2 { @apply text-2xl md:text-3xl font-black text-white mt-12 mb-6 font-display border-b border-white/10 pb-3; }
+  .prose h3 { @apply text-xl md:text-2xl font-bold text-cyan-300 mt-8 mb-4 font-display; }
+  .prose p { @apply text-slate-300 font-light leading-relaxed mb-6 text-base md:text-lg; }
+  .prose ul { @apply list-disc list-inside text-slate-300 space-y-2.5 mb-6 text-sm md:text-base; }
+  .prose li { @apply marker:text-cyan-400; }
+  .prose strong { @apply text-white font-semibold; }
+  .prose blockquote { @apply border-l-2 border-cyan-400 pl-6 py-3 italic text-slate-200 bg-cyan-950/20 rounded-r-2xl my-8; }
 </style>

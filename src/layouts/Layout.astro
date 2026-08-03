@@ -2,155 +2,285 @@
 import '../styles/global.css';
 import { Image } from 'astro:assets';
 import logo from '../assets/oceanhub-logo-v2.png';
+import TechBackground from '../components/TechBackground.astro';
+import PWAController from '../components/PWAController.astro';
 
 interface Props {
 	title: string;
 	description?: string;
 }
 
-const { title, description = "OceanHub - Bridging Data, Energy & Future" } = Astro.props;
+const { title, description = "OceanHub - Bridging Data, Energy & Future | Nordic Excellence in Marine Intelligence" } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="alternate icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
-		<!-- SEO: Open Graph -->
+		
+		<!-- PWA Manifest & App Configuration -->
+		<link rel="manifest" href="/manifest.webmanifest" />
+		<meta name="theme-color" content="#060B14" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-title" content="OceanHub" />
+		<meta name="application-name" content="OceanHub" />
+		
+		<!-- SEO & Open Graph -->
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="OceanHub" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+
+		<!-- Modern Google Fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+		
+		<!-- Font Awesome Icons -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 	</head>
-	<body class="selection:bg-brand-blue/10 selection:text-brand-blue">
-		<nav id="main-nav" class="fixed top-0 w-full z-50 transition-all duration-700 glass-nav py-6">
-			<div class="max-w-[1800px] mx-auto px-8 md:px-16 flex justify-between items-center">
-				<div class="flex-shrink-0">
-					<a href="/" class="block hover:opacity-70 transition-opacity">
-						<Image src={logo} alt="OceanHub Logo" width={220} class="w-44 md:w-56" />
+	<body class="bg-[#060B14] text-slate-100 min-h-screen flex flex-col font-sans">
+		<!-- Dynamic Interactive Tech Mesh Background -->
+		<TechBackground />
+
+		<!-- Top Cyber Navigation -->
+		<nav id="main-nav" class="fixed top-0 w-full z-50 transition-all duration-500 glass-nav py-4">
+			<div class="max-w-[1720px] mx-auto px-6 md:px-12 flex justify-between items-center">
+				<!-- Brand Logo -->
+				<div class="flex items-center gap-6">
+					<a href="/" class="flex items-center gap-3 group">
+						<div class="relative">
+							<Image src={logo} alt="OceanHub Logo" width={200} class="w-36 md:w-48 brightness-0 invert opacity-95 group-hover:opacity-100 transition-opacity" />
+							<div class="absolute -inset-1 bg-cyan-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
+						</div>
+					</a>
+
+					<!-- Live Telemetry Status Pill (Desktop) -->
+					<div class="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/20 text-[11px] font-mono text-cyan-300/80">
+						<span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+						<span>LIVE TELEMETRY // MESH READY</span>
+					</div>
+				</div>
+
+				<!-- Desktop Navigation Menu -->
+				<div class="hidden lg:flex items-center space-x-8 xl:space-x-10">
+					<a href="/#focus-areas" class="nav-link text-xs font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-400 transition-colors py-2 relative group">
+						Focus Areas
+						<span class="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
+					</a>
+					<a href="/insights" class="nav-link text-xs font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-400 transition-colors py-2 relative group">
+						Intelligence
+						<span class="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
+					</a>
+					<a href="/about" class="nav-link text-xs font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-400 transition-colors py-2 relative group">
+						About Us
+						<span class="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
+					</a>
+
+					<!-- PWA Fast Install Button (Header) -->
+					<button class="nav-pwa-install-btn hidden items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 text-xs font-mono font-semibold tracking-wider uppercase transition-all shadow-[0_0_15px_rgba(0,240,255,0.15)]">
+						<i class="fa-solid fa-download text-xs"></i>
+						<span>Install App</span>
+					</button>
+
+					<!-- Contact Action Button -->
+					<a href="mailto:info@oceanhub.com" class="relative group inline-flex items-center justify-center p-0.5 overflow-hidden rounded-full font-bold text-xs uppercase tracking-[0.2em]">
+						<span class="w-full h-full bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 group-hover:from-cyan-300 group-hover:to-blue-400 absolute"></span>
+						<span class="relative px-6 py-2.5 transition-all ease-out bg-[#060B14] rounded-full group-hover:bg-opacity-0 text-white font-mono tracking-wider">
+							Connect Uplink
+						</span>
 					</a>
 				</div>
-				<div class="hidden lg:flex items-center space-x-12">
-					<a href="/#focus-areas" class="nav-link text-[13px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-brand-blue transition-all">Focus Areas</a>
-					<a href="/#insights" class="nav-link text-[13px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-brand-blue transition-all">Insights</a>
-					<a href="/#about" class="nav-link text-[13px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-brand-blue transition-all">About Us</a>
-					<a href="mailto:info@oceanhub.com" class="text-[13px] font-black uppercase tracking-[0.2em] bg-brand-blue text-white px-8 py-3 rounded-full hover:shadow-2xl hover:shadow-brand-blue/40 transition-all">Get in touch</a>
+
+				<!-- Mobile Menu Button -->
+				<div class="flex items-center gap-3 lg:hidden">
+					<button class="nav-pwa-install-btn hidden p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-sm" aria-label="Install App">
+						<i class="fa-solid fa-download"></i>
+					</button>
+					<button id="mobile-menu-toggle" class="p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white" aria-label="Toggle navigation menu">
+						<i id="menu-icon" class="fa-solid fa-bars text-lg"></i>
+					</button>
+				</div>
+			</div>
+
+			<!-- Mobile Navigation Drawer -->
+			<div id="mobile-drawer" class="lg:hidden hidden border-t border-cyan-500/10 bg-[#060B14]/95 backdrop-blur-2xl px-6 py-6 transition-all duration-300">
+				<div class="flex flex-col space-y-4">
+					<a href="/#focus-areas" class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-300 hover:text-cyan-400 py-2 border-b border-white/5">
+						Strategic Focus Areas
+					</a>
+					<a href="/insights" class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-300 hover:text-cyan-400 py-2 border-b border-white/5">
+						Deep Blue Intelligence
+					</a>
+					<a href="/about" class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-300 hover:text-cyan-400 py-2 border-b border-white/5">
+						About OceanHub
+					</a>
+					<div class="pt-2 flex flex-col gap-3">
+						<button class="nav-pwa-install-btn hidden w-full py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider items-center justify-center gap-2">
+							<i class="fa-solid fa-download"></i> Install PWA App
+						</button>
+						<a href="mailto:info@oceanhub.com" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-center text-xs font-bold uppercase tracking-widest font-mono">
+							Connect Uplink
+						</a>
+					</div>
 				</div>
 			</div>
 		</nav>
 
-		<main>
+		<!-- Main Content Slot -->
+		<main class="flex-grow pt-20">
 			<slot />
 		</main>
 
-		<footer class="bg-brand-blue text-white py-32 md:py-48 mt-32 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-white/5 rounded-full blur-[150px] -mr-32 -mt-32"></div>
-			<div class="max-w-[1800px] mx-auto px-8 md:px-16 relative z-10">
-				<div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-32">
-					<div class="lg:col-span-5">
-						<div class="mb-12">
-							<Image src={logo} alt="OceanHub Logo" width={200} class="brightness-0 invert opacity-90" />
+		<!-- PWA Manager & Controller -->
+		<PWAController />
+
+		<!-- High-Tech Cybernetic Footer -->
+		<footer class="bg-[#04070D] text-slate-400 border-t border-cyan-500/10 py-20 md:py-28 relative overflow-hidden mt-20">
+			<!-- Background Radar Glow -->
+			<div class="absolute -top-32 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-[140px] pointer-events-none"></div>
+			<div class="absolute -bottom-32 left-10 w-96 h-96 bg-blue-600/5 rounded-full blur-[140px] pointer-events-none"></div>
+			
+			<div class="max-w-[1720px] mx-auto px-6 md:px-12 relative z-10">
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-20">
+					<!-- Brand Column -->
+					<div class="lg:col-span-5 space-y-6">
+						<div class="flex items-center gap-3">
+							<Image src={logo} alt="OceanHub Logo" width={220} class="w-48 brightness-0 invert opacity-95" />
 						</div>
-						<p class="text-xl md:text-2xl text-slate-300 font-light leading-relaxed max-w-xl">
-							Orchestrating the global transition to a sustainable blue energy future through data certainty and technical rigour.
+						<p class="text-base text-slate-400 font-light leading-relaxed max-w-lg">
+							Orchestrating the global transition to a sustainable blue energy future through data certainty, autonomous marine swarms, and geotechnical rigour.
 						</p>
+						<div class="flex items-center gap-3 pt-2">
+							<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/20 text-cyan-400 font-mono text-[11px]">
+								<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+								PWA ACTIVE // GH-PAGES SYNC
+							</span>
+						</div>
 					</div>
-					<div class="lg:col-span-2">
-						<h3 class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 mb-10">Ecosystem</h3>
-						<ul class="space-y-6">
-							<li><a href="/#focus-areas" class="text-lg text-slate-300 hover:text-white transition-colors">Strategic Initiatives</a></li>
-							<li><a href="/#insights" class="text-lg text-slate-300 hover:text-white transition-colors">Industry Insights</a></li>
-							<li><a href="/#about" class="text-lg text-slate-300 hover:text-white transition-colors">Our Vision</a></li>
+
+					<!-- Navigation Links -->
+					<div class="lg:col-span-2 space-y-4">
+						<h3 class="text-xs font-mono font-bold uppercase tracking-[0.25em] text-cyan-400">Ecosystem</h3>
+						<ul class="space-y-3 text-sm">
+							<li><a href="/#focus-areas" class="text-slate-400 hover:text-cyan-300 transition-colors">Strategic Initiatives</a></li>
+							<li><a href="/insights" class="text-slate-400 hover:text-cyan-300 transition-colors">Deep Intelligence</a></li>
+							<li><a href="/about" class="text-slate-400 hover:text-cyan-300 transition-colors">Vision & DNA</a></li>
+							<li><a href="/offline" class="text-slate-400 hover:text-cyan-300 transition-colors">Autonomous Mode</a></li>
 						</ul>
 					</div>
-					<div class="lg:col-span-2">
-						<h3 class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 mb-10">Platform</h3>
-						<ul class="space-y-6">
-							<li><a href="#" class="text-lg text-slate-300 hover:text-white transition-colors">Privacy Policy</a></li>
-							<li><a href="#" class="text-lg text-slate-300 hover:text-white transition-colors">Terms of Service</a></li>
+
+					<!-- Initiatives -->
+					<div class="lg:col-span-2 space-y-4">
+						<h3 class="text-xs font-mono font-bold uppercase tracking-[0.25em] text-cyan-400">Initiatives</h3>
+						<ul class="space-y-3 text-sm">
+							<li><a href="/focus-areas/ccus" class="text-slate-400 hover:text-cyan-300 transition-colors">Offshore CCUS</a></li>
+							<li><a href="/focus-areas/offshore-energy" class="text-slate-400 hover:text-cyan-300 transition-colors">Offshore Wind & Solar</a></li>
+							<li><a href="/focus-areas/marine-ecology" class="text-slate-400 hover:text-cyan-300 transition-colors">Marine Ecology</a></li>
+							<li><a href="/focus-areas/offshore-infrastructure" class="text-slate-400 hover:text-cyan-300 transition-colors">Infrastructure</a></li>
 						</ul>
 					</div>
-                    <div class="lg:col-span-3">
-						<h3 class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 mb-10">Connect</h3>
-                        <div class="flex gap-8">
-                            <a href="#" class="text-2xl text-slate-300 hover:text-white transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
-                            <a href="#" class="text-2xl text-slate-300 hover:text-white transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
-                        </div>
+
+					<!-- Connect -->
+					<div class="lg:col-span-3 space-y-4">
+						<h3 class="text-xs font-mono font-bold uppercase tracking-[0.25em] text-cyan-400">Uplink Channels</h3>
+						<p class="text-xs text-slate-400">Join the international marine intelligence network.</p>
+						<div class="flex gap-4 pt-2">
+							<a href="mailto:info@oceanhub.com" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/50 hover:bg-cyan-500/10 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition-all" aria-label="Email">
+								<i class="fa-solid fa-envelope text-sm"></i>
+							</a>
+							<a href="https://rio25.sbgf.org.br/Pages/oceanHub.php" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/50 hover:bg-cyan-500/10 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition-all" aria-label="SBGf Rio 25">
+								<i class="fa-solid fa-globe text-sm"></i>
+							</a>
+						</div>
 					</div>
 				</div>
-				<div class="mt-32 pt-16 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <p class="text-sm text-slate-500 font-medium tracking-wide uppercase">
-					    &copy; {new Date().getFullYear()} OceanHub. Nordic Excellence in Marine Data.
-                    </p>
+
+				<!-- Copyright & Latency Bar -->
+				<div class="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-slate-500">
+					<p>&copy; {new Date().getFullYear()} OceanHub. Nordic Excellence in Marine Data.</p>
+					<div class="flex items-center gap-6">
+						<span>SYSTEM ARCH: ASTRO + PWA</span>
+						<span>NODE: GLOBAL EDGE</span>
+					</div>
 				</div>
 			</div>
 		</footer>
 
-        <script>
-            // Scroll Reveal Animation
-            const revealOptions = {
-                threshold: 0.1,
-                rootMargin: "0px 0px -50px 0px"
-            };
+		<!-- Client Interaction Scripts -->
+		<script>
+			// Scroll Reveal Trigger
+			const revealOptions = {
+				threshold: 0.08,
+				rootMargin: "0px 0px -40px 0px"
+			};
 
-            const revealObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, revealOptions);
+			const revealObserver = new IntersectionObserver((entries) => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add('active');
+					}
+				});
+			}, revealOptions);
 
-            document.querySelectorAll('.reveal').forEach((el) => {
-                revealObserver.observe(el);
-            });
+			document.querySelectorAll('.reveal').forEach((el) => {
+				revealObserver.observe(el);
+			});
 
-            // Scroll Spy for active nav links
-            const spyOptions = {
-                rootMargin: '-20% 0px -70% 0px',
-                threshold: 0
-            };
+			// Navbar Glass Elevation on scroll
+			window.addEventListener('scroll', () => {
+				const nav = document.getElementById('main-nav');
+				if (nav) {
+					if (window.scrollY > 40) {
+						nav.classList.add('bg-[#060B14]/95', 'border-cyan-500/20', 'shadow-[0_10px_30px_rgba(0,0,0,0.8)]');
+						nav.classList.remove('bg-[#060B14]/80');
+					} else {
+						nav.classList.remove('bg-[#060B14]/95', 'border-cyan-500/20', 'shadow-[0_10px_30px_rgba(0,0,0,0.8)]');
+						nav.classList.add('bg-[#060B14]/80');
+					}
+				}
+			});
 
-            const spyObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const id = entry.target.getAttribute('id');
-                        document.querySelectorAll('.nav-link').forEach(link => {
-                            link.classList.remove('text-brand-blue');
-                            link.classList.add('text-slate-400');
-                            if (link.getAttribute('href') === `/#${id}`) {
-                                link.classList.add('text-brand-blue');
-                                link.classList.remove('text-slate-400');
-                            }
-                        });
-                    }
-                });
-            }, spyOptions);
+			// Mobile Menu Drawer Toggle
+			const menuToggle = document.getElementById('mobile-menu-toggle');
+			const mobileDrawer = document.getElementById('mobile-drawer');
+			const menuIcon = document.getElementById('menu-icon');
 
-            document.querySelectorAll('section[id]').forEach((section) => {
-                spyObserver.observe(section);
-            });
+			if (menuToggle && mobileDrawer && menuIcon) {
+				menuToggle.addEventListener('click', () => {
+					const isHidden = mobileDrawer.classList.contains('hidden');
+					if (isHidden) {
+						mobileDrawer.classList.remove('hidden');
+						menuIcon.classList.remove('fa-bars');
+						menuIcon.classList.add('fa-xmark');
+					} else {
+						mobileDrawer.classList.add('hidden');
+						menuIcon.classList.remove('fa-xmark');
+						menuIcon.classList.add('fa-bars');
+					}
+				});
 
-            // Navbar polish on scroll
-            window.addEventListener('scroll', () => {
-                const nav = document.getElementById('main-nav');
-                if (nav) {
-                    if (window.scrollY > 50) {
-                        nav.classList.add('py-4', 'shadow-2xl', 'shadow-slate-200/50');
-                        nav.classList.remove('py-6');
-                    } else {
-                        nav.classList.remove('py-4', 'shadow-2xl', 'shadow-slate-200/50');
-                        nav.classList.add('py-6');
-                    }
-                }
-            });
-        </script>
+				// Close drawer on link click
+				document.querySelectorAll('.mobile-nav-link').forEach((link) => {
+					link.addEventListener('click', () => {
+						mobileDrawer.classList.add('hidden');
+						menuIcon.classList.remove('fa-xmark');
+						menuIcon.classList.add('fa-bars');
+					});
+				});
+			}
+		</script>
 	</body>
 </html>

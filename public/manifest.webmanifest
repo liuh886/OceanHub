@@ -1,0 +1,83 @@
+{
+  "name": "OceanHub | Marine Intelligence & Blue Energy",
+  "short_name": "OceanHub",
+  "description": "Orchestrating the global transition to a sustainable blue energy future through data certainty and technical rigour.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#060B14",
+  "theme_color": "#060B14",
+  "dir": "auto",
+  "lang": "en-US",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities",
+    "energy"
+  ],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Focus Areas",
+      "short_name": "Focus Areas",
+      "description": "Explore strategic initiatives in CCUS, Offshore Wind, and Ecology",
+      "url": "./#focus-areas",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Intelligence Insights",
+      "short_name": "Insights",
+      "description": "Strategic foresight and technology trends",
+      "url": "./insights",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Our Ecosystem",
+      "short_name": "About",
+      "description": "Discover our DNA and partner ecosystem",
+      "url": "./about",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

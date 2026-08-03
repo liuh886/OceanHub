@@ -6,47 +6,70 @@ const insights = await getCollection('insights');
 const sortedInsights = insights.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 ---
 
-<Layout title="Insights | OceanHub" description="Deep dives into global CCUS trends, Smart MRV technologies, and the future of the blue economy.">
-	<section class="py-20 bg-white">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<div class="text-center max-w-3xl mx-auto mb-16">
-				<h1 class="text-4xl font-bold text-slate-900 mb-6">Deep Blue Intelligence</h1>
-				<p class="text-xl text-slate-600">
-					Market analysis, technology trends, and strategic foresight for the offshore energy transition.
+<Layout title="Deep Blue Intelligence & Dossiers | OceanHub" description="Deep dives into global CCUS trends, Smart MRV technologies, and the future of the blue economy.">
+	<section class="py-20 md:py-32">
+		<div class="max-w-7xl mx-auto px-6">
+			<!-- Header -->
+			<div class="text-center max-w-3xl mx-auto mb-20 reveal">
+				<div class="hud-badge mb-4">
+					<i class="fa-solid fa-satellite"></i> INTELLIGENCE ARCHIVE
+				</div>
+				<h1 class="heading-section">
+					Deep Blue <br/>
+					<span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-sky-300 glow-text-cyan">
+						Intelligence
+					</span>
+				</h1>
+				<p class="text-lg text-slate-300 font-light leading-relaxed">
+					Strategic foresight, technical White Papers, and market analysis for the global offshore blue energy transition.
 				</p>
 			</div>
 			
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-				{sortedInsights.map((insight) => (
-					<article class="flex flex-col items-start justify-between bg-white border border-slate-100 rounded-2xl p-8 hover:shadow-lg transition-all">
-						<div class="flex items-center gap-x-4 text-xs mb-4">
-							<time datetime={insight.data.publishDate.toISOString()} class="text-slate-500">
-								{insight.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-							</time>
-							{insight.data.tags.map(tag => (
-								<span class="relative z-10 rounded-full bg-blue-50 px-3 py-1.5 font-medium text-blue-600 hover:bg-blue-100">
-									{tag}
-								</span>
-							))}
-						</div>
-						<div class="group relative">
-							<h3 class="mt-3 text-2xl font-semibold leading-6 text-slate-900 group-hover:text-blue-600">
-								<a href={`/insights/${insight.slug}`}>
-									<span class="absolute inset-0"></span>
+			<!-- Insights Grid -->
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+				{sortedInsights.map((insight, index) => (
+					<article class="glass-card p-8 md:p-10 flex flex-col justify-between group reveal" style={`transition-delay: ${index * 120}ms;`}>
+						<div>
+							<!-- Meta Tags -->
+							<div class="flex flex-wrap items-center gap-3 mb-6">
+								<time datetime={insight.data.publishDate.toISOString()} class="text-xs font-mono text-cyan-400">
+									{insight.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+								</time>
+								<span class="text-slate-600">•</span>
+								{insight.data.tags.map(tag => (
+									<span class="px-2.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[11px] font-mono text-slate-300">
+										{tag}
+									</span>
+								))}
+							</div>
+
+							<!-- Title -->
+							<h2 class="text-2xl md:text-3xl font-black leading-tight text-white group-hover:text-cyan-300 transition-colors mb-4 font-display">
+								<a href={`/insights/${insight.slug}`} class="focus:outline-none">
 									{insight.data.title}
 								</a>
-							</h3>
-							<p class="mt-5 line-clamp-3 text-sm leading-6 text-slate-600">
+							</h2>
+
+							<!-- Description -->
+							<p class="text-slate-400 text-sm md:text-base font-light leading-relaxed mb-8">
 								{insight.data.description}
 							</p>
 						</div>
-						<div class="relative mt-8 flex items-center gap-x-4">
-							<div class="text-sm leading-6">
-								<p class="font-semibold text-slate-900">
-									<span class="absolute inset-0"></span>
+
+						<!-- Author & Action -->
+						<div class="flex items-center justify-between pt-6 border-t border-white/10">
+							<div class="flex items-center gap-3">
+								<div class="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300 font-bold text-xs font-mono">
+									{insight.data.author.charAt(0)}
+								</div>
+								<span class="text-xs font-mono text-slate-300">
 									{insight.data.author}
-								</p>
+								</span>
 							</div>
+							<a href={`/insights/${insight.slug}`} class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+								<span>Read Dossier</span>
+								<i class="fa-solid fa-chevron-right text-[10px]"></i>
+							</a>
 						</div>
 					</article>
 				))}
