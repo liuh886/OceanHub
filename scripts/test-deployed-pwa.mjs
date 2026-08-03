@@ -117,11 +117,13 @@ try {
   });
   const mobilePage = await mobile.newPage();
   await mobilePage.goto(base.href, { waitUntil: 'domcontentloaded' });
-  const menuButton = mobilePage.getByRole('button', { name: 'Open navigation menu' });
+  const menuButton = mobilePage.locator('#mobile-menu-toggle');
+  const mobileDrawer = mobilePage.locator('#mobile-drawer');
   await menuButton.waitFor();
   await menuButton.click();
   assert((await menuButton.getAttribute('aria-expanded')) === 'true', 'Mobile navigation did not expose its expanded state.');
-  await mobilePage.getByRole('link', { name: 'Offline Briefcase' }).waitFor();
+  assert((await mobileDrawer.getAttribute('aria-hidden')) === 'false', 'Mobile navigation drawer remained hidden from assistive technology.');
+  await mobileDrawer.getByRole('link', { name: 'Marine Intelligence' }).waitFor();
   await mobile.close();
 
   const reducedMotion = await browser.newContext({ reducedMotion: 'reduce' });
