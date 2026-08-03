@@ -1,10 +1,20 @@
 import { chromium } from 'playwright';
 
+function normalizeBaseUrl(value) {
+  const url = new URL(value);
+  if (!url.pathname.endsWith('/')) url.pathname += '/';
+  url.search = '';
+  url.hash = '';
+  return url.href;
+}
+
 const origin = process.env.OCEANHUB_TEST_ORIGIN ?? 'http://127.0.0.1:4321';
-const base = `${origin}/OceanHub/`;
-const focusUrl = `${base}focus-areas/ccus/`;
-const insightUrl = `${base}insights/ccs-monitoring-trends/`;
-const briefcaseUrl = `${base}briefcase/`;
+const base = normalizeBaseUrl(
+  process.env.OCEANHUB_TEST_BASE_URL ?? `${origin.replace(/\/+$/, '')}/OceanHub/`
+);
+const focusUrl = new URL('focus-areas/ccus/', base).href;
+const insightUrl = new URL('insights/ccs-monitoring-trends/', base).href;
+const briefcaseUrl = new URL('briefcase/', base).href;
 const focusTitle = 'Offshore CCUS & Storage';
 const insightTitle = 'Designing Risk-Based Monitoring for Offshore CO₂ Storage';
 
@@ -57,7 +67,7 @@ try {
   await page.getByRole('heading', { name: 'Nothing saved yet' }).waitFor();
   await page.getByText('0 saved items', { exact: true }).waitFor();
 
-  console.log('OceanHub offline briefcase browser workflow passed.');
+  console.log(`OceanHub offline briefcase browser workflow passed against ${base}`);
 } finally {
   await context.setOffline(false).catch(() => {});
   await browser.close();
