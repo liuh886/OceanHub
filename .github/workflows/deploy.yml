@@ -10,6 +10,7 @@ permissions:
   actions: read
   pages: write
   id-token: write
+  statuses: write
 
 concurrency:
   group: oceanhub-pages
@@ -96,3 +97,39 @@ jobs:
         run: |
           npm run test:deployed
           npm run test:briefcase
+
+  report-deployment:
+    name: Report deployed PWA status
+    if: >-
+      always() &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    needs: [deploy, verify-deployment]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Publish commit status
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOYED_SHA: ${{ github.event.workflow_run.head_sha }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          VERIFY_RESULT: ${{ needs.verify-deployment.result }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if [[ "$DEPLOY_RESULT" == "success" && "$VERIFY_RESULT" == "success" ]]; then
+            state=success
+            description='GitHub Pages deployment and deployed PWA checks passed'
+          else
+            state=failure
+            description='GitHub Pages deployment or deployed PWA checks failed'
+          fi
+
+          gh api --method POST \
+            "repos/${GITHUB_REPOSITORY}/statuses/${DEPLOYED_SHA}" \
+            -f state="$state" \
+            -f context='pages/deployed-pwa' \
+            -f description="$description" \
+            -f target_url="$RUN_URL"
