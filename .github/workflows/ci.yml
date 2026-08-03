@@ -30,3 +30,24 @@ jobs:
 
       - name: Type-check and build
         run: npm run ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Test offline briefcase workflow
+        shell: bash
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/oceanhub-preview.log 2>&1 &
+          PREVIEW_PID=$!
+          trap 'kill $PREVIEW_PID 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:4321/OceanHub/ > /dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              cat /tmp/oceanhub-preview.log
+              exit 1
+            fi
+            sleep 1
+          done
+          npm run test:briefcase
