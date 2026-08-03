@@ -1,0 +1,42 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const focusAreas = await getCollection('focus-areas');
+const sortedFocusAreas = focusAreas.sort((a, b) => a.data.order - b.data.order);
+---
+
+<Layout title="Focus Areas | OceanHub" description="Explore our strategic initiatives for Offshore Wind, CCS, and Marine Engineering.">
+	<section class="py-20 bg-slate-50">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="text-center max-w-3xl mx-auto mb-16">
+				<h1 class="text-4xl font-bold text-slate-900 mb-6">Strategic Focus Areas</h1>
+				<p class="text-xl text-slate-600">
+					From geophysical scanning to geotechnical sampling, we provide the data certainty needed for complex offshore developments—delivered in a sustainable way.
+				</p>
+			</div>
+			
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				{sortedFocusAreas.map((area) => (
+					<a href={`/focus-areas/${area.slug}`} class="group block bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1">
+						<div class="p-8">
+							<div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+								<!-- Icon placeholder or dynamic icon -->
+								<span class="text-2xl font-bold">⚓</span>
+							</div>
+							<h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">
+								{area.data.title}
+							</h3>
+							<p class="text-slate-500 mb-6 line-clamp-3">
+								{area.data.description}
+							</p>
+							<div class="flex items-center text-blue-600 font-semibold text-sm">
+								Explore Initiative <span class="ml-2 group-hover:translate-x-1 transition-transform">&rarr;</span>
+							</div>
+						</div>
+					</a>
+				))}
+			</div>
+		</div>
+	</section>
+</Layout>

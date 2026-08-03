@@ -1,0 +1,56 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const insights = await getCollection('insights');
+const sortedInsights = insights.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+---
+
+<Layout title="Insights | OceanHub" description="Deep dives into global CCUS trends, Smart MRV technologies, and the future of the blue economy.">
+	<section class="py-20 bg-white">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="text-center max-w-3xl mx-auto mb-16">
+				<h1 class="text-4xl font-bold text-slate-900 mb-6">Deep Blue Intelligence</h1>
+				<p class="text-xl text-slate-600">
+					Market analysis, technology trends, and strategic foresight for the offshore energy transition.
+				</p>
+			</div>
+			
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+				{sortedInsights.map((insight) => (
+					<article class="flex flex-col items-start justify-between bg-white border border-slate-100 rounded-2xl p-8 hover:shadow-lg transition-all">
+						<div class="flex items-center gap-x-4 text-xs mb-4">
+							<time datetime={insight.data.publishDate.toISOString()} class="text-slate-500">
+								{insight.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+							</time>
+							{insight.data.tags.map(tag => (
+								<span class="relative z-10 rounded-full bg-blue-50 px-3 py-1.5 font-medium text-blue-600 hover:bg-blue-100">
+									{tag}
+								</span>
+							))}
+						</div>
+						<div class="group relative">
+							<h3 class="mt-3 text-2xl font-semibold leading-6 text-slate-900 group-hover:text-blue-600">
+								<a href={`/insights/${insight.slug}`}>
+									<span class="absolute inset-0"></span>
+									{insight.data.title}
+								</a>
+							</h3>
+							<p class="mt-5 line-clamp-3 text-sm leading-6 text-slate-600">
+								{insight.data.description}
+							</p>
+						</div>
+						<div class="relative mt-8 flex items-center gap-x-4">
+							<div class="text-sm leading-6">
+								<p class="font-semibold text-slate-900">
+									<span class="absolute inset-0"></span>
+									{insight.data.author}
+								</p>
+							</div>
+						</div>
+					</article>
+				))}
+			</div>
+		</div>
+	</section>
+</Layout>

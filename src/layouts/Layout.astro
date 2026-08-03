@@ -1,0 +1,156 @@
+---
+import '../styles/global.css';
+import { Image } from 'astro:assets';
+import logo from '../assets/oceanhub-logo-v2.png';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = "OceanHub - Bridging Data, Energy & Future" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<!-- SEO: Open Graph -->
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	</head>
+	<body class="selection:bg-brand-blue/10 selection:text-brand-blue">
+		<nav id="main-nav" class="fixed top-0 w-full z-50 transition-all duration-700 glass-nav py-6">
+			<div class="max-w-[1800px] mx-auto px-8 md:px-16 flex justify-between items-center">
+				<div class="flex-shrink-0">
+					<a href="/" class="block hover:opacity-70 transition-opacity">
+						<Image src={logo} alt="OceanHub Logo" width={220} class="w-44 md:w-56" />
+					</a>
+				</div>
+				<div class="hidden lg:flex items-center space-x-12">
+					<a href="/#focus-areas" class="nav-link text-[13px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-brand-blue transition-all">Focus Areas</a>
+					<a href="/#insights" class="nav-link text-[13px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-brand-blue transition-all">Insights</a>
+					<a href="/#about" class="nav-link text-[13px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-brand-blue transition-all">About Us</a>
+					<a href="mailto:info@oceanhub.com" class="text-[13px] font-black uppercase tracking-[0.2em] bg-brand-blue text-white px-8 py-3 rounded-full hover:shadow-2xl hover:shadow-brand-blue/40 transition-all">Get in touch</a>
+				</div>
+			</div>
+		</nav>
+
+		<main>
+			<slot />
+		</main>
+
+		<footer class="bg-brand-blue text-white py-32 md:py-48 mt-32 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-white/5 rounded-full blur-[150px] -mr-32 -mt-32"></div>
+			<div class="max-w-[1800px] mx-auto px-8 md:px-16 relative z-10">
+				<div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-32">
+					<div class="lg:col-span-5">
+						<div class="mb-12">
+							<Image src={logo} alt="OceanHub Logo" width={200} class="brightness-0 invert opacity-90" />
+						</div>
+						<p class="text-xl md:text-2xl text-slate-300 font-light leading-relaxed max-w-xl">
+							Orchestrating the global transition to a sustainable blue energy future through data certainty and technical rigour.
+						</p>
+					</div>
+					<div class="lg:col-span-2">
+						<h3 class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 mb-10">Ecosystem</h3>
+						<ul class="space-y-6">
+							<li><a href="/#focus-areas" class="text-lg text-slate-300 hover:text-white transition-colors">Strategic Initiatives</a></li>
+							<li><a href="/#insights" class="text-lg text-slate-300 hover:text-white transition-colors">Industry Insights</a></li>
+							<li><a href="/#about" class="text-lg text-slate-300 hover:text-white transition-colors">Our Vision</a></li>
+						</ul>
+					</div>
+					<div class="lg:col-span-2">
+						<h3 class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 mb-10">Platform</h3>
+						<ul class="space-y-6">
+							<li><a href="#" class="text-lg text-slate-300 hover:text-white transition-colors">Privacy Policy</a></li>
+							<li><a href="#" class="text-lg text-slate-300 hover:text-white transition-colors">Terms of Service</a></li>
+						</ul>
+					</div>
+                    <div class="lg:col-span-3">
+						<h3 class="text-xs font-black uppercase tracking-[0.3em] text-slate-500 mb-10">Connect</h3>
+                        <div class="flex gap-8">
+                            <a href="#" class="text-2xl text-slate-300 hover:text-white transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                            <a href="#" class="text-2xl text-slate-300 hover:text-white transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
+                        </div>
+					</div>
+				</div>
+				<div class="mt-32 pt-16 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <p class="text-sm text-slate-500 font-medium tracking-wide uppercase">
+					    &copy; {new Date().getFullYear()} OceanHub. Nordic Excellence in Marine Data.
+                    </p>
+				</div>
+			</div>
+		</footer>
+
+        <script>
+            // Scroll Reveal Animation
+            const revealOptions = {
+                threshold: 0.1,
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, revealOptions);
+
+            document.querySelectorAll('.reveal').forEach((el) => {
+                revealObserver.observe(el);
+            });
+
+            // Scroll Spy for active nav links
+            const spyOptions = {
+                rootMargin: '-20% 0px -70% 0px',
+                threshold: 0
+            };
+
+            const spyObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        document.querySelectorAll('.nav-link').forEach(link => {
+                            link.classList.remove('text-brand-blue');
+                            link.classList.add('text-slate-400');
+                            if (link.getAttribute('href') === `/#${id}`) {
+                                link.classList.add('text-brand-blue');
+                                link.classList.remove('text-slate-400');
+                            }
+                        });
+                    }
+                });
+            }, spyOptions);
+
+            document.querySelectorAll('section[id]').forEach((section) => {
+                spyObserver.observe(section);
+            });
+
+            // Navbar polish on scroll
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('main-nav');
+                if (nav) {
+                    if (window.scrollY > 50) {
+                        nav.classList.add('py-4', 'shadow-2xl', 'shadow-slate-200/50');
+                        nav.classList.remove('py-6');
+                    } else {
+                        nav.classList.remove('py-4', 'shadow-2xl', 'shadow-slate-200/50');
+                        nav.classList.add('py-6');
+                    }
+                }
+            });
+        </script>
+	</body>
+</html>
