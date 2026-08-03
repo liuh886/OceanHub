@@ -21,7 +21,7 @@ const caseStudies = defineCollection({
     industry: z.string(),
     challenge: z.string(),
     result: z.string(),
-    solution: z.string(), // Link to solution slug
+    solution: z.string(),
     featured: z.boolean().default(false),
     publishDate: z.date().default(() => new Date()),
   }),
@@ -34,7 +34,7 @@ const insights = defineCollection({
     description: z.string(),
     tags: z.array(z.string()).default([]),
     publishDate: z.date().default(() => new Date()),
-    author: z.string().default('NBW Team'),
+    author: z.string().default('OceanHub Team'),
   }),
 });
 
