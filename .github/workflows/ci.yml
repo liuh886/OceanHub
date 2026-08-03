@@ -3,40 +3,81 @@ name: Validate OceanHub
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: oceanhub-ci-${{ github.ref }}
+  group: oceanhub-ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
+  scope:
+    name: Classify changed surface
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      browser: ${{ steps.classify.outputs.browser }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect browser-relevant changes
+        id: classify
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" != "pull_request" ]]; then
+            echo "browser=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git diff --name-only "$BASE_SHA" "$GITHUB_SHA" > changed-files.txt
+          cat changed-files.txt
+          if grep -Eq '^(src/|public/|scripts/test-briefcase\.mjs$|astro\.config\.mjs$|package(-lock)?\.json$|tsconfig\.json$|\.github/workflows/(ci|deploy)\.yml$)' changed-files.txt; then
+            echo "browser=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "browser=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  validate:
+    name: Type, build and offline product contract
+    needs: scope
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
 
-      - name: Install dependencies
+      - name: Install locked dependencies
         run: npm ci
 
       - name: Type-check and build
         run: npm run ci
 
       - name: Install Chromium
+        if: needs.scope.outputs.browser == 'true'
         run: npx playwright install --with-deps chromium
 
-      - name: Test offline briefcase workflow
+      - name: Test offline Briefcase workflow
+        if: needs.scope.outputs.browser == 'true'
         shell: bash
         run: |
+          set -euo pipefail
           npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/oceanhub-preview.log 2>&1 &
           PREVIEW_PID=$!
           trap 'kill $PREVIEW_PID 2>/dev/null || true' EXIT
@@ -51,3 +92,12 @@ jobs:
             sleep 1
           done
           npm run test:briefcase
+
+      - name: Retain validated Pages build
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: oceanhub-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
