@@ -16,7 +16,8 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (canvas && !reduceMotion) {
-    const ctx = canvas.getContext('2d');
+    const surface = canvas;
+    const ctx = surface.getContext('2d');
     let animationFrameId = 0;
     let width = 0;
     let height = 0;
@@ -41,10 +42,10 @@
       width = window.innerWidth;
       height = window.innerHeight;
       dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
+      surface.width = Math.round(width * dpr);
+      surface.height = Math.round(height * dpr);
+      surface.style.width = `${width}px`;
+      surface.style.height = `${height}px`;
       ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const targetCount = Math.min(width < 768 ? 22 : 48, Math.max(16, Math.floor((width * height) / 36000)));
