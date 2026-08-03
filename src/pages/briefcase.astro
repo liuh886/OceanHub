@@ -254,18 +254,22 @@ const catalogue = [
       message.textContent = `${availableCount} of ${savedItems.length} saved item${savedItems.length === 1 ? ' is' : 's are'} fully available offline.`;
     }
 
-    clearButton?.addEventListener('click', async () => {
-      clearButton.disabled = true;
-      const reply = await sendWorkerMessage({ type: 'CLEAR_CONTENT' });
-      if (reply.ok) {
-        localStorage.removeItem(STORAGE_KEY);
-        message.textContent = 'All deliberately saved OceanHub content was removed from this device.';
-        await renderBriefcase();
-      } else {
-        clearButton.disabled = false;
-        message.textContent = reply.error ?? 'Saved content could not be cleared.';
-      }
-    });
+    if (clearButton && message) {
+      const clearControl = clearButton;
+      const statusMessage = message;
+      clearControl.addEventListener('click', async () => {
+        clearControl.disabled = true;
+        const reply = await sendWorkerMessage({ type: 'CLEAR_CONTENT' });
+        if (reply.ok) {
+          localStorage.removeItem(STORAGE_KEY);
+          statusMessage.textContent = 'All deliberately saved OceanHub content was removed from this device.';
+          await renderBriefcase();
+        } else {
+          clearControl.disabled = false;
+          statusMessage.textContent = reply.error ?? 'Saved content could not be cleared.';
+        }
+      });
+    }
 
     renderBriefcase();
     window.addEventListener('oceanhub:briefcase-updated', renderBriefcase);
