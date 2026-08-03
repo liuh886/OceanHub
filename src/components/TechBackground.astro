@@ -1,27 +1,28 @@
 ---
-// Interactive Deep-Ocean Tech Matrix Canvas Component
+// Ambient ocean-data mesh. Decorative only; automatically reduces work on small screens,
+// hidden tabs and devices that request reduced motion.
 ---
 
-<div class="fixed inset-0 pointer-events-none -z-20 overflow-hidden">
-  <!-- Subtle Gradient Lighting Orbs -->
-  <div class="absolute -top-40 left-1/4 w-[700px] h-[700px] bg-cyan-500/10 rounded-full blur-[160px]"></div>
-  <div class="absolute top-1/3 -right-40 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[180px]"></div>
-  <div class="absolute -bottom-40 left-1/3 w-[800px] h-[800px] bg-emerald-500/5 rounded-full blur-[180px]"></div>
-  
-  <!-- Cyber Grid Pattern Overlay -->
+<div class="fixed inset-0 pointer-events-none -z-20 overflow-hidden" aria-hidden="true">
+  <div class="absolute -top-40 left-1/4 w-[700px] h-[700px] bg-cyan-500/8 rounded-full blur-[160px]"></div>
+  <div class="absolute top-1/3 -right-40 w-[600px] h-[600px] bg-blue-600/8 rounded-full blur-[180px]"></div>
+  <div class="absolute -bottom-40 left-1/3 w-[800px] h-[800px] bg-emerald-500/4 rounded-full blur-[180px]"></div>
   <div class="absolute inset-0 cyber-grid opacity-70"></div>
-
-  <!-- Interactive Marine Sensor Swarm Canvas -->
-  <canvas id="ocean-tech-canvas" class="absolute inset-0 w-full h-full opacity-60"></canvas>
+  <canvas id="ocean-tech-canvas" class="absolute inset-0 w-full h-full opacity-45"></canvas>
 </div>
 
 <script>
-  const canvas = document.getElementById('ocean-tech-canvas') as HTMLCanvasElement;
-  if (canvas) {
+  const canvas = document.getElementById('ocean-tech-canvas') as HTMLCanvasElement | null;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (canvas && !reduceMotion) {
     const ctx = canvas.getContext('2d');
-    let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    let animationFrameId = 0;
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let running = true;
+    let mouse = { x: -1000, y: -1000 };
 
     interface Particle {
       x: number;
@@ -29,101 +30,117 @@
       vx: number;
       vy: number;
       size: number;
-      baseAlpha: number;
+      alpha: number;
+      phase: number;
       pulseSpeed: number;
-      pulseVal: number;
     }
 
-    const particleCount = Math.min(65, Math.floor((width * height) / 25000));
     const particles: Particle[] = [];
 
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        size: Math.random() * 2 + 1,
-        baseAlpha: Math.random() * 0.4 + 0.2,
-        pulseSpeed: Math.random() * 0.02 + 0.01,
-        pulseVal: Math.random() * Math.PI * 2,
-      });
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const targetCount = Math.min(width < 768 ? 22 : 48, Math.max(16, Math.floor((width * height) / 36000)));
+      while (particles.length < targetCount) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.28,
+          vy: (Math.random() - 0.5) * 0.28,
+          size: Math.random() * 1.4 + 0.7,
+          alpha: Math.random() * 0.28 + 0.12,
+          phase: Math.random() * Math.PI * 2,
+          pulseSpeed: Math.random() * 0.015 + 0.006
+        });
+      }
+      particles.splice(targetCount);
     }
 
-    let mouse = { x: -1000, y: -1000 };
-
-    window.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
-
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-
     function draw() {
-      if (!ctx) return;
+      if (!ctx || !running) return;
       ctx.clearRect(0, 0, width, height);
 
-      // Draw particle connections (Marine Mesh Network)
-      const maxDistance = 140;
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
+      const maxDistance = width < 768 ? 105 : 135;
+      for (let i = 0; i < particles.length; i += 1) {
+        for (let j = i + 1; j < particles.length; j += 1) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < maxDistance) {
-            const alpha = (1 - dist / maxDistance) * 0.18;
+          const distanceSquared = dx * dx + dy * dy;
+          if (distanceSquared < maxDistance * maxDistance) {
+            const distance = Math.sqrt(distanceSquared);
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(0, 240, 255, ${alpha})`;
-            ctx.lineWidth = 0.8;
+            ctx.strokeStyle = `rgba(0, 240, 255, ${(1 - distance / maxDistance) * 0.12})`;
+            ctx.lineWidth = 0.7;
             ctx.stroke();
           }
         }
       }
 
-      // Draw particles (Sensor Nodes)
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.pulseVal += p.pulseSpeed;
+      particles.forEach((particle) => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.phase += particle.pulseSpeed;
 
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
-        if (p.y < 0) p.y = height;
-        if (p.y > height) p.y = 0;
+        if (particle.x < -5) particle.x = width + 5;
+        if (particle.x > width + 5) particle.x = -5;
+        if (particle.y < -5) particle.y = height + 5;
+        if (particle.y > height + 5) particle.y = -5;
 
-        // Subtle mouse repulsion / reaction
-        const mdx = p.x - mouse.x;
-        const mdy = p.y - mouse.y;
-        const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
-        if (mDist < 120) {
-          p.x += (mdx / mDist) * 1.2;
-          p.y += (mdy / mDist) * 1.2;
+        if (width >= 768) {
+          const dx = particle.x - mouse.x;
+          const dy = particle.y - mouse.y;
+          const distanceSquared = dx * dx + dy * dy;
+          if (distanceSquared > 0 && distanceSquared < 110 * 110) {
+            const distance = Math.sqrt(distanceSquared);
+            particle.x += (dx / distance) * 0.45;
+            particle.y += (dy / distance) * 0.45;
+          }
         }
 
-        const currentAlpha = p.baseAlpha + Math.sin(p.pulseVal) * 0.15;
+        const alpha = Math.max(0.08, particle.alpha + Math.sin(particle.phase) * 0.08);
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 240, 255, ${Math.max(0.1, currentAlpha)})`;
-        ctx.shadowColor = 'rgba(0, 240, 255, 0.6)';
-        ctx.shadowBlur = 6;
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 240, 255, ${alpha})`;
         ctx.fill();
-        ctx.shadowBlur = 0;
       });
 
       animationFrameId = requestAnimationFrame(draw);
     }
 
-    draw();
+    function start() {
+      if (running && !animationFrameId) animationFrameId = requestAnimationFrame(draw);
+    }
 
-    // Cleanup when leaving
-    document.addEventListener('astro:before-swap', () => {
+    function stop() {
       cancelAnimationFrame(animationFrameId);
+      animationFrameId = 0;
+    }
+
+    resizeCanvas();
+    start();
+
+    window.addEventListener('resize', resizeCanvas, { passive: true });
+    window.addEventListener('mousemove', (event) => {
+      mouse = { x: event.clientX, y: event.clientY };
+    }, { passive: true });
+
+    document.addEventListener('visibilitychange', () => {
+      running = !document.hidden;
+      if (running) start(); else stop();
+    });
+
+    document.addEventListener('astro:before-swap', () => {
+      running = false;
+      stop();
     });
   }
 </script>
