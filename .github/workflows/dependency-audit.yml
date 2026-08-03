@@ -1,0 +1,42 @@
+name: Classify npm advisories
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Capture npm audit evidence
+        shell: bash
+        run: |
+          npm audit --json > /tmp/audit-full.json || true
+          npm audit --omit=dev --json > /tmp/audit-production.json || true
+          node scripts/summarize-audit.mjs /tmp/audit-full.json /tmp/audit-production.json | tee /tmp/dependency-audit-summary.md
+
+      - name: Upload audit evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-evidence
+          path: |
+            /tmp/audit-full.json
+            /tmp/audit-production.json
+            /tmp/dependency-audit-summary.md
+          retention-days: 14

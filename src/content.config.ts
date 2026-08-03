@@ -1,7 +1,9 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 
 const focusAreas = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/focus-areas' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -14,12 +16,12 @@ const focusAreas = defineCollection({
 });
 
 const insights = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.md', base: './src/content/insights' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
     tags: z.array(z.string()).default([]),
-    publishDate: z.date().default(() => new Date()),
+    publishDate: z.coerce.date().default(() => new Date()),
     author: z.string().default('OceanHub Team'),
   }),
 });

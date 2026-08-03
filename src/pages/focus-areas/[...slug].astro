@@ -1,18 +1,18 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import OfflineSaveButton from '../../components/OfflineSaveButton.astro';
 import { contentVersion } from '../../lib/contentVersion';
 
 export async function getStaticPaths() {
   const focusAreaEntries = await getCollection('focus-areas');
-  return focusAreaEntries.map((entry) => ({ params: { slug: entry.slug }, props: { entry } }));
+  return focusAreaEntries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
 const base = import.meta.env.BASE_URL;
 const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
 const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { Content } = await render(entry);
 const version = contentVersion(entry);
 ---
 
@@ -27,10 +27,10 @@ const version = contentVersion(entry);
       <p class="text-lg md:text-xl text-slate-300 font-light leading-relaxed">{entry.data.description}</p>
       <div class="mt-8">
         <OfflineSaveButton
-          contentId={`focus-area:${entry.slug}`}
+          contentId={`focus-area:${entry.id}`}
           title={entry.data.title}
           description={entry.data.description}
-          route={`focus-areas/${entry.slug}`}
+          route={`focus-areas/${entry.id}`}
           contentType="focus-area"
           version={version}
         />

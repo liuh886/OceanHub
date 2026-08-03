@@ -12,20 +12,20 @@
     "astro": "astro"
   },
   "dependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.6",
     "@astrojs/react": "^4.4.2",
     "@tailwindcss/vite": "^4.1.18",
     "@types/react": "^19.2.9",
     "@types/react-dom": "^19.2.3",
-    "astro": "^5.16.15",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "tailwindcss": "^4.1.18"
-  },
-  "devDependencies": {
-    "@astrojs/check": "^0.9.6",
+    "astro": "^7.1.6",
     "playwright": "^1.58.0",
     "pptxgenjs": "^4.0.1",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.3",
+    "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
   }
 }

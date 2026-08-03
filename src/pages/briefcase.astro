@@ -9,19 +9,19 @@ const insights = await getCollection('insights');
 
 const catalogue = [
   ...focusAreas.map((entry) => ({
-    id: `focus-area:${entry.slug}`,
+    id: `focus-area:${entry.id}`,
     title: entry.data.title,
     description: entry.data.description,
     type: 'focus-area',
-    route: `${base}focus-areas/${entry.slug}/`,
+    route: `${base}focus-areas/${entry.id}/`,
     version: contentVersion(entry)
   })),
   ...insights.map((entry) => ({
-    id: `insight:${entry.slug}`,
+    id: `insight:${entry.id}`,
     title: entry.data.title,
     description: entry.data.description,
     type: 'insight',
-    route: `${base}insights/${entry.slug}/`,
+    route: `${base}insights/${entry.id}/`,
     version: contentVersion(entry)
   }))
 ];
