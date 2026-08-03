@@ -36,7 +36,7 @@ const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
     </div>
   </section>
 
-  <script define:vars={{ base }}>
+  <script is:inline define:vars={{ base }}>
     const retryBtn = document.getElementById('retry-connection-btn');
     const statusPill = document.getElementById('connection-status-pill');
 
