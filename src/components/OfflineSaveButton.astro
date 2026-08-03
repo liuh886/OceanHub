@@ -1,0 +1,188 @@
+---
+interface Props {
+  contentId: string;
+  title: string;
+  description: string;
+  route: string;
+  contentType: 'focus-area' | 'insight';
+  version: string;
+}
+
+const {
+  contentId,
+  title,
+  description,
+  route,
+  contentType,
+  version
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const normalizedRoute = `${base}${route.replace(/^\/+|\/+$/g, '')}/`;
+const briefcaseRoute = `${base}briefcase/`;
+---
+
+<div
+  class="offline-save-panel"
+  data-offline-save-root
+  data-content-id={contentId}
+  data-title={title}
+  data-description={description}
+  data-route={normalizedRoute}
+  data-content-type={contentType}
+  data-version={version}
+>
+  <button
+    type="button"
+    class="offline-save-button"
+    data-offline-save-button
+    aria-describedby={`${contentId.replace(/[^a-z0-9-]/gi, '-')}-offline-status`}
+  >
+    <i class="fa-solid fa-download" aria-hidden="true"></i>
+    <span data-offline-save-label>Save offline</span>
+  </button>
+  <a href={briefcaseRoute} class="offline-briefcase-link hidden" data-offline-briefcase-link>
+    Open Briefcase
+  </a>
+  <p
+    id={`${contentId.replace(/[^a-z0-9-]/gi, '-')}-offline-status`}
+    class="offline-save-status"
+    data-offline-save-status
+    aria-live="polite"
+  ></p>
+</div>
+
+<script>
+  const STORAGE_KEY = 'oceanhub-briefcase-v1';
+
+  interface SavedContent {
+    id: string;
+    title: string;
+    description: string;
+    route: string;
+    type: 'focus-area' | 'insight';
+    version: string;
+    savedAt: string;
+  }
+
+  interface WorkerReply {
+    ok: boolean;
+    error?: string;
+  }
+
+  function readSavedContent(): SavedContent[] {
+    try {
+      const value = localStorage.getItem(STORAGE_KEY);
+      if (!value) return [];
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function writeSavedContent(items: SavedContent[]) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }
+
+  async function sendWorkerMessage(message: Record<string, unknown>): Promise<WorkerReply> {
+    if (!('serviceWorker' in navigator)) {
+      throw new Error('Offline saving is not supported by this browser.');
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+    const worker = registration.active ?? navigator.serviceWorker.controller;
+    if (!worker) throw new Error('OceanHub offline support is not ready yet.');
+
+    return new Promise((resolve, reject) => {
+      const channel = new MessageChannel();
+      const timeout = window.setTimeout(() => reject(new Error('The offline download timed out.')), 15000);
+
+      channel.port1.onmessage = (event: MessageEvent<WorkerReply>) => {
+        window.clearTimeout(timeout);
+        resolve(event.data);
+      };
+
+      worker.postMessage(message, [channel.port2]);
+    });
+  }
+
+  function initializeOfflineSave(root: HTMLElement) {
+    if (root.dataset.initialized === 'true') return;
+    root.dataset.initialized = 'true';
+
+    const button = root.querySelector<HTMLButtonElement>('[data-offline-save-button]');
+    const label = root.querySelector<HTMLElement>('[data-offline-save-label]');
+    const status = root.querySelector<HTMLElement>('[data-offline-save-status]');
+    const briefcaseLink = root.querySelector<HTMLElement>('[data-offline-briefcase-link]');
+
+    const id = root.dataset.contentId;
+    const title = root.dataset.title;
+    const description = root.dataset.description;
+    const route = root.dataset.route;
+    const type = root.dataset.contentType as SavedContent['type'] | undefined;
+    const version = root.dataset.version;
+
+    if (!button || !label || !status || !briefcaseLink || !id || !title || !description || !route || !type || !version) return;
+
+    const actionButton = button;
+    const actionLabel = label;
+    const actionStatus = status;
+    const savedLink = briefcaseLink;
+
+    function setState() {
+      const saved = readSavedContent().find((item) => item.id === id);
+      const current = saved?.version === version;
+
+      actionButton.disabled = Boolean(current);
+      actionButton.dataset.state = current ? 'saved' : saved ? 'update' : 'idle';
+      actionLabel.textContent = current ? 'Saved offline' : saved ? 'Update offline copy' : 'Save offline';
+      savedLink.classList.toggle('hidden', !saved);
+      actionStatus.textContent = saved
+        ? current
+          ? `Saved on ${new Date(saved.savedAt).toLocaleDateString()}.`
+          : 'A newer version is available to download.'
+        : 'Downloads this page for deliberate offline access.';
+    }
+
+    actionButton.addEventListener('click', async () => {
+      actionButton.disabled = true;
+      actionButton.dataset.state = 'working';
+      actionLabel.textContent = 'Saving…';
+      actionStatus.textContent = 'Downloading the current page to this device.';
+
+      try {
+        const reply = await sendWorkerMessage({ type: 'CACHE_CONTENT', url: route });
+        if (!reply.ok) throw new Error(reply.error ?? 'The page could not be saved.');
+
+        const item: SavedContent = {
+          id,
+          title,
+          description,
+          route,
+          type,
+          version,
+          savedAt: new Date().toISOString()
+        };
+        const items = readSavedContent().filter((saved) => saved.id !== id);
+        writeSavedContent([...items, item]);
+        window.dispatchEvent(new CustomEvent('oceanhub:briefcase-updated'));
+        setState();
+      } catch (error) {
+        actionButton.disabled = false;
+        actionButton.dataset.state = 'error';
+        actionLabel.textContent = 'Try saving again';
+        actionStatus.textContent = error instanceof Error ? error.message : 'The page could not be saved.';
+      }
+    });
+
+    setState();
+  }
+
+  function initializeAllOfflineSaveControls() {
+    document.querySelectorAll<HTMLElement>('[data-offline-save-root]').forEach(initializeOfflineSave);
+  }
+
+  initializeAllOfflineSaveControls();
+  document.addEventListener('astro:page-load', initializeAllOfflineSaveControls);
+</script>

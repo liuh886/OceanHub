@@ -34,6 +34,13 @@
   ],
   "shortcuts": [
     {
+      "name": "Offline Briefcase",
+      "short_name": "Briefcase",
+      "description": "Open marine intelligence deliberately saved on this device.",
+      "url": "/OceanHub/briefcase/",
+      "icons": [{ "src": "/OceanHub/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
       "name": "Focus Areas",
       "short_name": "Focus Areas",
       "description": "Explore OceanHub offshore focus areas.",

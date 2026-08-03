@@ -146,6 +146,38 @@
     @apply inline-flex items-center rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-mono font-semibold uppercase tracking-wider text-slate-300;
   }
 
+  .offline-save-panel {
+    @apply flex flex-wrap items-center gap-3 rounded-2xl border border-cyan-500/15 bg-cyan-950/15 p-4;
+  }
+
+  .offline-save-button {
+    @apply inline-flex min-h-11 items-center gap-2 rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-5 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-cyan-200 transition-colors hover:bg-cyan-500/20;
+  }
+
+  .offline-save-button[data-state='saved'] {
+    @apply border-emerald-400/30 bg-emerald-500/10 text-emerald-200;
+  }
+
+  .offline-save-button[data-state='update'] {
+    @apply border-blue-400/30 bg-blue-500/10 text-blue-200;
+  }
+
+  .offline-save-button[data-state='error'] {
+    @apply border-rose-400/30 bg-rose-500/10 text-rose-200;
+  }
+
+  .offline-save-button:disabled {
+    @apply cursor-default opacity-80;
+  }
+
+  .offline-briefcase-link {
+    @apply inline-flex min-h-11 items-center rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-xs font-mono font-bold uppercase tracking-wider text-slate-200 hover:border-cyan-400/30 hover:text-cyan-200;
+  }
+
+  .offline-save-status {
+    @apply basis-full text-xs leading-relaxed text-slate-400;
+  }
+
   .heading-hero {
     @apply text-5xl sm:text-7xl md:text-8xl lg:text-[6.6rem] font-black tracking-tighter leading-[0.95] text-white;
     font-family: var(--font-display);
