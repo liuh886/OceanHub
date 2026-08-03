@@ -13,20 +13,6 @@ const focusAreas = defineCollection({
   }),
 });
 
-const caseStudies = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    client: z.string(),
-    industry: z.string(),
-    challenge: z.string(),
-    result: z.string(),
-    solution: z.string(),
-    featured: z.boolean().default(false),
-    publishDate: z.date().default(() => new Date()),
-  }),
-});
-
 const insights = defineCollection({
   type: 'content',
   schema: z.object({
@@ -40,6 +26,5 @@ const insights = defineCollection({
 
 export const collections = {
   'focus-areas': focusAreas,
-  'case-studies': caseStudies,
   insights,
 };
