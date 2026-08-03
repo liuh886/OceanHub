@@ -1,10 +1,12 @@
-/* OceanHub PWA Service Worker - v1.1.0 */
-const VERSION = 'v1.1.0';
+/* OceanHub PWA Service Worker - v1.2.0 */
+const VERSION = 'v1.2.0';
 const PRECACHE = `oceanhub-precache-${VERSION}`;
 const RUNTIME = `oceanhub-runtime-${VERSION}`;
+const CONTENT = 'oceanhub-content-v1';
 const CORE_ASSETS = [
   './',
   './offline/',
+  './briefcase/',
   './manifest.webmanifest',
   './favicon.svg',
   './icon-192.png',
@@ -22,11 +24,12 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
+  const retainedCaches = [PRECACHE, RUNTIME, CONTENT];
   event.waitUntil(
     caches.keys()
       .then((names) => Promise.all(
         names
-          .filter((name) => name.startsWith('oceanhub-') && ![PRECACHE, RUNTIME].includes(name))
+          .filter((name) => name.startsWith('oceanhub-') && !retainedCaches.includes(name))
           .map((name) => caches.delete(name))
       ))
       .then(() => self.clients.claim())
@@ -35,6 +38,19 @@ self.addEventListener('activate', (event) => {
 
 function isCacheable(response) {
   return response && response.ok && (response.type === 'basic' || response.type === 'cors');
+}
+
+function normalizeScopedUrl(input) {
+  const scopeUrl = new URL(self.registration.scope);
+  const requested = new URL(input, scopeUrl);
+  if (requested.origin !== scopeUrl.origin || !requested.pathname.startsWith(scopeUrl.pathname)) {
+    throw new Error('Only OceanHub pages can be saved offline.');
+  }
+  return requested.href;
+}
+
+function reply(event, payload) {
+  event.ports?.[0]?.postMessage(payload);
 }
 
 async function offlineFallback() {
@@ -57,7 +73,12 @@ async function networkFirstPage(request) {
     }
     return response;
   } catch {
-    return (await caches.match(request)) || offlineFallback();
+    const contentCache = await caches.open(CONTENT);
+    return (
+      await contentCache.match(request, { ignoreSearch: true }) ||
+      await caches.match(request, { ignoreSearch: true }) ||
+      offlineFallback()
+    );
   }
 }
 
@@ -94,5 +115,61 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+  const type = event.data?.type;
+
+  if (type === 'SKIP_WAITING') {
+    self.skipWaiting();
+    return;
+  }
+
+  if (type === 'CACHE_CONTENT') {
+    event.waitUntil((async () => {
+      try {
+        const url = normalizeScopedUrl(event.data?.url);
+        const response = await fetch(url, { cache: 'reload' });
+        if (!isCacheable(response)) throw new Error(`Download failed with status ${response.status}.`);
+        const cache = await caches.open(CONTENT);
+        await cache.put(url, response.clone());
+        reply(event, { ok: true, url });
+      } catch (error) {
+        reply(event, { ok: false, error: error instanceof Error ? error.message : 'The page could not be saved.' });
+      }
+    })());
+    return;
+  }
+
+  if (type === 'CHECK_CONTENT') {
+    event.waitUntil((async () => {
+      try {
+        const url = normalizeScopedUrl(event.data?.url);
+        const cache = await caches.open(CONTENT);
+        const cached = await cache.match(url, { ignoreSearch: true });
+        reply(event, { ok: true, available: Boolean(cached) });
+      } catch (error) {
+        reply(event, { ok: false, available: false, error: error instanceof Error ? error.message : 'Cache status unavailable.' });
+      }
+    })());
+    return;
+  }
+
+  if (type === 'REMOVE_CONTENT') {
+    event.waitUntil((async () => {
+      try {
+        const url = normalizeScopedUrl(event.data?.url);
+        const cache = await caches.open(CONTENT);
+        await cache.delete(url, { ignoreSearch: true });
+        reply(event, { ok: true });
+      } catch (error) {
+        reply(event, { ok: false, error: error instanceof Error ? error.message : 'The saved page could not be removed.' });
+      }
+    })());
+    return;
+  }
+
+  if (type === 'CLEAR_CONTENT') {
+    event.waitUntil((async () => {
+      await caches.delete(CONTENT);
+      reply(event, { ok: true });
+    })());
+  }
 });
