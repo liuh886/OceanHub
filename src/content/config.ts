@@ -13,20 +13,6 @@ const focusAreas = defineCollection({
   }),
 });
 
-const caseStudies = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    client: z.string(),
-    industry: z.string(),
-    challenge: z.string(),
-    result: z.string(),
-    solution: z.string(), // Link to solution slug
-    featured: z.boolean().default(false),
-    publishDate: z.date().default(() => new Date()),
-  }),
-});
-
 const insights = defineCollection({
   type: 'content',
   schema: z.object({
@@ -34,12 +20,11 @@ const insights = defineCollection({
     description: z.string(),
     tags: z.array(z.string()).default([]),
     publishDate: z.date().default(() => new Date()),
-    author: z.string().default('NBW Team'),
+    author: z.string().default('OceanHub Team'),
   }),
 });
 
 export const collections = {
   'focus-areas': focusAreas,
-  'case-studies': caseStudies,
   insights,
 };

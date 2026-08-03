@@ -1,33 +1,45 @@
 ---
 title: "Offshore Infrastructure"
-description: "Why we care: The ocean economy runs on physical assets. From pipelines to islands, we ensure the structural integrity and longevity of critical marine infrastructure."
+description: "Use repeatable seabed and asset evidence to support route selection, installation assurance, inspection, integrity management and decommissioning."
 painPoints:
-  - "Seabed scour and erosion"
-  - "Pipeline freespan risks"
-  - "Jack-up rig punch-through hazards"
+  - "Scour, erosion and seabed mobility"
+  - "Pipeline and cable exposure or freespan"
+  - "Installation and shallow-geohazard risk"
 benefits:
-  - "High-precision Bathymetry"
-  - "ROV Inspection & Verification"
-  - "Geohazard Assessment"
+  - "High-resolution route and site mapping"
+  - "Inspection evidence with clear change detection"
+  - "Geohazard and integrity decision support"
 order: 3
 featured: true
 icon: "anchor"
 ---
 
-## Why OceanHub Cares
+## The decision problem
 
-Whether it's a cross-border data cable, a hydrogen pipeline, or an artificial energy island, offshore infrastructure operates in a hostile environment. OceanHub provides the "eyes and ears" underwater, ensuring these assets are built on solid ground and maintained safely throughout their lifecycle.
+Pipelines, cables, foundations and other offshore assets interact continuously with the seabed and water column. Conditions observed during design may change during installation and operations, while inspection data can become difficult to compare across campaigns and contractors.
 
-## Our Mature Solutions
+OceanHub treats infrastructure assurance as a lifecycle evidence problem: establish a reliable baseline, detect meaningful change and connect observations to engineering action.
 
-### 1. Engineering Geophysics
-Before a single steel pile is driven, we map the hazards.
-*   **Jack-up Site Assessment:** Preventing "punch-through" accidents by mapping shallow gas pockets and soft clay layers using high-resolution seismic.
-*   **Pipeline Route Survey:** Optimizing routes to avoid bedrock outcrops and steep slopes.
+## Evidence pathway
 
-### 2. Asset Integrity & Inspection
-*   **O&M Support:** Periodic multi-beam and ROV inspections to detect scour (erosion) around foundations or pipeline freespans.
-*   **Digital Twin Support:** Feeding high-fidelity bathymetric data into asset management systems for predictive maintenance.
+### 1. Route and site definition
 
-### 3. Decommissioning
-At the end of an asset's life, we provide site clearance surveys to certify that the seabed has been restored to its natural state, complying with environmental regulations.
+Map seabed morphology, shallow geology and geohazards before installation decisions are fixed.
+
+- **Route survey:** Identify slopes, outcrops, mobile sediments, crossings and potential obstructions.
+- **Site assessment:** Support jack-up, foundation and temporary works planning with appropriate shallow-geological evidence.
+- **Engineering handoff:** Translate survey observations into route, installation and design constraints.
+
+### 2. Installation and as-built assurance
+
+Capture the installed condition in a form that can serve as the reference for future inspection.
+
+- **Position and configuration:** Verify location, burial, support and interfaces.
+- **Exceptions:** Record deviations, exposed sections and areas requiring follow-up.
+- **Data continuity:** Preserve comparable spatial and inspection references for later campaigns.
+
+### 3. Integrity and decommissioning
+
+Use repeat surveys, ROV observations and change detection to identify scour, exposure, freespan, movement or seabed disturbance.
+
+The objective is not simply to collect inspection footage. It is to provide traceable evidence for maintenance prioritisation, intervention planning and final site-clearance decisions.

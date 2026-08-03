@@ -1,34 +1,43 @@
 ---
-title: "CCUS & Subsurface Storage"
-description: "Why we care: Carbon Capture and Storage is the only viable path to decarbonize heavy industry. We provide the subsurface certainty needed to store billions of tons of CO₂ safely."
+title: "Offshore CCUS & Storage"
+description: "Connect site characterisation, baseline surveys and monitoring design so storage decisions are supported by traceable subsurface and environmental evidence."
 painPoints:
-  - "Storage capacity uncertainty"
-  - "Seal integrity risks"
-  - "Long-term plume monitoring costs"
+  - "Storage capacity and injectivity uncertainty"
+  - "Containment and migration risks"
+  - "Long-term monitoring cost and coverage"
 benefits:
-  - "High-resolution 3D Seismic Baseline"
-  - "Smart MRV (Measurement, Reporting, Verification)"
-  - "Time-lapse (4D) Monitoring"
+  - "Integrated storage-site characterisation"
+  - "Risk-based monitoring and verification design"
+  - "Repeatable baseline and time-lapse evidence"
 order: 1
 featured: true
 icon: "cloud-upload"
 ---
 
-## Why OceanHub Cares
+## The decision problem
 
-The IEA Net Zero scenario requires capturing 7.6 Gt of CO₂ per year by 2050. This massive scale-up faces a critical bottleneck: **Storage Certainty**. Without rigorous subsurface data, projects cannot secure FID (Final Investment Decision) or social license. OceanHub exists to bridge the gap between "theoretical capacity" and "commercial storage."
+Offshore carbon storage depends on more than identifying a deep saline formation or depleted field. Developers need evidence that the storage complex can accept the planned injection, retain CO₂ as expected and be monitored throughout the project lifecycle.
 
-## Our Mature Solutions
+OceanHub frames this as a connected evidence problem: geological interpretation, geophysical imaging, well information, seabed conditions and environmental baselines must support the same decision model.
 
-### 1. Storage Site Characterization
-We deploy high-resolution geophysical arrays to map reservoir architecture and caprock integrity with sub-meter precision.
-*   **3D/2D Seismic Survey:** Identifying faulting and stratigraphic traps.
-*   **Sub-bottom Profiling:** Detailed mapping of shallow overburden to assess leakage risks.
+## Evidence pathway
 
-### 2. Baseline & Monitoring (MRV)
-Regulatory compliance (like EU ETS or US Class VI wells) requires establishing a strict environmental baseline.
-*   **Environmental Baseline Survey (EBS):** Mapping benthic ecosystems before injection.
-*   **4D Geophysical Monitoring:** Using time-lapse seismic and gravity surveys to track the CO₂ plume migration over decades.
+### 1. Storage-site characterisation
 
-### 3. Risk-Based Measurement
-We implement "Smart MRV" strategies that optimize sensor deployment (DAS, InSAR, seabed nodes) to lower OpEx while ensuring permanent containment.
+Combine regional screening with project-scale interpretation of reservoir architecture, faults, seals, overburden and seabed conditions.
+
+- **Seismic interpretation:** Map structure, stratigraphy and potential migration pathways.
+- **Shallow-hazard assessment:** Identify near-surface features that affect drilling, installation or monitoring design.
+- **Ground-model integration:** Connect subsurface interpretation with wells, samples and engineering assumptions.
+
+### 2. Baseline and monitoring design
+
+Establish what must be observed before injection and how evidence will be updated during operations.
+
+- **Environmental baseline:** Characterise natural variability in the water column and seabed environment.
+- **Time-lapse monitoring:** Select fit-for-purpose seismic, seabed, well and remote-sensing methods.
+- **Detection and escalation logic:** Define thresholds, follow-up actions and evidence handoffs before anomalies occur.
+
+### 3. Decision-ready outputs
+
+The result should not be a collection of disconnected surveys. It should be a documented evidence chain that supports storage appraisal, permitting, operational assurance and long-term responsibility decisions.

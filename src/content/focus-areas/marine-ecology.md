@@ -1,35 +1,45 @@
 ---
 title: "Marine Ecology & Environment"
-description: "Why we care: A sustainable blue economy must regenerate, not just extract. We provide the data to quantify Blue Carbon and protect marine biodiversity."
+description: "Design environmental baselines and monitoring around the pressures, receptors and decisions that matter across an offshore project lifecycle."
 painPoints:
-  - "Lack of baseline biodiversity data"
-  - "Unknown impact of noise/sediment"
-  - "Blue Carbon quantification difficulty"
+  - "Fragmented baseline evidence"
+  - "Uncertain construction and operational effects"
+  - "Difficult comparison across monitoring campaigns"
 benefits:
-  - "Habitat Mapping"
-  - "Blue Carbon Assessment"
-  - "Environmental Impact Assessment (EIA)"
+  - "Habitat and receptor mapping"
+  - "Pressure-specific monitoring design"
+  - "Comparable evidence for consenting and operations"
 order: 4
 featured: true
 icon: "leaf"
 ---
 
-## Why OceanHub Cares
+## The decision problem
 
-The ocean is not just a resource; it's a life support system. As industrial activity increases, so does the need for rigorous environmental stewardship. OceanHub integrates ecological monitoring into standard survey workflows, helping clients move from "compliance" to "nature-positive" impact.
+Environmental work is most useful when it is designed around the decisions a project must make: where infrastructure can be placed, which receptors require protection, what change is material and how mitigation should be triggered.
 
-## Our Mature Solutions
+OceanHub connects hydrographic, acoustic, sampling and ecological observations so baseline and monitoring programmes remain comparable, spatially coherent and usable beyond a single report.
 
-### 1. Habitat Mapping
-Using acoustic backscatter and ground-truthing (grab sampling/camera), we create detailed maps of benthic habitats.
-*   **Coral & Seagrass Mapping:** Identifying sensitive zones to be avoided during construction.
-*   **Substrate Classification:** differentiating between sandy, muddy, and rocky habitats to predict biodiversity hotspots.
+## Evidence pathway
 
-### 2. Blue Carbon Assessment
-The ocean absorbs 25% of human CO₂ emissions. We support the emerging Blue Carbon market:
-*   **Sediment Carbon Profiling:** Sampling and analyzing seabed sediments to quantify carbon stocks.
-*   **Sequestration Monitoring:** Tracking the health of carbon-rich ecosystems like seagrass meadows.
+### 1. Baseline design
 
-### 3. Environmental Monitoring
-*   **Water Quality:** Real-time monitoring of turbidity and chemical parameters during dredging or construction.
-*   **Passive Acoustic Monitoring (PAM):** Listening for marine mammals to ensure operations do not disrupt migration patterns.
+Define the receptors, natural variability and project pressures that the baseline must resolve before selecting survey methods.
+
+- **Habitat mapping:** Combine acoustic interpretation with samples, imagery and existing ecological information.
+- **Water-column and seabed conditions:** Characterise relevant physical and chemical variability.
+- **Sensitive receptors:** Establish where species, habitats or ecosystem functions require specific consideration.
+
+### 2. Construction and operational monitoring
+
+Select monitoring methods according to plausible pathways of effect rather than applying a generic survey package.
+
+- **Turbidity and sediment movement:** Track conditions where dredging, trenching or installation may create change.
+- **Underwater sound:** Use appropriate acoustic evidence where marine fauna may be affected.
+- **Inspection integration:** Reuse operational survey opportunities to improve environmental coverage where technically valid.
+
+### 3. Comparable evidence and response
+
+Monitoring should make it possible to distinguish project-related change from natural variability and explain what happens when thresholds are approached or exceeded.
+
+The intended output is a defensible evidence chain for consenting, mitigation, adaptive management and long-term environmental stewardship.

@@ -1,34 +1,45 @@
 ---
 title: "Offshore Renewable Energy"
-description: "Why we care: Offshore wind is the backbone of the future energy grid. We accelerate deployment by de-risking the complex interaction between massive turbines and the seabed."
+description: "Connect seabed, subsurface and environmental evidence to support site selection, foundation design, cable routing and installation planning."
 painPoints:
-  - "Unpredictable seabed mobility"
-  - "Boulder fields and UXO risks"
-  - "Foundation design uncertainty"
+  - "Variable ground conditions"
+  - "Geohazards, boulders and unexploded ordnance"
+  - "Foundation and cable-route uncertainty"
 benefits:
-  - "Integrated Geophysical & Geotechnical (G&G) Survey"
-  - "Deep-push CPT for Monopile Design"
-  - "Cable Route Engineering"
+  - "Integrated geophysical and geotechnical site characterisation"
+  - "Ground-model inputs for foundation engineering"
+  - "Cable-route and installation evidence"
 order: 2
 featured: true
 icon: "wind"
 ---
 
-## Why OceanHub Cares
+## The decision problem
 
-As offshore wind farms move into deeper waters and larger capacities (15MW+ turbines), the geological risks multiply. A single misplaced foundation can cost millions. OceanHub believes that **Integrated Site Characterization**—combining acoustic imaging with physical sampling—is the key to reducing the Levelized Cost of Energy (LCOE).
+Offshore renewable projects must translate a large and variable site into buildable locations, engineering parameters and installation constraints. Survey volume alone does not reduce risk unless observations are integrated and tied to specific design decisions.
 
-## Our Mature Solutions
+OceanHub connects geophysical coverage, geotechnical testing, environmental constraints and engineering interpretation into a consistent site-characterisation workflow.
 
-### 1. Integrated Site Investigation
-We don't just supply data; we build a **Unified Ground Model (UGM)**.
-*   **Reconnaissance:** Multi-beam bathymetry and side-scan sonar to identify "buildable zones."
-*   **Detailed Geotechnics:** Utilizing our **PeneVector Seabed CPT** (up to 80m penetration) to derive precise soil parameters for monopile and jacket design.
+## Evidence pathway
 
-### 2. Cable Route Engineering
-The "lifeline" of any wind farm is its export cable. We provide:
-*   **Burial Assessment Survey (BAS):** Determining optimal trenching depths to protect cables from anchors and trawlers.
-*   **Thermal Conductivity Testing:** In-situ testing to ensure cables won't overheat.
+### 1. Site screening and development zoning
 
-### 3. Floating Wind Support
-For deep-water floating wind, we offer specialized anchor-handling site surveys and dynamic mooring analysis support.
+Use bathymetry, seabed imaging and shallow-geological data to identify hazards, constraints and areas requiring denser investigation.
+
+- **Bathymetry and seabed character:** Establish morphology, mobility and surface features.
+- **Shallow geology:** Map sediment architecture, channels, faults and potential hazards.
+- **Constraint integration:** Bring technical and environmental exclusions into one spatial decision view.
+
+### 2. Ground investigation and engineering interpretation
+
+Target sampling and in-situ testing where they most improve the ground model and design basis.
+
+- **CPT and sampling:** Derive soil behaviour and confirm geophysical interpretation.
+- **Foundation inputs:** Support concept selection and subsequent design stages with traceable parameters.
+- **Uncertainty management:** Record where the ground model is strong, where it remains uncertain and what additional work would change the decision.
+
+### 3. Cable and installation planning
+
+Connect route conditions, burial feasibility, crossings and operational constraints before construction methods are fixed.
+
+The intended output is a coherent site and route evidence package that can be reused across design, consenting, installation and later asset management.
