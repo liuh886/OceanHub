@@ -5,6 +5,8 @@ const base = `${origin}/OceanHub/`;
 const focusUrl = `${base}focus-areas/ccus/`;
 const insightUrl = `${base}insights/ccs-monitoring-trends/`;
 const briefcaseUrl = `${base}briefcase/`;
+const focusTitle = 'Offshore CCUS & Storage';
+const insightTitle = 'Designing Risk-Based Monitoring for Offshore CO₂ Storage';
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -26,8 +28,8 @@ try {
 
   await page.goto(briefcaseUrl, { waitUntil: 'networkidle' });
   await page.getByText('2 saved items', { exact: true }).waitFor();
-  await page.getByRole('heading', { name: 'CCUS Storage Evidence Pathway' }).waitFor();
-  await page.getByRole('heading', { name: 'From Monitoring Data to Decision-Ready CCUS Evidence' }).waitFor();
+  await page.getByRole('heading', { name: focusTitle }).waitFor();
+  await page.getByRole('heading', { name: insightTitle }).waitFor();
 
   await page.evaluate(() => {
     const key = 'oceanhub-briefcase-v1';
@@ -43,11 +45,11 @@ try {
   await context.setOffline(true);
   await page.goto(focusUrl, { waitUntil: 'domcontentloaded' });
   const offlineHeading = await page.locator('h1').first().textContent();
-  assert(offlineHeading?.includes('CCUS Storage Evidence Pathway'), 'Saved focus area did not open while offline.');
+  assert(offlineHeading?.includes(focusTitle), 'Saved focus area did not open while offline.');
 
   await page.goto(insightUrl, { waitUntil: 'domcontentloaded' });
   const offlineInsightHeading = await page.locator('h1').first().textContent();
-  assert(offlineInsightHeading?.includes('From Monitoring Data to Decision-Ready CCUS Evidence'), 'Saved insight did not open while offline.');
+  assert(offlineInsightHeading?.includes(insightTitle), 'Saved insight did not open while offline.');
 
   await context.setOffline(false);
   await page.goto(briefcaseUrl, { waitUntil: 'networkidle' });
