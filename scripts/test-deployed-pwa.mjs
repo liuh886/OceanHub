@@ -12,6 +12,22 @@ function normalizeBaseUrl(value) {
   return url;
 }
 
+async function waitForServiceWorkerControl(page, timeoutMs = 30000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const controlled = await page.evaluate(() =>
+        'serviceWorker' in navigator && Boolean(navigator.serviceWorker.controller)
+      );
+      if (controlled) return;
+    } catch {
+      // The PWA intentionally reloads on first controllerchange. Retry in the new document.
+    }
+    await page.waitForTimeout(250);
+  }
+  throw new Error('The page was not controlled by its service worker within the timeout.');
+}
+
 const configuredBase = process.env.OCEANHUB_TEST_BASE_URL;
 if (!configuredBase) {
   throw new Error('OCEANHUB_TEST_BASE_URL is required, for example https://example.com/OceanHub/.');
@@ -74,15 +90,21 @@ try {
 
   await desktopPage.goto(base.href, { waitUntil: 'domcontentloaded' });
   await desktopPage.locator('h1').first().waitFor();
+  await waitForServiceWorkerControl(desktopPage);
+  await desktopPage.locator('h1').first().waitFor();
+
   const registration = await desktopPage.evaluate(async () => {
-    const ready = await navigator.serviceWorker.ready;
+    const active = await navigator.serviceWorker.getRegistration();
     return {
-      scope: ready.scope,
+      scope: active?.scope ?? '',
       manifestHref: document.querySelector('link[rel="manifest"]')?.href ?? '',
-      title: document.title
+      title: document.title,
+      controlled: Boolean(navigator.serviceWorker.controller)
     };
   });
 
+  assert(registration.controlled, 'The deployed page is not controlled by its service worker.');
+  assert(registration.scope, 'No service-worker registration was found for the deployed page.');
   assert(new URL(registration.scope).pathname === expectedScopePath, 'Service worker scope does not match the deployed base.');
   assert(registration.manifestHref === route('manifest.webmanifest'), 'Manifest link does not resolve under the deployed base.');
   assert(registration.title.includes('OceanHub'), 'Deployed document title is incorrect.');
@@ -95,10 +117,6 @@ try {
     await desktopPage.locator('#main-content').evaluate((element) => document.activeElement === element),
     'Activating the skip link did not move focus to main content.'
   );
-
-  await desktopPage.reload({ waitUntil: 'domcontentloaded' });
-  const controlled = await desktopPage.evaluate(() => Boolean(navigator.serviceWorker.controller));
-  assert(controlled, 'The deployed page was not controlled by its service worker after reload.');
   assert(pageErrors.length === 0, `The deployed homepage raised page errors: ${pageErrors.join(' | ')}`);
 
   await desktop.setOffline(true);
