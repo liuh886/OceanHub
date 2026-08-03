@@ -1,12 +1,13 @@
 {
   "name": "ocean-hub",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scripts": {
     "dev": "astro dev",
     "check": "astro check",
     "build": "astro build",
     "ci": "npm run check && npm run build",
+    "test:briefcase": "node scripts/test-briefcase.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
