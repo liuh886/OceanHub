@@ -114,15 +114,15 @@ const iconMap: Record<string, { icon: string; badge: string }> = {
             <div>
               <div class="flex items-center justify-between mb-7">
                 <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/15 to-blue-600/20 border border-cyan-400/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-all">
-                  <i class={`fa-solid ${iconMap[area.slug]?.icon || 'fa-anchor'} text-xl`} aria-hidden="true"></i>
+                  <i class={`fa-solid ${iconMap[area.id]?.icon || 'fa-anchor'} text-xl`} aria-hidden="true"></i>
                 </div>
-                <span class="hud-badge text-[10px]">{iconMap[area.slug]?.badge || 'OFFSHORE'}</span>
+                <span class="hud-badge text-[10px]">{iconMap[area.id]?.badge || 'OFFSHORE'}</span>
               </div>
               <h3 class="text-2xl font-black text-white mb-4 tracking-tight group-hover:text-cyan-300 transition-colors font-display">{area.data.title}</h3>
               <p class="text-sm md:text-base text-slate-400 mb-8 font-light leading-relaxed">{area.data.description}</p>
             </div>
             <div class="pt-5 border-t border-white/10">
-              <a href={url(`focus-areas/${area.slug}/`)} class="inline-flex items-center gap-3 text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 hover:text-cyan-300">
+              <a href={url(`focus-areas/${area.id}/`)} class="inline-flex items-center gap-3 text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 hover:text-cyan-300">
                 <span>View problem and approach</span>
                 <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
               </a>
@@ -183,10 +183,10 @@ const iconMap: Record<string, { icon: string; badge: string }> = {
                   <time datetime={insight.data.publishDate.toISOString()} class="text-xs font-mono text-cyan-400">{insight.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
                   {insight.data.tags.slice(0, 2).map((tag) => <span class="evidence-chip">{tag}</span>)}
                 </div>
-                <h3 class="text-2xl font-black leading-tight text-white group-hover:text-cyan-300 transition-colors mb-4 font-display"><a href={url(`insights/${insight.slug}/`)}>{insight.data.title}</a></h3>
+                <h3 class="text-2xl font-black leading-tight text-white group-hover:text-cyan-300 transition-colors mb-4 font-display"><a href={url(`insights/${insight.id}/`)}>{insight.data.title}</a></h3>
                 <p class="text-slate-400 text-sm leading-relaxed mb-8">{insight.data.description}</p>
               </div>
-              <a href={url(`insights/${insight.slug}/`)} class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-2">Read insight <i class="fa-solid fa-chevron-right text-[10px]" aria-hidden="true"></i></a>
+              <a href={url(`insights/${insight.id}/`)} class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-2">Read insight <i class="fa-solid fa-chevron-right text-[10px]" aria-hidden="true"></i></a>
             </article>
           ))}
         </div>
