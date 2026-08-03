@@ -3,68 +3,83 @@
 Audit date: 2026-08-03  
 Evidence source: GitHub Actions, Node.js 24 and npm 11 (`npm audit --json` plus `npm audit --omit=dev --json`).
 
-## Executive finding
+## Outcome
 
-The complete dependency graph currently reports **20 advisories**: 12 high, 7 moderate and 1 low. npm's production-only graph reports **14 advisories**: 10 high, 3 moderate and 1 low.
+Dependency remediation is complete for the audited graph.
 
-That production label needs architectural context. OceanHub is built by Astro and deployed to GitHub Pages as static HTML, CSS, JavaScript and images. There is no deployed Node.js server, Astro SSR process, Vite development server or Sharp image-processing process. The npm production graph therefore overstates browser-runtime exposure because several build-time packages are currently listed under `dependencies` rather than `devDependencies`.
+| Scope | Baseline | Final |
+|---|---:|---:|
+| Complete dependency graph | 20 advisories | **0 advisories** |
+| npm production graph | 14 advisories | **0 advisories** |
+| Critical | 0 | **0** |
+| High | 12 | **0** |
+| Moderate | 7 | **0** |
+| Low | 1 | **0** |
 
-This does **not** mean the findings can be ignored. The build and contributor toolchain processes repository content and runs in CI, so direct and transitive advisories still require upgrades and controlled validation.
+The final clean result was produced from a fresh `npm ci`, not from an existing `node_modules` directory.
 
-## Direct vulnerable packages
+## Baseline assessment
 
-| Package | Current declaration | Severity | Audit fix path | Exposure assessment |
-|---|---|---:|---|---|
-| `astro` | `^5.16.15` in `dependencies` | High | `astro@7.1.6` (major) | Build framework and local preview server. Not shipped as a Node runtime on GitHub Pages, but processes project content during CI builds. |
-| `sharp` | `^0.34.5` in `devDependencies` | High | `sharp@0.35.3` (major) | Build-time image processor. Not present in the deployed browser application. |
+The initial complete graph reported 12 high, 7 moderate and 1 low advisory. npm's production-only graph reported 10 high, 3 moderate and 1 low.
 
-## Production-graph transitive findings
+OceanHub is deployed to GitHub Pages as static HTML, CSS, JavaScript and images. There is no deployed Node.js server, Astro SSR process, Vite development server or Sharp image-processing process. The initial production label therefore overstated browser-runtime exposure because static build tooling was listed under `dependencies`.
 
-The production-only audit also reports vulnerable paths through Astro's build stack:
+The findings still required remediation because the build and contributor toolchain processes repository content and runs in CI.
 
-- `defu`
-- `h3`
-- `js-yaml`
-- `picomatch`
-- `postcss`
-- `rollup`
-- `svgo`
-- `vite`
-- `devalue`
-- `smol-toml`
-- `yaml`
-- `@babel/core`
+## Direct vulnerable packages remediated
 
-These are not independently imported by OceanHub application code. Their production classification is inherited from build tooling currently placed under `dependencies`. Compatible transitive fixes are listed by npm, but they must be resolved through a coherent framework/lockfile update rather than arbitrary overrides.
+| Package | Baseline | Remediated version | Treatment |
+|---|---|---|---|
+| `astro` | `^5.16.15` | `^7.1.6` | Upgraded to the audit-specified patched major release and moved to `devDependencies`. |
+| `sharp` | `^0.34.5` | `^0.35.3` | Upgraded to the audit-specified patched release. |
 
-## Development-only findings
+## Framework migration
 
-The full graph additionally reports six packages that do not appear in the production-only graph:
+Astro 7 required migration from the removed legacy Content Collections API to the Content Layer API:
 
-- high: `fast-uri`, `lodash`
-- moderate: `@astrojs/language-server`, `ajv`, `volar-service-yaml`, `yaml-language-server`
+- moved configuration from `src/content/config.ts` to `src/content.config.ts`;
+- added explicit `glob()` loaders for Focus Areas and Insights;
+- imported Zod from `astro/zod`;
+- changed collection entry routing from `entry.slug` to `entry.id`;
+- changed Markdown rendering from `entry.render()` to `render(entry)`.
 
-These paths are associated with editor/type-checking and schema tooling. They remain relevant for malicious or untrusted project files, but they do not execute in the deployed PWA.
+The migration preserves the existing public routes and content structure.
 
-## Remediation policy
+## Dependency classification cleanup
 
-1. Move static-site build tooling (`astro`, Astro integration, Tailwind/Vite integration and type packages) to `devDependencies` so npm's production graph reflects the deployed architecture.
-2. Upgrade Astro to the audit-specified patched major release and Sharp to the audit-specified patched release.
-3. Apply only non-forced compatible lockfile remediation after the direct upgrades.
-4. Do not use `npm audit fix --force`.
-5. Require all of the following before merging:
-   - clean `npm ci`;
-   - `astro check`;
-   - production static build;
-   - Chromium offline Briefcase workflow;
-   - refreshed full and production-only audit reports.
-6. Record any remaining advisories as build-only, development-only, no-fix or intentionally deferred with a concrete compatibility reason.
+Static-site build tooling is now classified under `devDependencies`, including:
 
-## Baseline counts
+- Astro and the React integration;
+- Tailwind and the Vite integration;
+- React type packages;
+- Sharp and other build/test tooling.
 
-| Scope | Critical | High | Moderate | Low | Total |
-|---|---:|---:|---:|---:|---:|
-| Complete graph | 0 | 12 | 7 | 1 | 20 |
-| npm production graph | 0 | 10 | 3 | 1 | 14 |
+`react` and `react-dom` remain application dependencies. This makes the production-only audit better reflect what the deployed PWA actually uses.
 
-The raw JSON reports and generated classifier output are retained as a short-lived GitHub Actions artifact for the audit run attached to PR #5.
+## Remediation method
+
+1. Upgraded Astro and Sharp explicitly.
+2. Applied compatible transitive lockfile fixes without `--force`.
+3. Regenerated `package-lock.json` from the controlled branch.
+4. Removed the one-time self-modifying workflow after the generated files were committed.
+5. Re-ran full and production-only audits from a clean install.
+
+`npm audit fix --force` was not used.
+
+## Validation evidence
+
+All required checks passed after remediation:
+
+- `npm ci`;
+- `astro check`;
+- production static build;
+- Chromium installation;
+- browser-level offline Briefcase workflow, including save, update, offline open and clear;
+- full dependency audit: **0**;
+- production-only dependency audit: **0**.
+
+The raw final JSON reports and generated classifier output are retained as a short-lived GitHub Actions artifact attached to PR #5.
+
+## Remaining supply-chain note
+
+npm 11 reports that the `esbuild` install scripts are not yet covered by an explicit `allowScripts` policy. This is not an npm vulnerability advisory and did not prevent a clean install or build. It should be handled separately as install-script allowlisting rather than mixed into vulnerability remediation.
