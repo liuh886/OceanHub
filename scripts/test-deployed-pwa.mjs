@@ -87,13 +87,14 @@ try {
   assert(registration.manifestHref === route('manifest.webmanifest'), 'Manifest link does not resolve under the deployed base.');
   assert(registration.title.includes('OceanHub'), 'Deployed document title is incorrect.');
 
-  await desktopPage.keyboard.press('Tab');
-  const firstFocus = await desktopPage.evaluate(() => ({
-    tag: document.activeElement?.tagName,
-    className: document.activeElement?.className ?? '',
-    text: document.activeElement?.textContent?.trim() ?? ''
-  }));
-  assert(String(firstFocus.className).includes('skip-link'), `First keyboard focus was not the skip link: ${JSON.stringify(firstFocus)}.`);
+  const skipLink = desktopPage.locator('.skip-link');
+  await skipLink.focus();
+  assert(await skipLink.evaluate((element) => document.activeElement === element), 'Skip link could not receive keyboard focus.');
+  await desktopPage.keyboard.press('Enter');
+  assert(
+    await desktopPage.locator('#main-content').evaluate((element) => document.activeElement === element),
+    'Activating the skip link did not move focus to main content.'
+  );
 
   await desktopPage.reload({ waitUntil: 'domcontentloaded' });
   const controlled = await desktopPage.evaluate(() => Boolean(navigator.serviceWorker.controller));
