@@ -125,26 +125,31 @@ const briefcaseRoute = `${base}briefcase/`;
 
     if (!button || !label || !status || !briefcaseLink || !id || !title || !description || !route || !type || !version) return;
 
+    const actionButton = button;
+    const actionLabel = label;
+    const actionStatus = status;
+    const savedLink = briefcaseLink;
+
     function setState() {
       const saved = readSavedContent().find((item) => item.id === id);
       const current = saved?.version === version;
 
-      button.disabled = Boolean(current);
-      button.dataset.state = current ? 'saved' : saved ? 'update' : 'idle';
-      label.textContent = current ? 'Saved offline' : saved ? 'Update offline copy' : 'Save offline';
-      briefcaseLink.classList.toggle('hidden', !saved);
-      status.textContent = saved
+      actionButton.disabled = Boolean(current);
+      actionButton.dataset.state = current ? 'saved' : saved ? 'update' : 'idle';
+      actionLabel.textContent = current ? 'Saved offline' : saved ? 'Update offline copy' : 'Save offline';
+      savedLink.classList.toggle('hidden', !saved);
+      actionStatus.textContent = saved
         ? current
           ? `Saved on ${new Date(saved.savedAt).toLocaleDateString()}.`
           : 'A newer version is available to download.'
         : 'Downloads this page for deliberate offline access.';
     }
 
-    button.addEventListener('click', async () => {
-      button.disabled = true;
-      button.dataset.state = 'working';
-      label.textContent = 'Saving…';
-      status.textContent = 'Downloading the current page to this device.';
+    actionButton.addEventListener('click', async () => {
+      actionButton.disabled = true;
+      actionButton.dataset.state = 'working';
+      actionLabel.textContent = 'Saving…';
+      actionStatus.textContent = 'Downloading the current page to this device.';
 
       try {
         const reply = await sendWorkerMessage({ type: 'CACHE_CONTENT', url: route });
@@ -164,10 +169,10 @@ const briefcaseRoute = `${base}briefcase/`;
         window.dispatchEvent(new CustomEvent('oceanhub:briefcase-updated'));
         setState();
       } catch (error) {
-        button.disabled = false;
-        button.dataset.state = 'error';
-        label.textContent = 'Try saving again';
-        status.textContent = error instanceof Error ? error.message : 'The page could not be saved.';
+        actionButton.disabled = false;
+        actionButton.dataset.state = 'error';
+        actionLabel.textContent = 'Try saving again';
+        actionStatus.textContent = error instanceof Error ? error.message : 'The page could not be saved.';
       }
     });
 
