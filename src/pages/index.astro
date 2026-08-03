@@ -5,416 +5,232 @@ import { Image } from 'astro:assets';
 import bgpLogo from '../assets/bgp-logo.png';
 import penesonLogo from '../assets/peneson-logo.png';
 
+const base = import.meta.env.BASE_URL;
+const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
+
 const focusAreas = await getCollection('focus-areas');
 const sortedFocusAreas = focusAreas.sort((a, b) => a.data.order - b.data.order);
-
 const insights = await getCollection('insights');
-const sortedInsights = insights.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()).slice(0, 4);
+const sortedInsights = insights
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf())
+  .slice(0, 3);
 
 const iconMap: Record<string, { icon: string; badge: string }> = {
-  'ccus': { icon: 'fa-cloud-arrow-up', badge: 'DEEP STORAGE' },
-  'marine-ecology': { icon: 'fa-leaf', badge: 'BIO-SURVEY' },
-  'offshore-energy': { icon: 'fa-bolt-lightning', badge: 'WIND & SOLAR' },
-  'offshore-infrastructure': { icon: 'fa-anchor', badge: 'GEO-RIGOUR' }
+  ccus: { icon: 'fa-cloud-arrow-up', badge: 'CARBON STORAGE' },
+  'marine-ecology': { icon: 'fa-leaf', badge: 'ENVIRONMENT' },
+  'offshore-energy': { icon: 'fa-wind', badge: 'SITE DEVELOPMENT' },
+  'offshore-infrastructure': { icon: 'fa-anchor', badge: 'ASSET INTEGRITY' }
 };
 ---
 
-<Layout title="OceanHub | Marine Intelligence & Blue Energy Ecosystem" description="Orchestrating the global transition to a sustainable blue energy future through data certainty and technical rigour.">
-	<!-- Hero Section with Futuristic HUD & Telemetry -->
-	<section class="relative min-h-[92vh] flex items-center overflow-hidden pt-12 pb-24 md:py-32">
-		<div class="max-w-[1720px] mx-auto px-6 md:px-12 relative z-10 w-full">
-			<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-				<!-- Hero Left Narrative -->
-				<div class="lg:col-span-8 reveal">
-					<!-- HUD Badge -->
-					<div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 font-mono text-xs font-semibold tracking-wider uppercase backdrop-blur-md mb-8">
-						<span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-						<span>DEEP BLUE INTELLIGENCE // GREEN TECH ECOSYSTEM</span>
-					</div>
+<Layout
+  title="OceanHub | Marine Intelligence for Offshore Decisions"
+  description="OceanHub connects offshore operators and specialist partners around decision-ready geophysical, geotechnical and environmental evidence."
+>
+  <section class="relative min-h-[86vh] flex items-center overflow-hidden py-24 md:py-32">
+    <div class="max-w-[1560px] mx-auto px-6 md:px-12 relative z-10 w-full">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div class="lg:col-span-7 reveal">
+          <div class="hud-badge mb-8">
+            <i class="fa-solid fa-water" aria-hidden="true"></i>
+            <span>OFFSHORE ENERGY · MONITORING · MARINE DATA</span>
+          </div>
 
-					<!-- Hero Main Heading -->
-					<h1 class="heading-hero mb-8">
-						Bridging <br/>
-						<span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 glow-text-cyan">
-							Data & Future
-						</span>
-					</h1>
+          <h1 class="heading-hero mb-8">
+            Marine intelligence<br />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500">for offshore decisions.</span>
+          </h1>
 
-					<p class="text-lg md:text-2xl text-slate-300 mb-12 leading-relaxed font-light max-w-3xl">
-						Orchestrating the global transition to a sustainable blue energy future through <strong class="text-white font-medium">data certainty</strong>, autonomous marine sensor swarms, and geotechnical rigour.
-					</p>
+          <p class="text-lg md:text-2xl text-slate-300 mb-10 leading-relaxed font-light max-w-3xl">
+            OceanHub connects operators, geoscience teams and specialist technology partners around the evidence needed to plan, build, monitor and maintain complex offshore projects.
+          </p>
 
-					<!-- Action Buttons -->
-					<div class="flex flex-wrap gap-5 items-center">
-						<a href="#focus-areas" class="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black uppercase tracking-[0.18em] text-xs shadow-[0_0_30px_rgba(0,240,255,0.35)] hover:shadow-[0_0_40px_rgba(0,240,255,0.6)] transition-all duration-300 flex items-center gap-3 group">
-							<span>Explore Initiatives</span>
-							<i class="fa-solid fa-arrow-down text-xs transition-transform group-hover:translate-y-1"></i>
-						</a>
-						
-						<a href="/about" class="px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 hover:border-cyan-500/40 text-white font-bold uppercase tracking-[0.18em] text-xs transition-all duration-300 flex items-center gap-2">
-							<span>Our Vision & DNA</span>
-							<i class="fa-solid fa-chevron-right text-[10px] text-cyan-400"></i>
-						</a>
-					</div>
-				</div>
+          <div class="flex flex-wrap gap-4 items-center">
+            <a href={url('#focus-areas')} class="px-7 py-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black uppercase tracking-[0.14em] text-xs transition-all flex items-center gap-3 group">
+              <span>Explore Focus Areas</span>
+              <i class="fa-solid fa-arrow-down text-xs transition-transform group-hover:translate-y-1" aria-hidden="true"></i>
+            </a>
+            <a href="mailto:info@oceanhub.com" class="px-7 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 hover:border-cyan-500/40 text-white font-bold uppercase tracking-[0.14em] text-xs transition-all flex items-center gap-2">
+              <span>Propose a Collaboration</span>
+              <i class="fa-solid fa-arrow-right text-[10px] text-cyan-400" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
 
-				<!-- Hero Right: Live HUD Telemetry Matrix Card -->
-				<div class="lg:col-span-4 reveal" style="transition-delay: 200ms;">
-					<div class="glass-panel p-6 md:p-8 rounded-3xl border border-cyan-500/20 relative overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-						<!-- Scanner line effect -->
-						<div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50 animate-pulse"></div>
+        <div class="lg:col-span-5 reveal" style="transition-delay: 160ms;">
+          <div class="glass-panel p-6 md:p-8 rounded-3xl border border-cyan-500/20 relative overflow-hidden">
+            <div class="flex items-center justify-between pb-5 border-b border-white/10">
+              <span class="text-xs font-mono text-cyan-300 uppercase tracking-[0.18em]">How the platform works</span>
+              <span class="text-xs text-slate-500 font-mono">01—03</span>
+            </div>
 
-						<div class="flex items-center justify-between pb-6 border-b border-white/10 text-xs font-mono text-cyan-400">
-							<span class="flex items-center gap-2">
-								<i class="fa-solid fa-chart-line"></i> TELEMETRY OVERVIEW
-							</span>
-							<span class="text-slate-400">SYS_V2.5</span>
-						</div>
+            <ol class="divide-y divide-white/10">
+              <li class="py-6 flex gap-4">
+                <span class="text-cyan-400 font-mono font-bold">01</span>
+                <div>
+                  <h2 class="text-lg font-bold text-white font-display">Frame the offshore decision</h2>
+                  <p class="text-sm text-slate-400 mt-2 leading-relaxed">Define the development, monitoring or integrity question before selecting technology.</p>
+                </div>
+              </li>
+              <li class="py-6 flex gap-4">
+                <span class="text-cyan-400 font-mono font-bold">02</span>
+                <div>
+                  <h2 class="text-lg font-bold text-white font-display">Connect the evidence chain</h2>
+                  <p class="text-sm text-slate-400 mt-2 leading-relaxed">Combine geophysical, geotechnical and environmental observations into a coherent ground and risk picture.</p>
+                </div>
+              </li>
+              <li class="py-6 flex gap-4">
+                <span class="text-cyan-400 font-mono font-bold">03</span>
+                <div>
+                  <h2 class="text-lg font-bold text-white font-display">Build the right delivery team</h2>
+                  <p class="text-sm text-slate-400 mt-2 leading-relaxed">Match operator needs with specialist partners, field capability and decision-ready outputs.</p>
+                </div>
+              </li>
+            </ol>
 
-						<!-- Metric 1 -->
-						<div class="py-5 border-b border-white/5 flex items-center justify-between">
-							<div>
-								<div class="text-3xl font-black text-white font-display">4 Core</div>
-								<div class="text-xs text-slate-400 font-mono mt-0.5">Strategic Initiatives</div>
-							</div>
-							<div class="text-right">
-								<span class="hud-badge text-[10px]">CCUS / WIND / ECO</span>
-							</div>
-						</div>
+            <div class="pt-5 border-t border-white/10 flex flex-wrap gap-2">
+              <span class="evidence-chip">GEOPHYSICS</span>
+              <span class="evidence-chip">GEOTECHNICS</span>
+              <span class="evidence-chip">ENVIRONMENT</span>
+              <span class="evidence-chip">MONITORING</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-						<!-- Metric 2 -->
-						<div class="py-5 border-b border-white/5 flex items-center justify-between">
-							<div>
-								<div class="text-3xl font-black text-cyan-400 font-display">100%</div>
-								<div class="text-xs text-slate-400 font-mono mt-0.5">Ground Model Rigour</div>
-							</div>
-							<div class="text-right">
-								<span class="hud-badge-emerald text-[10px]">VERIFIED</span>
-							</div>
-						</div>
+  <section id="focus-areas" class="section-padding relative scroll-mt-20">
+    <div class="max-w-[1560px] mx-auto px-6 md:px-12">
+      <div class="max-w-3xl mb-16 reveal">
+        <div class="hud-badge mb-4"><i class="fa-solid fa-cubes" aria-hidden="true"></i> FOCUS AREAS</div>
+        <h2 class="heading-section">Four connected offshore problem spaces</h2>
+        <p class="text-lg md:text-xl text-slate-400 font-light leading-relaxed">Each focus area starts with a decision, identifies the evidence required, and brings together the capabilities needed to deliver it.</p>
+      </div>
 
-						<!-- Metric 3 -->
-						<div class="py-5 border-b border-white/5 flex items-center justify-between">
-							<div>
-								<div class="text-3xl font-black text-white font-display">Autonomous</div>
-								<div class="text-xs text-slate-400 font-mono mt-0.5">USV & Fiber-Optic MRV</div>
-							</div>
-							<div class="text-right">
-								<span class="hud-badge text-[10px]">REAL-TIME</span>
-							</div>
-						</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-7">
+        {sortedFocusAreas.map((area, index) => (
+          <article class="glass-card p-7 h-full flex flex-col justify-between group relative overflow-hidden reveal" style={`transition-delay: ${index * 90}ms`}>
+            <div>
+              <div class="flex items-center justify-between mb-7">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/15 to-blue-600/20 border border-cyan-400/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-all">
+                  <i class={`fa-solid ${iconMap[area.slug]?.icon || 'fa-anchor'} text-xl`} aria-hidden="true"></i>
+                </div>
+                <span class="hud-badge text-[10px]">{iconMap[area.slug]?.badge || 'OFFSHORE'}</span>
+              </div>
+              <h3 class="text-2xl font-black text-white mb-4 tracking-tight group-hover:text-cyan-300 transition-colors font-display">{area.data.title}</h3>
+              <p class="text-sm md:text-base text-slate-400 mb-8 font-light leading-relaxed">{area.data.description}</p>
+            </div>
+            <div class="pt-5 border-t border-white/10">
+              <a href={url(`focus-areas/${area.slug}/`)} class="inline-flex items-center gap-3 text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 hover:text-cyan-300">
+                <span>View problem and approach</span>
+                <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
 
-						<!-- Alliance Status -->
-						<div class="pt-5 flex items-center justify-between text-xs font-mono">
-							<span class="text-slate-400">GLOBAL ALLIANCE:</span>
-							<span class="text-cyan-300 font-bold">BGP + PENESON</span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+  <section class="py-20 md:py-28 bg-[#040810]/70 border-y border-cyan-500/10 relative">
+    <div class="max-w-[1560px] mx-auto px-6 md:px-12">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        <div class="lg:col-span-4 reveal">
+          <div class="hud-badge mb-4"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> SHARED EVIDENCE</div>
+          <h2 class="heading-section">From field observation to engineering decision</h2>
+          <p class="text-lg text-slate-400 leading-relaxed font-light">OceanHub is not a single-company service catalogue. It is a collaboration layer for assembling coherent offshore evidence across disciplines and organisations.</p>
+        </div>
 
-	<!-- Focus Areas Section -->
-	<section id="focus-areas" class="section-padding relative scroll-mt-20">
-		<div class="max-w-[1720px] mx-auto px-6 md:px-12">
-			<!-- Header -->
-			<div class="max-w-3xl mb-20 reveal">
-				<div class="hud-badge mb-4">
-					<i class="fa-solid fa-cubes"></i> CORE DOMAINS
-				</div>
-				<h2 class="heading-section">
-					Strategic <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-sky-300">Focus Areas</span>
-				</h2>
-				<p class="text-lg md:text-xl text-slate-400 font-light leading-relaxed">
-					Targeted initiatives delivering data certainty for complex offshore developments—powered by unified ground models and technical rigour.
-				</p>
-			</div>
+        <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6 reveal" style="transition-delay: 120ms;">
+          <div class="glass-card p-7">
+            <div class="text-xs text-cyan-400 font-mono font-bold mb-3">FOUNDATION</div>
+            <h3 class="text-xl text-white font-bold font-display mb-3">Observed conditions</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Bathymetry, seismic, soil, oceanographic and ecological observations with clear provenance and uncertainty.</p>
+          </div>
+          <div class="glass-card p-7">
+            <div class="text-xs text-cyan-400 font-mono font-bold mb-3">INTEGRATION</div>
+            <h3 class="text-xl text-white font-bold font-display mb-3">Connected interpretation</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">A consistent view of ground conditions, hazards, environmental constraints and monitoring requirements.</p>
+          </div>
+          <div class="glass-card p-7">
+            <div class="text-xs text-cyan-400 font-mono font-bold mb-3">USE</div>
+            <h3 class="text-xl text-white font-bold font-display mb-3">Decision-ready outputs</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Evidence designed for site selection, engineering, consenting, operations, monitoring and asset integrity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-			<!-- Grid of 4 Initiatives -->
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-				{sortedFocusAreas.map((area, index) => (
-					<div class="reveal" style={`transition-delay: ${index * 120}ms`}>
-						<div class="glass-card p-8 h-full flex flex-col justify-between group relative overflow-hidden">
-							<!-- Subtle Ambient Glow on hover -->
-							<div class="absolute top-0 right-0 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all duration-700 pointer-events-none"></div>
+  {sortedInsights.length > 0 && (
+    <section id="insights" class="section-padding relative scroll-mt-20">
+      <div class="max-w-[1560px] mx-auto px-6 md:px-12">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-8 reveal">
+          <div class="max-w-3xl">
+            <div class="hud-badge mb-4"><i class="fa-solid fa-book-open" aria-hidden="true"></i> MARINE INTELLIGENCE</div>
+            <h2 class="heading-section">Technical context for better offshore choices</h2>
+            <p class="text-lg text-slate-400 font-light leading-relaxed">Focused notes on monitoring, site characterisation, offshore development and the evidence needed to reduce uncertainty.</p>
+          </div>
+          <a href={url('insights/')} class="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-500/30 text-xs font-mono font-bold uppercase tracking-wider text-slate-300 hover:text-cyan-300 transition-all shrink-0">Browse all insights <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+        </div>
 
-							<div>
-								<!-- Icon & Badge Header -->
-								<div class="flex items-center justify-between mb-8">
-									<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500/15 to-blue-600/20 border border-cyan-400/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-all duration-500 shadow-[0_0_20px_rgba(0,240,255,0.15)]">
-										<i class={`fa-solid ${iconMap[area.slug]?.icon || 'fa-anchor'} text-2xl`}></i>
-									</div>
-									<span class="hud-badge text-[10px]">
-										{iconMap[area.slug]?.badge || 'INITIATIVE'}
-									</span>
-								</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7">
+          {sortedInsights.map((insight, index) => (
+            <article class="glass-card p-7 h-full flex flex-col justify-between group reveal" style={`transition-delay: ${index * 100}ms`}>
+              <div>
+                <div class="flex flex-wrap items-center gap-3 mb-5">
+                  <time datetime={insight.data.publishDate.toISOString()} class="text-xs font-mono text-cyan-400">{insight.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+                  {insight.data.tags.slice(0, 2).map((tag) => <span class="evidence-chip">{tag}</span>)}
+                </div>
+                <h3 class="text-2xl font-black leading-tight text-white group-hover:text-cyan-300 transition-colors mb-4 font-display"><a href={url(`insights/${insight.slug}/`)}>{insight.data.title}</a></h3>
+                <p class="text-slate-400 text-sm leading-relaxed mb-8">{insight.data.description}</p>
+              </div>
+              <a href={url(`insights/${insight.slug}/`)} class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-2">Read insight <i class="fa-solid fa-chevron-right text-[10px]" aria-hidden="true"></i></a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 
-								<!-- Title & Description -->
-								<h3 class="text-2xl font-black text-white mb-4 tracking-tight group-hover:text-cyan-300 transition-colors font-display">
-									{area.data.title}
-								</h3>
-								<p class="text-sm md:text-base text-slate-400 mb-8 font-light leading-relaxed line-clamp-3">
-									{area.data.description}
-								</p>
-							</div>
+  <section class="section-padding bg-[#040810]/80 border-y border-cyan-500/10 relative">
+    <div class="max-w-[1200px] mx-auto px-6 md:px-12">
+      <div class="text-center max-w-3xl mx-auto mb-14 reveal">
+        <div class="hud-badge mb-4"><i class="fa-solid fa-handshake" aria-hidden="true"></i> FOUNDING NETWORK</div>
+        <h2 class="heading-section">A platform built through complementary capability</h2>
+        <p class="text-lg text-slate-400 font-light">The initial network connects large-scale marine geophysical delivery with specialist offshore geotechnical capability, while remaining open to additional partners.</p>
+      </div>
 
-							<!-- Link Action -->
-							<div class="pt-6 border-t border-white/10">
-								<a href={`/focus-areas/${area.slug}`} class="inline-flex items-center gap-3 text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 group-hover:text-cyan-300 transition-all group-hover:translate-x-1">
-									<span>Explore Initiative</span>
-									<i class="fa-solid fa-arrow-right text-xs"></i>
-								</a>
-							</div>
-						</div>
-					</div>
-				))}
-			</div>
-		</div>
-	</section>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-7 reveal">
+        <div class="glass-card p-8 text-center flex flex-col items-center justify-between group">
+          <div class="w-full flex justify-center py-6"><Image src={bgpLogo} alt="BGP Offshore" width={220} class="brightness-0 invert opacity-75 group-hover:opacity-100 transition-opacity w-48" /></div>
+          <div class="w-full pt-4 border-t border-white/10"><div class="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest">Marine Geophysics</div></div>
+        </div>
+        <div class="glass-card p-8 text-center flex flex-col items-center justify-between group">
+          <div class="w-full flex justify-center py-6"><Image src={penesonLogo} alt="Guangzhou Peneson" width={220} class="brightness-0 invert opacity-75 group-hover:opacity-100 transition-opacity w-48" /></div>
+          <div class="w-full pt-4 border-t border-white/10"><div class="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest">Marine Geotechnics</div></div>
+        </div>
+        <div class="glass-card p-8 text-center flex flex-col items-center justify-center border-dashed border-cyan-500/30">
+          <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-cyan-400 mb-4"><i class="fa-solid fa-plus" aria-hidden="true"></i></div>
+          <h3 class="text-xl font-bold text-white font-display">Add your capability</h3>
+          <p class="text-sm text-slate-400 mt-3 mb-6">Bring a technology, dataset, field capability or offshore use case to the platform.</p>
+          <a href="mailto:info@oceanhub.com" class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-widest">Start a conversation →</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-	<!-- Insights Section (Intelligence Stream) -->
-	<section id="insights" class="section-padding bg-[#040810]/70 border-y border-cyan-500/10 relative scroll-mt-20">
-		<div class="max-w-[1720px] mx-auto px-6 md:px-12">
-			<!-- Header -->
-			<div class="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8 reveal">
-				<div class="max-w-3xl">
-					<div class="hud-badge mb-4">
-						<i class="fa-solid fa-satellite"></i> INTELLIGENCE STREAM
-					</div>
-					<h2 class="heading-section">
-						Deep Blue <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-sky-300">Intelligence</span>
-					</h2>
-					<p class="text-lg md:text-xl text-slate-400 font-light leading-relaxed">
-						Strategic foresight, technical White Papers, and market trends for the offshore blue energy transition.
-					</p>
-				</div>
-				<a href="/insights" class="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-500/30 text-xs font-mono font-bold uppercase tracking-wider text-slate-300 hover:text-cyan-300 transition-all shrink-0">
-					<span>Browse All Reports</span>
-					<i class="fa-solid fa-arrow-right text-xs"></i>
-				</a>
-			</div>
-
-			<!-- Insight Cards -->
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-				{sortedInsights.map((insight, index) => (
-					<div class="reveal" style={`transition-delay: ${index * 150}ms`}>
-						<article class="glass-card p-8 md:p-10 h-full flex flex-col justify-between group">
-							<div>
-								<!-- Meta Tags & Date -->
-								<div class="flex flex-wrap items-center gap-3 mb-6">
-									<time datetime={insight.data.publishDate.toISOString()} class="text-xs font-mono text-cyan-400">
-										{insight.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-									</time>
-									<span class="text-slate-600">•</span>
-									{insight.data.tags.map(tag => (
-										<span class="px-2.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[11px] font-mono text-slate-300">
-											{tag}
-										</span>
-									))}
-								</div>
-
-								<!-- Title -->
-								<h3 class="text-2xl md:text-3xl font-black leading-tight text-white group-hover:text-cyan-300 transition-colors mb-4 font-display">
-									<a href={`/insights/${insight.slug}`} class="focus:outline-none">
-										{insight.data.title}
-									</a>
-								</h3>
-
-								<!-- Description -->
-								<p class="text-slate-400 text-sm md:text-base font-light leading-relaxed mb-8">
-									{insight.data.description}
-								</p>
-							</div>
-
-							<!-- Author & Read Link -->
-							<div class="flex items-center justify-between pt-6 border-t border-white/10">
-								<div class="flex items-center gap-3">
-									<div class="w-9 h-9 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300 font-bold text-xs font-mono">
-										{insight.data.author.charAt(0)}
-									</div>
-									<span class="text-xs font-mono text-slate-300">
-										{insight.data.author}
-									</span>
-								</div>
-								<a href={`/insights/${insight.slug}`} class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-									<span>Read Dossier</span>
-									<i class="fa-solid fa-chevron-right text-[10px]"></i>
-								</a>
-							</div>
-						</article>
-					</div>
-				))}
-			</div>
-		</div>
-	</section>
-
-	<!-- About & DNA (Nordic Engineering & Technological Pillars) -->
-	<section id="about" class="section-padding scroll-mt-20 relative overflow-hidden">
-		<div class="max-w-[1720px] mx-auto px-6 md:px-12">
-			<div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-				<!-- Left Column: Vision & Narrative -->
-				<div class="lg:col-span-7 reveal">
-					<div class="hud-badge mb-4">
-						<i class="fa-solid fa-dna"></i> ARCHITECTURE & DNA
-					</div>
-					<h2 class="heading-section mb-8">
-						Orchestrating the <br/>
-						<span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500">
-							Energy Transition.
-						</span>
-					</h2>
-					
-					<p class="text-lg md:text-xl text-slate-300 font-light leading-relaxed mb-12">
-						The challenge of the energy transition—from offshore wind gigawatt scale-up to gigaton-scale carbon storage—demands radical data certainty. We connect developers with specialized tech partners to navigate the deep sea.
-					</p>
-
-					<!-- Key Technological Pillars -->
-					<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-						<div class="p-6 rounded-2xl glass-panel border-l-4 border-l-cyan-400">
-							<h3 class="text-lg font-black text-white mb-2 font-display">Smart MRV Swarms</h3>
-							<p class="text-sm text-slate-400 font-light">Deploying autonomous USVs and distributed acoustic sensing (DAS) to heighten measurement accuracy.</p>
-						</div>
-						<div class="p-6 rounded-2xl glass-panel border-l-4 border-l-blue-500">
-							<h3 class="text-lg font-black text-white mb-2 font-display">Unified Ground Model</h3>
-							<p class="text-sm text-slate-400 font-light">Fusing geophysics and geotechnics into single-source truth to compress project cycle risks.</p>
-						</div>
-					</div>
-
-					<!-- Spotlight: Ocean Talks @ SBGf Rio 25 -->
-					<div class="p-8 rounded-3xl glass-card border border-cyan-500/30 relative overflow-hidden">
-						<div class="flex items-center gap-3 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider mb-4">
-							<i class="fa-solid fa-microphone-lines"></i>
-							<span>Initiative Spotlight // SBGf Rio 25</span>
-						</div>
-						<h3 class="text-2xl font-black text-white mb-3 font-display">Ocean Talks Dialogue Series</h3>
-						<p class="text-sm md:text-base text-slate-300 font-light leading-relaxed mb-6">
-							OceanHub actively curates global symposiums uniting geophysicists, developers, and policymakers to debate high-consequence offshore data standardization.
-						</p>
-						<a href="https://rio25.sbgf.org.br/Pages/oceanHub.php" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 px-5 py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 font-mono text-xs font-bold uppercase tracking-wider transition-all">
-							<span>SBGf Rio 25 Program</span>
-							<i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
-						</a>
-					</div>
-				</div>
-
-				<!-- Right Column: 3 Strategic Enablers -->
-				<div class="lg:col-span-5 space-y-6 reveal" style="transition-delay: 200ms;">
-					<div class="glass-card p-8 group">
-						<div class="text-cyan-400 font-mono text-sm font-bold mb-2">01 / INTEGRATION</div>
-						<h3 class="text-xl font-black text-white mb-3 font-display">Holistic Ground Fusion</h3>
-						<p class="text-sm text-slate-400 font-light leading-relaxed">
-							Eliminating geological blind spots by fusing multi-source seismic and geotechnical data into real-time digital twins.
-						</p>
-					</div>
-
-					<div class="glass-card p-8 group border-cyan-500/40 shadow-[0_0_30px_rgba(0,240,255,0.1)]">
-						<div class="text-cyan-400 font-mono text-sm font-bold mb-2">02 / INNOVATION</div>
-						<h3 class="text-xl font-black text-white mb-3 font-display">Autonomous Monitoring</h3>
-						<p class="text-sm text-slate-400 font-light leading-relaxed">
-							Leveraging USV swarms and fiber-optic wellhead telemetry to slash survey carbon footprint while boosting frequency.
-						</p>
-					</div>
-
-					<div class="glass-card p-8 group">
-						<div class="text-cyan-400 font-mono text-sm font-bold mb-2">03 / SUSTAINABILITY</div>
-						<h3 class="text-xl font-black text-white mb-3 font-display">Net-Zero Energy Velocity</h3>
-						<p class="text-sm text-slate-400 font-light leading-relaxed">
-							Delivering the critical data infrastructure to accelerate gigatonne-scale offshore wind and geological carbon storage.
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- Open Ecosystem & Partner Matrix -->
-	<section class="section-padding bg-[#040810]/80 border-t border-cyan-500/10 relative">
-		<div class="max-w-[1720px] mx-auto px-6 md:px-12 relative z-10">
-			<!-- Header -->
-			<div class="max-w-3xl mb-16 text-center mx-auto reveal">
-				<div class="hud-badge mb-4">
-					<i class="fa-solid fa-handshake-simple"></i> GLOBAL ALLIANCE
-				</div>
-				<h2 class="heading-section">
-					Open <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-sky-300">Ecosystem</span>
-				</h2>
-				<p class="text-base md:text-lg text-slate-400 font-light">
-					A collaborative network spanning geophysical leaders, geotechnical specialists, and offshore operators.
-				</p>
-			</div>
-
-			<!-- Partner Cards -->
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto reveal">
-				<!-- BGP Offshore -->
-				<div class="glass-card p-8 text-center flex flex-col items-center justify-between group">
-					<div class="w-full flex justify-center py-6">
-						<Image src={bgpLogo} alt="BGP Offshore" width={220} class="brightness-0 invert opacity-70 group-hover:opacity-100 transition-opacity duration-500 w-48" />
-					</div>
-					<div class="w-full pt-4 border-t border-white/10">
-						<div class="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest">Geophysical Leader</div>
-						<p class="text-xs text-slate-400 mt-1 font-light">Global Marine Seismic Fleet</p>
-					</div>
-				</div>
-
-				<!-- Guangzhou Peneson -->
-				<div class="glass-card p-8 text-center flex flex-col items-center justify-between group">
-					<div class="w-full flex justify-center py-6">
-						<Image src={penesonLogo} alt="Guangzhou Peneson" width={220} class="brightness-0 invert opacity-70 group-hover:opacity-100 transition-opacity duration-500 w-48" />
-					</div>
-					<div class="w-full pt-4 border-t border-white/10">
-						<div class="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest">Geotechnical Specialist</div>
-						<p class="text-xs text-slate-400 mt-1 font-light">Offshore Sampling & CPT Solutions</p>
-					</div>
-				</div>
-
-				<!-- Join Alliance Card -->
-				<div class="glass-card p-8 text-center flex flex-col items-center justify-between border-dashed border-cyan-500/30 group hover:border-cyan-400">
-					<div class="py-6 flex flex-col items-center justify-center h-full">
-						<div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform mb-3">
-							<i class="fa-solid fa-plus text-lg"></i>
-						</div>
-						<div class="text-sm font-bold text-white font-display">Join the Alliance</div>
-					</div>
-					<div class="w-full pt-4 border-t border-white/10">
-						<a href="mailto:info@oceanhub.com" class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-widest">
-							Become a Partner →
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- High-Impact Cyber CTA Portal -->
-	<section class="section-padding relative overflow-hidden">
-		<!-- Glowing concentric portals -->
-		<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
-
-		<div class="max-w-4xl mx-auto px-6 text-center relative z-10 reveal">
-			<div class="hud-badge mb-6">
-				<i class="fa-solid fa-bolt"></i> READY FOR DEPLOYMENT
-			</div>
-
-			<h2 class="text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tight mb-8 font-display">
-				Ready for the <br/>
-				<span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 glow-text-cyan">
-					Blue Future.
-				</span>
-			</h2>
-
-			<p class="text-base md:text-xl text-slate-300 mb-12 font-light leading-relaxed max-w-2xl mx-auto">
-				Join the OceanHub ecosystem to accelerate your offshore energy initiatives with certified data certainty.
-			</p>
-
-			<div class="flex flex-wrap justify-center gap-5">
-				<a href="https://rio25.sbgf.org.br/Pages/oceanHub.php" target="_blank" rel="noopener noreferrer" class="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black uppercase tracking-wider text-xs shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-all">
-					Ocean Talks @ SBGf
-				</a>
-				<a href="mailto:info@oceanhub.com" class="px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 hover:border-cyan-500/40 text-white font-bold uppercase tracking-wider text-xs transition-all">
-					Connect with Team
-				</a>
-			</div>
-		</div>
-	</section>
+  <section class="section-padding relative overflow-hidden">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="max-w-4xl mx-auto px-6 text-center relative z-10 reveal">
+      <div class="hud-badge mb-6"><i class="fa-solid fa-compass" aria-hidden="true"></i> START WITH THE DECISION</div>
+      <h2 class="text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tight mb-8 font-display">Bring us the offshore question.</h2>
+      <p class="text-base md:text-xl text-slate-300 mb-10 font-light leading-relaxed max-w-2xl mx-auto">OceanHub will help frame the evidence need, identify relevant capabilities and shape a practical collaboration path.</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="mailto:info@oceanhub.com" class="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black uppercase tracking-wider text-xs transition-all">Propose a Collaboration</a>
+        <a href={url('about/')} class="px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 hover:border-cyan-500/40 text-white font-bold uppercase tracking-wider text-xs transition-all">How OceanHub Works</a>
+      </div>
+    </div>
+  </section>
 </Layout>
