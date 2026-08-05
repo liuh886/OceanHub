@@ -2,7 +2,6 @@
 import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import OfflineSaveButton from '../../components/OfflineSaveButton.astro';
-import JoinAllianceModal from '../../components/JoinAllianceModal.astro';
 import { contentVersion } from '../../lib/contentVersion';
 
 export async function getStaticPaths() {
@@ -204,9 +203,6 @@ const relatedJip = jipMap[entry.id];
       </div>
     </section>
   </article>
-
-  <!-- Alliance Onboarding Modal -->
-  <JoinAllianceModal />
 </Layout>
 
 <style is:global>

@@ -2,7 +2,6 @@
 // src/pages/jips/index.astro
 // Joint Industry Projects (JIP) Hub - Green Offshore Technology Alliance
 import Layout from '../../layouts/Layout.astro';
-import JoinAllianceModal from '../../components/JoinAllianceModal.astro';
 
 const base = import.meta.env.BASE_URL;
 const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
@@ -465,7 +464,4 @@ const jips: JipItem[] = [
       });
     });
   </script>
-
-  <!-- Interactive Join Alliance Modal Instance -->
-  <JoinAllianceModal />
 </Layout>
