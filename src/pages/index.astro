@@ -166,7 +166,7 @@ const focusAreaMetadata: Record<string, {
             <div class="py-6 min-h-[250px]" id="hud-channel-content">
               <!-- Shared Live Procedural Oscilloscope Canvas -->
               <div class="relative mb-5">
-                <canvas id="hud-telemetry-canvas" class="w-full h-24 rounded-xl bg-[#02050E] border border-cyan-500/30 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]"></canvas>
+                <canvas id="hud-telemetry-canvas" class="w-full h-24 rounded-xl bg-[#02050E] border border-cyan-500/30 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]" role="img" aria-label="Live marine telemetry oscilloscope displaying real-time sensor data streams"></canvas>
                 <div class="absolute top-2 left-3 flex items-center gap-2">
                   <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
                   <span class="text-[10px] font-mono font-bold tracking-widest text-cyan-300 uppercase" id="canvas-mode-tag">SEISMIC STREAM 3D</span>
@@ -979,6 +979,20 @@ const focusAreaMetadata: Record<string, {
         running = !document.hidden;
         if (running && !animId) animId = requestAnimationFrame(draw);
       });
+
+      // Pause canvas when scrolled out of viewport
+      if ('IntersectionObserver' in window) {
+        const hudObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              if (!running) { running = true; animId = requestAnimationFrame(draw); }
+            } else {
+              if (running) { running = false; cancelAnimationFrame(animId); animId = 0; }
+            }
+          });
+        }, { threshold: 0 });
+        hudObserver.observe(canvas);
+      }
     }
 
     // 3. Subtle Live Telemetry Value Flickers
