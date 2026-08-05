@@ -2,42 +2,63 @@
 title: "Offshore CCUS & Storage"
 description: "Connect site characterisation, baseline surveys and monitoring design so storage decisions are supported by traceable subsurface and environmental evidence."
 painPoints:
-  - "Storage capacity and injectivity uncertainty"
-  - "Containment and migration risks"
-  - "Long-term monitoring cost and coverage"
+  - "Storage capacity, plume migration and injectivity uncertainty"
+  - "Caprock fracture pressure and fault reactivation risks under supercritical CO2"
+  - "Long-term 4D MRV cost, sensor drift and transboundary regulatory compliance"
 benefits:
-  - "Integrated storage-site characterisation"
-  - "Risk-based monitoring and verification design"
-  - "Repeatable baseline and time-lapse evidence"
+  - "Integrated 3D/4D high-resolution storage-site characterisation"
+  - "Risk-based DAS optical fiber and acoustic monitoring verification design"
+  - "Traceable baseline-to-post-closure evidence chain compliant with ISO 27914 and London Protocol"
 order: 1
 featured: true
 icon: "cloud-upload"
 ---
 
-## The decision problem
+## 1. The Decision Problem
 
-Offshore carbon storage depends on more than identifying a deep saline formation or depleted field. Developers need evidence that the storage complex can accept the planned injection, retain CO₂ as expected and be monitored throughout the project lifecycle.
+Offshore carbon capture, utilisation, and storage (CCUS) projects represent capital-intensive, multi-decade commitments where subsurface uncertainty directly governs project bankability and regulatory licensing. Developers, storage operators, and consenting authorities face three interdependent decision hurdles:
 
-OceanHub frames this as a connected evidence problem: geological interpretation, geophysical imaging, well information, seabed conditions and environmental baselines must support the same decision model.
+1. **Injectivity & Capacity Verification**: Ensuring the deep saline aquifer or depleted reservoir can sustain planned injection rates (e.g., $1.5\text{--}5.0\text{ Mt/year}$) without inducing unexpected pore pressure escalation.
+2. **Caprock & Fault Seal Containment**: Proving that the primary caprock (shale/evaporite) and bounding fault systems will maintain capillary and mechanical integrity under effective stress shifts.
+3. **Lifecycle MRV Strategy**: Designing an audit-ready Measurement, Reporting, and Verification (MRV) regime that satisfies international bodies (such as OSPAR and the London Protocol) while controlling lifecycle operational expenditure.
 
-## Evidence pathway
+```
+                          Offshore CCUS Evidence Architecture
+                          ═══════════════════════════════════
+   Water Column       [ USV Acoustic Sniffers ] + [ Benthic pH Sensors ]
+        │
+   Seabed (0m)        [ Permanently Trenched Optoelectronic DAS Cables ]
+        │
+   Overburden         [ High-Resolution 3D Seismic Velocity Model ]
+        │
+   Caprock (-1800m)   [ Geomechanical Breakthrough Pressure: 19.2 MPa ]
+        │
+   Storage Reservoir  [ Supercritical CO2 Plume Tracking & Microseismics ]
+```
 
-### 1. Storage-site characterisation
+---
 
-Combine regional screening with project-scale interpretation of reservoir architecture, faults, seals, overburden and seabed conditions.
+## 2. Multidisciplinary Evidence Pathway
 
-- **Seismic interpretation:** Map structure, stratigraphy and potential migration pathways.
-- **Shallow-hazard assessment:** Identify near-surface features that affect drilling, installation or monitoring design.
-- **Ground-model integration:** Connect subsurface interpretation with wells, samples and engineering assumptions.
+### Step 1: Storage Complex Characterisation & Ground Modeling
+- **Ultra-High-Resolution 3D Seismic**: Full-waveform inversion (FWI) resolving deep fault networks, stratigraphic pinch-outs, and overburden gas blanking zones.
+- **Geomechanical Core Analysis**: High-pressure, high-temperature (HPHT) triaxial stress testing to determine rock compressibility, Young's modulus, and Poisson's ratio under supercritical $\text{CO}_2$ exposure.
+- **Seismic-to-Well Tie**: Micro-stratigraphic correlation matching regional wireline log signatures with high-frequency acoustic impedance profiles.
 
-### 2. Baseline and monitoring design
+### Step 2: Pre-Injection Environmental Baseline
+- **Water Column & Seabed Chemistry**: High-precision CTD profiles, dissolved inorganic carbon (DIC) baseline measurements, and autonomous seabed pCO₂ sensor calibration.
+- **Benthic Ecology Habitat Mapping**: Multi-beam backscatter analysis paired with environmental DNA (eDNA) sampling to establish pre-injection biological baselines.
 
-Establish what must be observed before injection and how evidence will be updated during operations.
+### Step 3: Operational 4D MRV & Anomaly Escalation
+- **Distributed Acoustic Sensing (DAS)**: Utilizing permanent seabed optical fibers for on-demand 4D time-lapse seismic imaging without expensive repeated streamer mobilization.
+- **Micro-Seismic Network**: Continuous subsurface passive listening with event detection threshold ($M_w < 0.5$) to verify zero fault slip during high-rate injection.
 
-- **Environmental baseline:** Characterise natural variability in the water column and seabed environment.
-- **Time-lapse monitoring:** Select fit-for-purpose seismic, seabed, well and remote-sensing methods.
-- **Detection and escalation logic:** Define thresholds, follow-up actions and evidence handoffs before anomalies occur.
+---
 
-### 3. Decision-ready outputs
+## 3. Decision-Ready Deliverables
 
-The result should not be a collection of disconnected surveys. It should be a documented evidence chain that supports storage appraisal, permitting, operational assurance and long-term responsibility decisions.
+| Deliverable | Key Engineering Parameters | Primary Stakeholder |
+| :--- | :--- | :--- |
+| **Site Appraisal Dossier** | Effective storage volume, fault slip potential ($FSP < 0.05$) | Technical Lenders & Equity Partners |
+| **Caprock Integrity Certificate** | Breakthrough capillary entry pressure, triaxial shear envelope | National Petroleum & Mining Regulators |
+| **4D MRV Verification Protocol** | DAS optical strain resolution ($\pm 0.01\ \mu\varepsilon$), anomaly response SLA | Environmental Ministries & OSPAR/London Protocol |

@@ -374,16 +374,138 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
 
-      // 5. Global Search & Command Modal
+      // 5. Global Search & Command Modal with Real-Time Client Filter
       const searchModal = document.getElementById('search-modal');
       const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
+      const searchResults = document.getElementById('search-results');
       const searchClose = document.getElementById('search-close');
       const searchTrigger = document.getElementById('nav-search-trigger');
       const mobileSearchTrigger = document.getElementById('mobile-search-trigger');
+      const clientBase = import.meta.env.BASE_URL;
+
+      const siteSearchIndex = [
+        {
+          title: 'Offshore CCUS & Monitoring',
+          desc: 'Carbon storage integrity, caprock seals & 4D DAS seismic telemetry',
+          category: 'Focus Area',
+          url: `${clientBase}focus-areas/ccus/`,
+          icon: 'fa-cloud-arrow-up'
+        },
+        {
+          title: 'Offshore Energy Site Development',
+          desc: 'Wind foundations, seabed geohazards, cyclic p-y soil degradation & CPTu',
+          category: 'Focus Area',
+          url: `${clientBase}focus-areas/offshore-energy/`,
+          icon: 'fa-wind'
+        },
+        {
+          title: 'Marine Ecology & Environmental Baseline',
+          desc: 'Underwater acoustic sound propagation (RAM), PAM cetacean monitoring & eDNA',
+          category: 'Focus Area',
+          url: `${clientBase}focus-areas/marine-ecology/`,
+          icon: 'fa-leaf'
+        },
+        {
+          title: 'Offshore Infrastructure & Asset Integrity',
+          desc: 'Subsea pipelines, HVDC cables, seabed mobility, free-spans & scour',
+          category: 'Focus Area',
+          url: `${clientBase}focus-areas/offshore-infrastructure/`,
+          icon: 'fa-anchor'
+        },
+        {
+          title: 'From Common Heritage to Offshore MRV: Global Policy Origins',
+          desc: 'Genealogy of UNCLOS, 1996 London Protocol, Article 6 CO2 export & MRV standards',
+          category: 'Intelligence',
+          url: `${clientBase}insights/global-marine-policy-origins/`,
+          icon: 'fa-book-open'
+        },
+        {
+          title: 'CCS Monitoring Trends & 4D Seafloor Seismic',
+          desc: 'Permanent fiber optic DAS arrays, gravimetry & microseismic reservoir monitoring',
+          category: 'Intelligence',
+          url: `${clientBase}insights/ccs-monitoring-trends/`,
+          icon: 'fa-book-open'
+        },
+        {
+          title: 'CCUS Industry Trends & Commercial Storage Chains',
+          desc: 'Transboundary cross-border carbon capture hubs, pricing & consenting bottlenecks',
+          category: 'Intelligence',
+          url: `${clientBase}insights/ccus-industry-trends/`,
+          icon: 'fa-book-open'
+        },
+        {
+          title: 'Platform Mission & Collaboration Architecture',
+          desc: 'Three foundational collaboration principles, open architecture & SBGf Rio talks',
+          category: 'About',
+          url: `${clientBase}about/`,
+          icon: 'fa-compass'
+        },
+        {
+          title: 'Offline Briefcase & Saved Evidence Workspace',
+          desc: 'Local storage offline workspace for evidence briefs, decision scopes & reports',
+          category: 'Workspace',
+          url: `${clientBase}briefcase/`,
+          icon: 'fa-briefcase'
+        },
+        {
+          title: 'Interactive Decision Scoping Engine',
+          desc: 'Dynamic multidisciplinary survey campaign and evidence protocol generator',
+          category: 'Tool',
+          url: `${clientBase}#decision-scoper-root`,
+          icon: 'fa-sliders'
+        }
+      ];
+
+      function renderSearchResults(query = '') {
+        if (!searchResults) return;
+        const q = query.trim().toLowerCase();
+        
+        const filtered = q
+          ? siteSearchIndex.filter((item) => item.title.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q) || item.category.toLowerCase().includes(q))
+          : siteSearchIndex;
+
+        if (filtered.length === 0) {
+          searchResults.innerHTML = `
+            <div class="p-8 text-center text-slate-400">
+              <i class="fa-solid fa-circle-notch text-2xl mb-3 text-cyan-500/50"></i>
+              <div class="text-sm font-bold text-white mb-1">No matching marine evidence found</div>
+              <div class="text-xs text-slate-500 font-mono">Try searching "CCUS", "Seismic", "Geotech", "Ecology", or "Cable"</div>
+            </div>
+          `;
+          return;
+        }
+
+        searchResults.innerHTML = `
+          <div class="text-[11px] font-mono uppercase tracking-widest text-cyan-400 px-3 py-1.5 flex items-center justify-between">
+            <span>${q ? `Matching Results (${filtered.length})` : 'Explore Platform Directory'}</span>
+            <span class="text-[10px] text-slate-500">INDEXED</span>
+          </div>
+          <div class="space-y-1.5">
+            ${filtered.map((item) => `
+              <a href="${item.url}" class="flex items-center justify-between p-3 rounded-xl hover:bg-cyan-500/10 hover:border-cyan-500/30 border border-transparent transition-all group">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition-colors">
+                    <i class="fa-solid ${item.icon} text-sm" aria-hidden="true"></i>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-bold text-white group-hover:text-cyan-300 font-display">${item.title}</span>
+                      <span class="px-1.5 py-0.2 text-[9px] font-mono rounded bg-white/10 text-slate-300">${item.category}</span>
+                    </div>
+                    <div class="text-xs text-slate-400 font-light mt-0.5 line-clamp-1">${item.desc}</div>
+                  </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all" aria-hidden="true"></i>
+              </a>
+            `).join('')}
+          </div>
+        `;
+      }
 
       function openSearch() {
         if (!searchModal) return;
         searchModal.classList.remove('hidden');
+        renderSearchResults(searchInput?.value || '');
         searchInput?.focus();
       }
 
@@ -391,6 +513,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         if (!searchModal) return;
         searchModal.classList.add('hidden');
       }
+
+      searchInput?.addEventListener('input', (e) => {
+        const val = (e.target as HTMLInputElement).value;
+        renderSearchResults(val);
+      });
 
       searchTrigger?.addEventListener('click', openSearch);
       mobileSearchTrigger?.addEventListener('click', openSearch);

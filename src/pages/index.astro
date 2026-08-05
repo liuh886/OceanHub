@@ -1,5 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import SubsurfaceVisualizer from '../components/SubsurfaceVisualizer.astro';
+import DecisionScoper from '../components/DecisionScoper.astro';
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import bgpLogo from '../assets/bgp-logo.png';
@@ -323,6 +325,11 @@ const focusAreaMetadata: Record<string, {
           </div>
         </div>
       </div>
+
+      <!-- Interactive Subsurface & Full-Depth Cross-Section Component -->
+      <div class="mt-16 reveal">
+        <SubsurfaceVisualizer />
+      </div>
     </div>
   </section>
 
@@ -466,6 +473,11 @@ const focusAreaMetadata: Record<string, {
             Real-time subsurface deformation tracking and autonomous surface vessel patrols for permanent asset integrity.
           </p>
         </div>
+      </div>
+
+      <!-- Interactive Decision Scoping Engine Component -->
+      <div class="mt-16 reveal">
+        <DecisionScoper />
       </div>
     </div>
   </section>

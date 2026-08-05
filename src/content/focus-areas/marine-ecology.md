@@ -2,44 +2,60 @@
 title: "Marine Ecology & Environment"
 description: "Design environmental baselines and monitoring around the pressures, receptors and decisions that matter across an offshore project lifecycle."
 painPoints:
-  - "Fragmented baseline evidence"
-  - "Uncertain construction and operational effects"
-  - "Difficult comparison across monitoring campaigns"
+  - "Underwater noise propagation compliance during high-energy pile driving"
+  - "Fragmented baseline biodiversity data failing statutory consenting scrutiny"
+  - "Lack of repeatable long-term ecosystem telemetry post-commissioning"
 benefits:
-  - "Habitat and receptor mapping"
-  - "Pressure-specific monitoring design"
-  - "Comparable evidence for consenting and operations"
+  - "Calibrated underwater acoustic propagation modeling (RAM / PE methods)"
+  - "Autonomous Passive Acoustic Monitoring (PAM) and environmental DNA (eDNA) integration"
+  - "Audit-ready Environmental Impact Assessment (EIA) data packages aligned with NOAA/OSPAR"
 order: 4
 featured: true
 icon: "leaf"
 ---
 
-## The decision problem
+## 1. The Decision Problem
 
-Environmental work is most useful when it is designed around the decisions a project must make: where infrastructure can be placed, which receptors require protection, what change is material and how mitigation should be triggered.
+Offshore engineering operations—from seismic airguns and pile-driving hammers to continuous subsea trenching—introduce substantial acoustic, sedimentological, and hydrodynamic pressures into marine ecosystems. 
 
-OceanHub connects hydrographic, acoustic, sampling and ecological observations so baseline and monitoring programmes remain comparable, spatially coherent and usable beyond a single report.
+Project developers and consenting authorities face stringent regulatory thresholds (such as NOAA marine mammal injury criteria $SEL_{cum} > 183\text{ dB re } 1\ \mu\text{Pa}^2\text{s}$ and OSPAR benthic disturbance directives). Failure to prove compliance results in immediate stop-work orders and multi-million-dollar project delays.
 
-## Evidence pathway
+```
+                      Marine Ecological Evidence Chain
+                      ═════════════════════════════════
+   Noise Sources       [ Hydro-Hammer Pile Driving / Dynamic Positioning Thrusters ]
+        │
+   Acoustic Modeling   [ Range-dependent Parabolic Equation (RAM Sound Fields) ]
+        │
+   Faunal Protection   [ Real-Time PAM Buoy Array + 1.5km Mitigation Exclusion Zone ]
+        │
+   Seabed Integrity    [ High-Definition Drop-Camera Photogrammetry & eDNA Assays ]
+        │
+   Regulatory Output   [ Audit-Ready EIA Telemetry & Marine Mammal Observer Log ]
+```
 
-### 1. Baseline design
+---
 
-Define the receptors, natural variability and project pressures that the baseline must resolve before selecting survey methods.
+## 2. Integrated Evidence Workflow
 
-- **Habitat mapping:** Combine acoustic interpretation with samples, imagery and existing ecological information.
-- **Water-column and seabed conditions:** Characterise relevant physical and chemical variability.
-- **Sensitive receptors:** Establish where species, habitats or ecosystem functions require specific consideration.
+### Step 1: Acoustic Propagation Modeling & Noise Impact Zones
+- **Parabolic Equation (PE) & Ray Tracing**: Incorporating seasonal thermoclines, CTD sound speed profiles (SSP), and multi-layer geoacoustic seabed reflectivity to predict Sound Pressure Level (SPL) and cumulative Sound Exposure Level ($SEL_{cum}$) attenuation with distance.
+- **Exclusion Zone Calibration**: Establishing verified safety perimeters ($500\text{--}1,500\text{ m}$) for marine mammal observer (MMO) protocols.
 
-### 2. Construction and operational monitoring
+### Step 2: Passive Acoustic Monitoring (PAM) & Real-Time Telemetry
+- **Autonomous PAM Moored Buoys**: Continuous high-frequency hydrophone logging ($10\text{ Hz}\text{--}150\text{ kHz}$) with real-time whistle and click detection for odontocetes and mysticetes.
+- **Sediment Plume Dispersion Tracking**: Optical backscatter sensors and calibrated acoustic backscatter to monitor suspended particulate matter (SPM) during cable trenching and dredging.
 
-Select monitoring methods according to plausible pathways of effect rather than applying a generic survey package.
+### Step 3: Molecular Biodiversity (eDNA) & Benthic Photogrammetry
+- **eDNA Metabarcoding**: Water column and benthic sediment filtration yielding comprehensive taxonomic inventories of teleost fish and benthic macroinvertebrates without destructive trawl sampling.
+- **High-Resolution Seabed Video**: ROV/drop-camera photogrammetric 3D reconstructions of biogenic reefs (e.g., *Sabellaria*, *Lophelia pertusa*).
 
-- **Turbidity and sediment movement:** Track conditions where dredging, trenching or installation may create change.
-- **Underwater sound:** Use appropriate acoustic evidence where marine fauna may be affected.
-- **Inspection integration:** Reuse operational survey opportunities to improve environmental coverage where technically valid.
+---
 
-### 3. Comparable evidence and response
+## 3. Decision-Ready Deliverables
 
-Monitoring should make it possible to distinguish project-related change from natural variability and explain what happens when thresholds are approached or exceeded.
-
-The intended output is a defensible evidence chain for consenting, mitigation, adaptive management and long-term environmental stewardship.
+| Deliverable | Key Technical Parameters | Regulatory Standard |
+| :--- | :--- | :--- |
+| **Acoustic Mitigation Plan** | Attenuation curves, double big bubble curtain (DBBC) damping ($\ge 15\text{ dB}$) | BSH / NOAA Fisheries / OSPAR |
+| **Benthic Baseline Atlas** | Habitat classification (EUNIS Level 4), biogenic reef boundary coordinates | National Maritime Consenting Body |
+| **Environmental Telemetry Log** | Real-time hydrophone data streams, turbidity plume bounds | Joint Nature Conservation Committee |

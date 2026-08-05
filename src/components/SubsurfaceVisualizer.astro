@@ -1,0 +1,290 @@
+---
+// Interactive Subsurface & Full-Depth Cross-Section Visualizer
+// Demonstrates multidisciplinary evidence assembly from atmosphere/surface to deep sub-seabed storage.
+const base = import.meta.env.BASE_URL;
+const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
+---
+
+<div class="glass-panel p-6 sm:p-10 rounded-3xl border border-cyan-500/25 relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.6)] my-12">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-white/10 gap-4">
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+        <span class="text-xs font-mono font-bold text-cyan-300 uppercase tracking-[0.2em]">Full-Depth Subsurface Horizon Visualizer</span>
+      </div>
+      <h3 class="text-xl sm:text-2xl font-bold text-white font-display">
+        Cross-Sectional Marine Evidence Architecture
+      </h3>
+    </div>
+    <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
+      <span class="hidden md:inline">CLICK HORIZONS TO INSPECT</span>
+      <span class="px-2.5 py-1 rounded bg-cyan-950/80 border border-cyan-500/30 text-cyan-300">INTERACTIVE 3D PROJECTION</span>
+    </div>
+  </div>
+
+  <!-- Interactive Depth Layers Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-8">
+    <!-- Left Column: Visual Cross-Sectional Diagram -->
+    <div class="lg:col-span-6 space-y-3.5" id="horizon-selector-list">
+      <!-- Horizon 1: Water Column -->
+      <button
+        type="button"
+        class="horizon-btn active w-full text-left p-5 rounded-2xl border border-cyan-400/50 bg-gradient-to-r from-cyan-950/40 via-sky-950/20 to-transparent hover:border-cyan-400 transition-all group relative overflow-hidden"
+        data-horizon="0"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-300 text-sm font-bold">
+              <i class="fa-solid fa-water" aria-hidden="true"></i>
+            </div>
+            <span class="text-sm font-bold text-white group-hover:text-cyan-300 font-display">01. Pelagic & Water Column</span>
+          </div>
+          <span class="text-xs font-mono text-cyan-300 font-bold">+10m to -150m</span>
+        </div>
+        <p class="text-xs text-slate-400 pl-11">
+          Autonomous USV fleet telemetry, PAM cetacean hydrophones, eDNA biodiversity baselines.
+        </p>
+      </button>
+
+      <!-- Horizon 2: Seabed Surface -->
+      <button
+        type="button"
+        class="horizon-btn w-full text-left p-5 rounded-2xl border border-white/10 bg-white/5 hover:border-sky-400/50 hover:bg-sky-950/20 transition-all group relative overflow-hidden"
+        data-horizon="1"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-sky-500/20 flex items-center justify-center text-sky-300 text-sm font-bold">
+              <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+            </div>
+            <span class="text-sm font-bold text-white group-hover:text-sky-300 font-display">02. Benthic & Seabed Interface</span>
+          </div>
+          <span class="text-xs font-mono text-sky-300 font-bold">-150m Horizon</span>
+        </div>
+        <p class="text-xs text-slate-400 pl-11">
+          Multi-beam bathymetry, side-scan sonar backscatter, pipeline free-spans and cable burial verification.
+        </p>
+      </button>
+
+      <!-- Horizon 3: Foundation Soils -->
+      <button
+        type="button"
+        class="horizon-btn w-full text-left p-5 rounded-2xl border border-white/10 bg-white/5 hover:border-emerald-400/50 hover:bg-emerald-950/20 transition-all group relative overflow-hidden"
+        data-horizon="2"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-300 text-sm font-bold">
+              <i class="fa-solid fa-wind" aria-hidden="true"></i>
+            </div>
+            <span class="text-sm font-bold text-white group-hover:text-emerald-300 font-display">03. Shallow Foundation Strata</span>
+          </div>
+          <span class="text-xs font-mono text-emerald-300 font-bold">0m to -120m Sub-seabed</span>
+        </div>
+        <p class="text-xs text-slate-400 pl-11">
+          Deep in-situ CPTu cones, UHR 3D seismic stratigraphy, shallow gas hazard avoidance & p-y soil curves.
+        </p>
+      </button>
+
+      <!-- Horizon 4: Deep Storage Reservoir -->
+      <button
+        type="button"
+        class="horizon-btn w-full text-left p-5 rounded-2xl border border-white/10 bg-white/5 hover:border-indigo-400/50 hover:bg-indigo-950/20 transition-all group relative overflow-hidden"
+        data-horizon="3"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-300 text-sm font-bold">
+              <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+            </div>
+            <span class="text-sm font-bold text-white group-hover:text-indigo-300 font-display">04. Deep Saline Reservoir & Caprock</span>
+          </div>
+          <span class="text-xs font-mono text-indigo-300 font-bold">-800m to -3,200m</span>
+        </div>
+        <p class="text-xs text-slate-400 pl-11">
+          Sub-seabed CO₂ plume containment, caprock fracture pressure, and continuous 4D fiber DAS strain MRV.
+        </p>
+      </button>
+    </div>
+
+    <!-- Right Column: Live Telemetry & Engineering Diagnostic HUD -->
+    <div class="lg:col-span-6">
+      <div class="glass-card p-6 sm:p-8 h-full flex flex-col justify-between border-cyan-500/30 bg-[#060D1E]/90 relative overflow-hidden">
+        <!-- Diagnostic Header -->
+        <div>
+          <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+            <div class="flex items-center gap-2">
+              <span class="hud-badge text-[10px]" id="diag-badge">ZONE 01: WATER COLUMN</span>
+              <span class="text-[11px] font-mono text-slate-400" id="diag-target">PAM & USV TELEMETRY</span>
+            </div>
+            <span class="text-xs font-mono text-emerald-400 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> SENSOR ONLINE
+            </span>
+          </div>
+
+          <!-- Parameter Screen -->
+          <div class="space-y-6" id="diag-parameters">
+            <!-- Dynamic Content Injected via Script -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="p-4 rounded-xl bg-black/40 border border-white/5">
+                <div class="text-[10px] font-mono text-slate-400">SOUND SPEED PROFILE</div>
+                <div class="text-lg font-mono font-bold text-cyan-300 mt-1">1,492.4 m/s</div>
+                <div class="text-[10px] font-mono text-slate-500 mt-0.5">CTD Thermocline Calibrated</div>
+              </div>
+              <div class="p-4 rounded-xl bg-black/40 border border-white/5">
+                <div class="text-[10px] font-mono text-slate-400">CETACEAN ACOUSTIC FIELD</div>
+                <div class="text-lg font-mono font-bold text-emerald-400 mt-1">85.2 kHz (Detected)</div>
+                <div class="text-[10px] font-mono text-slate-500 mt-0.5">Exclusion Buffer: Active</div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-xs font-mono text-slate-400 mb-2">TELEMETRY STREAM & SPECTRAL LOG</div>
+              <div class="h-24 bg-black/60 rounded-xl border border-cyan-500/20 p-3 flex items-center justify-center relative overflow-hidden">
+                <svg class="w-full h-16 text-cyan-400 opacity-80" viewBox="0 0 400 50" preserveAspectRatio="none">
+                  <path d="M0 25 Q 20 10, 40 25 T 80 25 T 120 5 T 160 45 T 200 25 T 240 15 T 280 35 T 320 25 T 360 20 T 400 25" fill="none" stroke="currentColor" stroke-width="2" />
+                  <path d="M0 25 Q 30 40, 60 25 T 120 20 T 180 30 T 240 10 T 300 35 T 360 15 T 400 25" fill="none" stroke="#10B981" stroke-width="1.5" stroke-dasharray="3,3" />
+                </svg>
+              </div>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed font-light" id="diag-desc">
+              Continuous monitoring of marine soundscapes, sound propagation loss (RAM models), and environmental baseline signatures ensuring regulatory compliance prior to piling and seismic operations.
+            </p>
+          </div>
+        </div>
+
+        <!-- Diagnostic Footer Action -->
+        <div class="pt-6 border-t border-white/10 flex items-center justify-between mt-6">
+          <span class="text-xs font-mono text-slate-400" id="diag-discipline">Discipline: Marine Ecology</span>
+          <a href={url('focus-areas/marine-ecology/')} class="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase text-cyan-400 hover:text-cyan-300 transition-colors" id="diag-link">
+            <span>Explore Focus Area</span>
+            <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ base }}>
+  const horizonData = [
+    {
+      badge: 'ZONE 01: WATER COLUMN',
+      target: 'PAM & USV TELEMETRY',
+      discipline: 'Discipline: Marine Ecology & Environmental Baseline',
+      link: `${base}focus-areas/marine-ecology/`,
+      p1Label: 'SOUND SPEED PROFILE',
+      p1Val: '1,492.4 m/s',
+      p1Sub: 'CTD Thermocline Calibrated',
+      p2Label: 'CETACEAN ACOUSTIC FIELD',
+      p2Val: '85.2 kHz (Detected)',
+      p2Sub: 'Exclusion Buffer: Active',
+      desc: 'Continuous monitoring of marine soundscapes, sound propagation loss (RAM models), and environmental baseline signatures ensuring regulatory compliance prior to piling and seismic operations.',
+      svgStroke: '#00F0FF',
+      svgStroke2: '#10B981'
+    },
+    {
+      badge: 'ZONE 02: SEABED INTERFACE',
+      target: 'BATHYMETRY & CABLES',
+      discipline: 'Discipline: Offshore Infrastructure & Asset Integrity',
+      link: `${base}focus-areas/offshore-infrastructure/`,
+      p1Label: 'SEABED MORPHOLOGY',
+      p1Val: 'Slope: 1.8° · Sandwaves',
+      p1Sub: 'Mega-ripple Wavelength: 7.5m',
+      p2Label: 'CABLE BURIAL DEPTH',
+      p2Val: 'Target: 2.0m (Achieved 2.2m)',
+      p2Sub: 'Free-Span Risk: Null (<0.3m)',
+      desc: 'Multi-beam echo-sounder and side-scan sonar integration resolving sub-meter bedform mobility, trench stability, and pipeline/cable anchor hazard mitigations.',
+      svgStroke: '#38BDF8',
+      svgStroke2: '#0EA5E9'
+    },
+    {
+      badge: 'ZONE 03: FOUNDATION SOIL',
+      target: 'CPTU CONE & 3D SEISMIC',
+      discipline: 'Discipline: Offshore Energy Site Development',
+      link: `${base}focus-areas/offshore-energy/`,
+      p1Label: 'CONE TIP RESISTANCE (qc)',
+      p1Val: '42.8 MPa (Dense Sand)',
+      p1Sub: 'Sleeve Friction fs: 195 kPa',
+      p2Label: 'CYCLIC DEGRADATION (p-y)',
+      p2Val: 'ULS Safety Margin: 1.85',
+      p2Sub: 'Monopile Fatigue Limit: Verified',
+      desc: 'Deep seabed CPTu continuous geotechnical thrust correlated against ultra-high-resolution 3D seismic stratigraphy to eliminate boulder and shallow gas hazards for foundation piles.',
+      svgStroke: '#10B981',
+      svgStroke2: '#00F0FF'
+    },
+    {
+      badge: 'ZONE 04: DEEP RESERVOIR',
+      target: '4D DAS OPTICAL FIBER MRV',
+      discipline: 'Discipline: Offshore CCUS & Storage',
+      link: `${base}focus-areas/ccus/`,
+      p1Label: 'CAPROCK SEAL INTEGRITY',
+      p1Val: 'Breakthrough: 19.2 MPa',
+      p1Sub: 'Effective Pressure: 14.1 MPa (Safe)',
+      p2Label: 'CO2 PLUME SATURATION',
+      p2Val: '1,850m Depth · Stable',
+      p2Sub: 'DAS Strain Drift: ±0.01 με',
+      desc: 'Deep geological sequestration monitoring utilizing permanently trenched optoelectronic DAS cables, verifying zero fault slip, caprock containment, and transboundary London Protocol MRV compliance.',
+      svgStroke: '#818CF8',
+      svgStroke2: '#38BDF8'
+    }
+  ];
+
+  const buttons = document.querySelectorAll('.horizon-btn');
+  const badgeEl = document.getElementById('diag-badge');
+  const targetEl = document.getElementById('diag-target');
+  const discEl = document.getElementById('diag-discipline');
+  const linkEl = document.getElementById('diag-link');
+  const descEl = document.getElementById('diag-desc');
+  const paramContainer = document.getElementById('diag-parameters');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.getAttribute('data-horizon') || '0');
+      const d = horizonData[idx];
+      if (!d) return;
+
+      buttons.forEach((b) => {
+        b.classList.remove('active', 'border-cyan-400', 'border-cyan-400/50', 'bg-gradient-to-r', 'from-cyan-950/40', 'via-sky-950/20');
+        b.classList.add('border-white/10', 'bg-white/5');
+      });
+      btn.classList.add('active', 'border-cyan-400', 'bg-gradient-to-r', 'from-cyan-950/40', 'via-sky-950/20');
+      btn.classList.remove('border-white/10', 'bg-white/5');
+
+      if (badgeEl) badgeEl.textContent = d.badge;
+      if (targetEl) targetEl.textContent = d.target;
+      if (discEl) discEl.textContent = d.discipline;
+      if (linkEl) linkEl.href = d.link;
+      if (descEl) descEl.textContent = d.desc;
+
+      if (paramContainer) {
+        paramContainer.innerHTML = `
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 rounded-xl bg-black/40 border border-white/5">
+              <div class="text-[10px] font-mono text-slate-400">${d.p1Label}</div>
+              <div class="text-lg font-mono font-bold text-cyan-300 mt-1">${d.p1Val}</div>
+              <div class="text-[10px] font-mono text-slate-500 mt-0.5">${d.p1Sub}</div>
+            </div>
+            <div class="p-4 rounded-xl bg-black/40 border border-white/5">
+              <div class="text-[10px] font-mono text-slate-400">${d.p2Label}</div>
+              <div class="text-lg font-mono font-bold text-emerald-400 mt-1">${d.p2Val}</div>
+              <div class="text-[10px] font-mono text-slate-500 mt-0.5">${d.p2Sub}</div>
+            </div>
+          </div>
+          <div>
+            <div class="text-xs font-mono text-slate-400 mb-2">TELEMETRY STREAM & SPECTRAL LOG</div>
+            <div class="h-24 bg-black/60 rounded-xl border border-cyan-500/20 p-3 flex items-center justify-center relative overflow-hidden">
+              <svg class="w-full h-16 opacity-85" viewBox="0 0 400 50" preserveAspectRatio="none">
+                <path d="M0 25 Q 20 10, 40 25 T 80 25 T 120 5 T 160 45 T 200 25 T 240 15 T 280 35 T 320 25 T 360 20 T 400 25" fill="none" stroke="${d.svgStroke}" stroke-width="2" />
+                <path d="M0 25 Q 30 40, 60 25 T 120 20 T 180 30 T 240 10 T 300 35 T 360 15 T 400 25" fill="none" stroke="${d.svgStroke2}" stroke-width="1.5" stroke-dasharray="3,3" />
+              </svg>
+            </div>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed font-light">${d.desc}</p>
+        `;
+      }
+    });
+  });
+</script>

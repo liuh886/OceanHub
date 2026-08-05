@@ -1,0 +1,241 @@
+---
+// Interactive Offshore Decision & Survey Campaign Scoping Engine
+// Generates tailored multidisciplinary evidence protocols based on project archetypes.
+---
+
+<div class="glass-panel p-6 sm:p-10 rounded-3xl border border-cyan-500/30 relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.6)] my-12" id="decision-scoper-root">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-white/10 gap-4">
+    <div>
+      <div class="hud-badge mb-2">
+        <i class="fa-solid fa-sliders text-[10px]" aria-hidden="true"></i> INTERACTIVE DECISION SCOPING ENGINE
+      </div>
+      <h3 class="text-2xl sm:text-3xl font-black text-white font-display">
+        Tailor Your Multidisciplinary Evidence Protocol
+      </h3>
+      <p class="text-sm text-slate-300 font-light mt-1">
+        Select your project parameters to dynamically assemble the recommended geophysical, geotechnical, and environmental evidence chain.
+      </p>
+    </div>
+    <span class="text-xs font-mono px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 self-start sm:self-center">
+      DECISION ALGORITHM V2.4
+    </span>
+  </div>
+
+  <!-- Interactive Controls & Output Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-8">
+    <!-- Left Column: Parameter Selection -->
+    <div class="lg:col-span-5 space-y-6">
+      <!-- 1. Project Archetype -->
+      <div>
+        <label for="scoper-archetype" class="block text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-2">
+          1. Project Archetype
+        </label>
+        <select id="scoper-archetype" class="w-full bg-[#081226] border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400 font-sans">
+          <option value="fixed-wind">Fixed Bottom Offshore Wind (Monopile / Jacket)</option>
+          <option value="floating-wind">Floating Offshore Wind (Suction Caissons / Drag Anchors)</option>
+          <option value="ccus-storage">Sub-seabed Carbon Storage & Caprock MRV</option>
+          <option value="subsea-cable">Subsea HVDC Cable / Pipeline Route Corridor</option>
+        </select>
+      </div>
+
+      <!-- 2. Geological Setting -->
+      <div>
+        <label for="scoper-geology" class="block text-xs font-mono font-bold text-sky-400 uppercase tracking-wider mb-2">
+          2. Seabed Geological Regime
+        </label>
+        <select id="scoper-geology" class="w-full bg-[#081226] border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400 font-sans">
+          <option value="dense-sand">Dense Sand with Mobile Bedforms & Scour Risk</option>
+          <option value="soft-clay">Soft Normally Consolidated Marine Clays (Cyclic Degradation)</option>
+          <option value="carbonates">Complex Carbonate Seabed & Cavity Geohazards</option>
+          <option value="fault-slope">Steep Continental Slope with Fault Escarpments</option>
+        </select>
+      </div>
+
+      <!-- 3. Lifecycle Stage -->
+      <div>
+        <label for="scoper-stage" class="block text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider mb-2">
+          3. Project Decision Milestone
+        </label>
+        <select id="scoper-stage" class="w-full bg-[#081226] border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-400 font-sans">
+          <option value="feasibility">Feasibility & Broad Geohazard Scoping</option>
+          <option value="pre-feed">Pre-FEED Detailed Ground Model & Foundation Sizing</option>
+          <option value="eia-consent">Regulatory Consenting & Environmental Impact Assessment</option>
+          <option value="post-install">Installation Verification & Long-term 4D MRV</option>
+        </select>
+      </div>
+
+      <!-- Quick Summary Status Box -->
+      <div class="p-5 rounded-2xl bg-cyan-950/20 border border-cyan-500/20">
+        <div class="text-[11px] font-mono text-cyan-300 font-bold mb-1">EVIDENCE READINESS INDEX</div>
+        <div class="flex items-center gap-3">
+          <div class="text-2xl font-mono font-bold text-white" id="scoper-fidelity">98.5%</div>
+          <div class="text-xs text-slate-400">Target uncertainty reduction threshold achieved</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Assembled Evidence Protocol Screen -->
+    <div class="lg:col-span-7">
+      <div class="glass-card p-6 sm:p-8 h-full flex flex-col justify-between border-cyan-500/30 bg-[#060D1E]/95">
+        <div>
+          <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+            <span class="text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider" id="scoper-protocol-title">
+              RECOMMENDED EVIDENCE PROTOCOL
+            </span>
+            <span class="hud-badge text-[10px]" id="scoper-std-badge">ISO 19901 / OSPAR COMPLIANT</span>
+          </div>
+
+          <!-- Dynamic Output Blocks -->
+          <div class="space-y-4" id="scoper-output-blocks">
+            <!-- Block 1: Geophysics -->
+            <div class="p-4 rounded-xl bg-black/40 border border-cyan-500/20">
+              <div class="text-[11px] font-mono font-bold text-cyan-400 mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-water text-xs"></i> 1. Marine Geophysics & Acoustic Imaging
+              </div>
+              <p class="text-xs text-slate-300 font-light" id="scoper-geophys-desc">
+                Ultra-high-resolution 3D seismic grid (12.5m bin) combined with multi-beam echo-sounder bathymetry and side-scan sonar for micro-topography.
+              </p>
+            </div>
+
+            <!-- Block 2: Geotechnics -->
+            <div class="p-4 rounded-xl bg-black/40 border border-sky-500/20">
+              <div class="text-[11px] font-mono font-bold text-sky-400 mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-wind text-xs"></i> 2. Deep In-Situ Seabed Geotechnics
+              </div>
+              <p class="text-xs text-slate-300 font-light" id="scoper-geotech-desc">
+                Seabed continuous CPTu to 40m penetration, high-frequency pore pressure dissipation tests, and advanced cyclic triaxial laboratory verification.
+              </p>
+            </div>
+
+            <!-- Block 3: Environmental & MRV -->
+            <div class="p-4 rounded-xl bg-black/40 border border-emerald-500/20">
+              <div class="text-[11px] font-mono font-bold text-emerald-400 mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-leaf text-xs"></i> 3. Environmental Baseline & 4D Monitoring
+              </div>
+              <p class="text-xs text-slate-300 font-light" id="scoper-environ-desc">
+                Passive acoustic hydrophone grid (10Hz - 160kHz), underwater noise propagation modelling (RAM), and seasonal eDNA water sampling.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4 mt-6">
+          <button id="scoper-save-briefcase-btn" type="button" class="px-5 py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all">
+            <i class="fa-solid fa-briefcase text-xs"></i>
+            <span id="scoper-save-label">Save Scoping to Briefcase</span>
+          </button>
+          
+          <a href="mailto:info@oceanhub.com?subject=Inquiry%20from%20OceanHub%20Decision%20Scoper" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,240,255,0.3)]">
+            Mobilize Capability →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const scoperArchetype = document.getElementById('scoper-archetype') as HTMLSelectElement | null;
+  const scoperGeology = document.getElementById('scoper-geology') as HTMLSelectElement | null;
+  const scoperStage = document.getElementById('scoper-stage') as HTMLSelectElement | null;
+
+  const geophysDesc = document.getElementById('scoper-geophys-desc');
+  const geotechDesc = document.getElementById('scoper-geotech-desc');
+  const environDesc = document.getElementById('scoper-environ-desc');
+  const fidelityEl = document.getElementById('scoper-fidelity');
+  const saveBtn = document.getElementById('scoper-save-briefcase-btn');
+  const saveLabel = document.getElementById('scoper-save-label');
+
+  interface ScoperResult {
+    geophys: string;
+    geotech: string;
+    environ: string;
+    fidelity: string;
+  }
+
+  function calculateProtocol(): ScoperResult {
+    const arch = scoperArchetype?.value || 'fixed-wind';
+    const geo = scoperGeology?.value || 'dense-sand';
+
+    if (arch === 'ccus-storage') {
+      return {
+        geophys: '4D Baseline & Time-lapse Seismic imaging, high-density streamer configuration with full-waveform inversion (FWI) resolving deep fault seals (800m - 3000m).',
+        geotech: 'Deep wellbore caprock integrity coring, geomechanical triaxial stress testing, and fracture breakdown pressure analysis under supercritical CO2.',
+        environ: 'Permanently trenched 4D DAS optical fiber cables, seabed methane/CO2 bubble flare hydro-acoustic sniffers, and continuous benthic fauna monitoring.',
+        fidelity: '99.2%'
+      };
+    }
+
+    if (arch === 'floating-wind') {
+      return {
+        geophys: 'Sub-bottom profiler (Chirp 2-16kHz), high-resolution bathymetry for anchor mooring corridors, and shallow gas pocket blanking hazard identification.',
+        geotech: 'Heavy seabed CPTu (up to 30m) with continuous pore pressure measurement, box coring for suction caisson holding capacity, and cyclic t-z / q-z curves.',
+        environ: 'Mooring line acoustic vibration and cetacean entanglement prevention hydrophone array with real-time AIS/satellite alert integration.',
+        fidelity: '97.8%'
+      };
+    }
+
+    if (arch === 'subsea-cable') {
+      return {
+        geophys: 'Ultra-dense multi-beam bathymetry (0.2m grid), side-scan sonar for seabed boulder/debris detection, and magnetometer array for unexploded ordnance (UXO).',
+        geotech: 'Shallow seabed CPTu (0-6m) and continuous thermal resistivity testing for cable thermal dissipation and jet-trenching burial feasibility.',
+        environ: 'Benthic habitat vulnerability baseline, reef avoidance buffer corridors, and post-installation EMF (electromagnetic field) monitoring.',
+        fidelity: '98.9%'
+      };
+    }
+
+    // Default: Fixed Wind
+    return {
+      geophys: 'Ultra-high-resolution 3D shallow seismic (12.5m bin), Sparker profiling for paleo-channels, and multi-beam bathymetry for scour mitigation.',
+      geotech: 'Deep continuous seabed CPTu to 50m penetration, cyclic p-y lateral degradation modeling, and rotational shear tests for large-diameter monopile fatigue limits.',
+      environ: 'Continuous passive acoustic monitoring (PAM) during piling, acoustic deterrence device (ADD) triggers, and sound propagation RAM parabolic equation modeling.',
+      fidelity: geo === 'dense-sand' ? '98.5%' : '97.4%'
+    };
+  }
+
+  function updateProtocol() {
+    const res = calculateProtocol();
+    if (geophysDesc) geophysDesc.textContent = res.geophys;
+    if (geotechDesc) geotechDesc.textContent = res.geotech;
+    if (environDesc) environDesc.textContent = res.environ;
+    if (fidelityEl) fidelityEl.textContent = res.fidelity;
+  }
+
+  scoperArchetype?.addEventListener('change', updateProtocol);
+  scoperGeology?.addEventListener('change', updateProtocol);
+  scoperStage?.addEventListener('change', updateProtocol);
+
+  saveBtn?.addEventListener('click', () => {
+    try {
+      const archText = scoperArchetype?.options[scoperArchetype.selectedIndex].text || 'Offshore Campaign';
+      const geoText = scoperGeology?.options[scoperGeology.selectedIndex].text || '';
+      const stageText = scoperStage?.options[scoperStage.selectedIndex].text || '';
+      const res = calculateProtocol();
+
+      const item = {
+        id: `scoper:${Date.now()}`,
+        title: `Decision Scoping: ${archText}`,
+        description: `Geology: ${geoText} | Milestone: ${stageText} | Protocol: ${res.geophys.slice(0, 80)}...`,
+        route: 'briefcase/',
+        type: 'insight',
+        version: 'scoper-v1',
+        savedAt: new Date().toISOString()
+      };
+
+      const key = 'oceanhub-briefcase-v1';
+      const list = JSON.parse(localStorage.getItem(key) || '[]');
+      list.unshift(item);
+      localStorage.setItem(key, JSON.stringify(list));
+
+      if (saveLabel) saveLabel.textContent = '✓ Saved to Briefcase!';
+      window.dispatchEvent(new CustomEvent('oceanhub:briefcase-updated'));
+      setTimeout(() => {
+        if (saveLabel) saveLabel.textContent = 'Save Scoping to Briefcase';
+      }, 2500);
+    } catch {
+      // ignore
+    }
+  });
+</script>

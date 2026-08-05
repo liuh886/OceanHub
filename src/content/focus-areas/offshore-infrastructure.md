@@ -2,44 +2,60 @@
 title: "Offshore Infrastructure"
 description: "Use repeatable seabed and asset evidence to support route selection, installation assurance, inspection, integrity management and decommissioning."
 painPoints:
-  - "Scour, erosion and seabed mobility"
-  - "Pipeline and cable exposure or freespan"
-  - "Installation and shallow-geohazard risk"
+  - "Hydrodynamic scour, bedform mobility and subsea pipeline free-span development"
+  - "Vortex-Induced Vibration (VIV) fatigue and pipeline buckling under high temperature/pressure"
+  - "Inconsistent cross-campaign inspection formats obscuring structural degradation"
 benefits:
-  - "High-resolution route and site mapping"
-  - "Inspection evidence with clear change detection"
-  - "Geohazard and integrity decision support"
+  - "Millimeter-accuracy ROV dynamic laser scanning and multibeam bathymetry"
+  - "DNV-RP-F105 compliant free-span screening and fatigue life calculation"
+  - "End-to-end digital twin integration connecting as-laid data to decommissioning clearance"
 order: 3
 featured: true
 icon: "anchor"
 ---
 
-## The decision problem
+## 1. The Decision Problem
 
-Pipelines, cables, foundations and other offshore assets interact continuously with the seabed and water column. Conditions observed during design may change during installation and operations, while inspection data can become difficult to compare across campaigns and contractors.
+Subsea pipelines, umbilicals, export power cables, and subsea production templates operate in harsh, dynamic hydrodynamic regimes. As seabed sandwaves and megaripples migrate, pipelines originally buried flush with the seabed become exposed, forming unsupported spans.
 
-OceanHub treats infrastructure assurance as a lifecycle evidence problem: establish a reliable baseline, detect meaningful change and connect observations to engineering action.
+When current velocities induce vortex shedding matching the pipeline's natural frequency, Vortex-Induced Vibrations (VIV) accelerate cyclic fatigue damage, risking catastrophic structural failure. Asset operators need actionable inspection protocols that prioritize rectification (e.g., rock dumping or grout bag placement) based on quantified fatigue life expenditure rather than crude visual heuristics.
 
-## Evidence pathway
+```
+                      Subsea Infrastructure Integrity Flow
+                      ═════════════════════════════════════
+   Hydrodynamic Flow   [ Tidal Current (1.8 m/s) + Sandwave Migration (12 m/yr) ]
+        │
+   Seabed Dynamic      [ Pipeline Exposure & Free-Span Formation (L_span > 24m) ]
+        │
+   VIV Assessment      [ DNV-RP-F105 Modal Analysis & Inline/Crossflow Lock-In ]
+        │
+   Intervention Plan   [ Precision Rock Placement / Mattressing / Span Clamping ]
+        │
+   Integrity Record    [ As-Inspected 3D Cloud Synchronized with Operator GIS ]
+```
 
-### 1. Route and site definition
+---
 
-Map seabed morphology, shallow geology and geohazards before installation decisions are fixed.
+## 2. Integrated Evidence Workflow
 
-- **Route survey:** Identify slopes, outcrops, mobile sediments, crossings and potential obstructions.
-- **Site assessment:** Support jack-up, foundation and temporary works planning with appropriate shallow-geological evidence.
-- **Engineering handoff:** Translate survey observations into route, installation and design constraints.
+### Step 1: Route Geomorphology & As-Laid Baseline
+- **Multi-Beam Echo Sounder (MBES) & Synthetic Aperture Sonar (SAS)**: High-density point clouds resolving centimeter-level seabed bathymetry and micro-topography along pipeline corridors.
+- **As-Laid & As-Trenching Survey**: Establishing the spatial ground-truth datum (UTM/ETRS89 coordinates and KP markers) for the entire asset lifecycle.
 
-### 2. Installation and as-built assurance
+### Step 2: High-Definition Subsea Inspection & Change Detection
+- **ROV Subsea Laser Scanning & HD Photogrammetry**: Capturing millimeter-resolution 3D reconstructions of flanges, bend restrictors, anodes, and scour pits around structure foundations.
+- **Cathodic Protection (CP) Potential Surveys**: Trailing wire and electric field gradient logging to verify sacrificial anode consumption and cathodic protection levels ($<-800\text{ mV vs. Ag/AgCl}$).
 
-Capture the installed condition in a form that can serve as the reference for future inspection.
+### Step 3: Engineering Free-Span Screening (DNV-RP-F105)
+- **Modal Vibration Analysis**: Computing static deflection, effective axial force, and screening for inline and crossflow lock-in under combined current and wave loading.
+- **Intervention Prioritization**: Automatically categorizing pipeline spans into Level 1 (benign), Level 2 (monitor next campaign), and Level 3 (immediate rock-placement remediation).
 
-- **Position and configuration:** Verify location, burial, support and interfaces.
-- **Exceptions:** Record deviations, exposed sections and areas requiring follow-up.
-- **Data continuity:** Preserve comparable spatial and inspection references for later campaigns.
+---
 
-### 3. Integrity and decommissioning
+## 3. Decision-Ready Deliverables
 
-Use repeat surveys, ROV observations and change detection to identify scour, exposure, freespan, movement or seabed disturbance.
-
-The objective is not simply to collect inspection footage. It is to provide traceable evidence for maintenance prioritisation, intervention planning and final site-clearance decisions.
+| Deliverable | Key Technical Parameters | Industry Benchmark |
+| :--- | :--- | :--- |
+| **Asset Free-Span Integrity Report** | Span lengths, natural frequencies ($f_0$), VIV fatigue accumulation | DNV-RP-F105 / API RP 1111 |
+| **Differential Bathymetric Model** | 4D seabed erosion/deposition volume balance ($\pm 0.05\text{ m}$) | IMCA S003 / IHO Special Order |
+| **Decommissioning Clearance Dossier** | Post-removal seabed verification, debris clearance magnetometer sign-off | OSPAR Decision 98/3 |

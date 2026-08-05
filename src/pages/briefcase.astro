@@ -44,9 +44,19 @@ const catalogue = [
           <p id="briefcase-summary" class="text-2xl font-black text-white font-display">Checking saved content…</p>
           <p id="briefcase-message" class="text-sm text-slate-400 mt-2" aria-live="polite">Verifying local cache availability.</p>
         </div>
-        <button id="briefcase-clear" type="button" class="hidden px-5 py-3 rounded-xl border border-rose-400/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20 text-xs font-mono font-bold uppercase tracking-wider">
-          Clear all saved content
-        </button>
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="briefcase-export-md" type="button" class="hidden px-4 py-2.5 rounded-xl border border-cyan-400/30 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-download text-xs" aria-hidden="true"></i>
+            <span>Export Dossier (.md)</span>
+          </button>
+          <button id="briefcase-print" type="button" class="hidden px-4 py-2.5 rounded-xl border border-white/15 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-print text-xs" aria-hidden="true"></i>
+            <span>Print Summary</span>
+          </button>
+          <button id="briefcase-clear" type="button" class="hidden px-4 py-2.5 rounded-xl border border-rose-400/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20 text-xs font-mono font-bold uppercase tracking-wider">
+            Clear all
+          </button>
+        </div>
       </div>
     </div>
 
@@ -97,6 +107,8 @@ const catalogue = [
     const summary = document.getElementById('briefcase-summary');
     const message = document.getElementById('briefcase-message');
     const clearButton = document.getElementById('briefcase-clear') as HTMLButtonElement | null;
+    const exportMdButton = document.getElementById('briefcase-export-md') as HTMLButtonElement | null;
+    const printButton = document.getElementById('briefcase-print') as HTMLButtonElement | null;
 
     function readSavedContent(): SavedContent[] {
       try {
@@ -149,6 +161,8 @@ const catalogue = [
       list.replaceChildren();
       summary.textContent = `${savedItems.length} saved item${savedItems.length === 1 ? '' : 's'}`;
       clearButton.classList.toggle('hidden', savedItems.length === 0);
+      if (exportMdButton) exportMdButton.classList.toggle('hidden', savedItems.length === 0);
+      if (printButton) printButton.classList.toggle('hidden', savedItems.length === 0);
       empty.classList.toggle('hidden', savedItems.length !== 0);
 
       if (savedItems.length === 0) {
@@ -188,42 +202,40 @@ const catalogue = [
           badges.append(createTextElement('span', 'px-3 py-1 rounded-full text-xs font-mono border border-blue-400/30 bg-blue-500/10 text-blue-300', 'Update available'));
         }
 
-        const title = createTextElement('h2', 'text-2xl font-black text-white font-display mb-3', current?.title ?? saved.title);
-        const description = createTextElement('p', 'text-sm text-slate-400 leading-relaxed', current?.description ?? saved.description);
+        const title = createTextElement('h2', 'text-2xl font-black text-white font-display mb-3', saved.title);
+        const desc = createTextElement('p', 'text-slate-300 text-sm leading-relaxed mb-6 font-light', saved.description);
         const meta = createTextElement(
           'p',
-          'text-xs font-mono text-slate-500 mt-5',
-          `Saved ${new Date(saved.savedAt).toLocaleString()} · version ${saved.version}`
+          'text-xs font-mono text-slate-400',
+          `Saved on ${new Date(saved.savedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`
         );
-        top.append(badges, title, description, meta);
+        top.append(badges, title, desc, meta);
 
         const actions = document.createElement('div');
-        actions.className = 'flex flex-wrap items-center gap-3 pt-5 border-t border-white/10';
+        actions.className = 'pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-4';
 
         const openLink = document.createElement('a');
         openLink.href = currentRoute;
-        openLink.className = 'px-5 py-2.5 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs uppercase tracking-wider';
-        openLink.textContent = available ? 'Open saved page' : 'Open page';
+        openLink.className = 'px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider transition-all';
+        openLink.textContent = 'Open Page →';
         actions.append(openLink);
 
-        if (current && (updateAvailable || !available)) {
+        if (updateAvailable) {
           const updateButton = document.createElement('button');
           updateButton.type = 'button';
-          updateButton.className = 'px-5 py-2.5 rounded-xl bg-blue-500/10 border border-blue-400/30 text-blue-200 font-bold text-xs uppercase tracking-wider';
-          updateButton.textContent = updateAvailable ? 'Download update' : 'Retry download';
+          updateButton.className = 'px-5 py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 font-mono text-xs font-bold uppercase tracking-wider';
+          updateButton.textContent = 'Update Copy';
           updateButton.addEventListener('click', async () => {
             updateButton.disabled = true;
-            updateButton.textContent = 'Downloading…';
-            const reply = await sendWorkerMessage({ type: 'CACHE_CONTENT', url: current.route });
+            const reply = await sendWorkerMessage({ type: 'CACHE_CONTENT', url: currentRoute });
             if (reply.ok) {
-              const items = readSavedContent().filter((item) => item.id !== current.id);
-              writeSavedContent([...items, { ...current, savedAt: new Date().toISOString() }]);
-              message.textContent = `${current.title} is now available offline.`;
+              const updatedList = readSavedContent().map((item) => (item.id === saved.id ? { ...item, version: current!.version } : item));
+              writeSavedContent(updatedList);
+              message.textContent = `${saved.title} was updated on this device.`;
               await renderBriefcase();
             } else {
               updateButton.disabled = false;
-              updateButton.textContent = 'Try again';
-              message.textContent = reply.error ?? 'The page could not be downloaded.';
+              message.textContent = reply.error ?? 'The saved page could not be updated.';
             }
           });
           actions.append(updateButton);
@@ -231,7 +243,7 @@ const catalogue = [
 
         const removeButton = document.createElement('button');
         removeButton.type = 'button';
-        removeButton.className = 'px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 font-bold text-xs uppercase tracking-wider';
+        removeButton.className = 'px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 font-bold text-xs uppercase tracking-wider';
         removeButton.textContent = 'Remove';
         removeButton.addEventListener('click', async () => {
           removeButton.disabled = true;
@@ -253,6 +265,38 @@ const catalogue = [
 
       message.textContent = `${availableCount} of ${savedItems.length} saved item${savedItems.length === 1 ? ' is' : 's are'} fully available offline.`;
     }
+
+    // Export as Markdown Dossier
+    exportMdButton?.addEventListener('click', () => {
+      const savedItems = readSavedContent();
+      if (savedItems.length === 0) return;
+
+      const dateStr = new Date().toISOString().slice(0, 10);
+      let md = `# OceanHub Marine Evidence Dossier\n\n`;
+      md += `*Generated from OceanHub Offline Briefcase on ${dateStr}*\n\n`;
+      md += `---\n\n`;
+
+      savedItems.forEach((item, index) => {
+        md += `## ${index + 1}. ${item.title}\n`;
+        md += `- **Type**: ${item.type}\n`;
+        md += `- **Saved At**: ${item.savedAt}\n`;
+        md += `- **Route**: ${item.route}\n`;
+        md += `- **Summary**: ${item.description}\n\n`;
+      });
+
+      const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+      const dlUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = dlUrl;
+      a.download = `OceanHub-Evidence-Dossier-${dateStr}.md`;
+      a.click();
+      URL.revokeObjectURL(dlUrl);
+    });
+
+    // Print summary
+    printButton?.addEventListener('click', () => {
+      window.print();
+    });
 
     if (clearButton && message) {
       const clearControl = clearButton;
