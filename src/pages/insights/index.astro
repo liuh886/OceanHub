@@ -8,37 +8,56 @@ const insights = await getCollection('insights');
 const sortedInsights = insights.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 ---
 
-<Layout title="Marine Intelligence | OceanHub" description="Technical context on offshore CCUS, site characterisation, monitoring and marine development decisions.">
+<Layout
+  title="Marine Intelligence | OceanHub"
+  description="Technical context and multidisciplinary analysis on offshore CCUS, site characterisation, 4D monitoring, and marine development decisions."
+>
   <section class="py-20 md:py-32">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="text-center max-w-3xl mx-auto mb-16 reveal">
-        <div class="hud-badge mb-4"><i class="fa-solid fa-book-open" aria-hidden="true"></i> MARINE INTELLIGENCE</div>
-        <h1 class="heading-section">Technical context for offshore decisions</h1>
-        <p class="text-lg text-slate-300 font-light leading-relaxed">Focused notes on monitoring, site characterisation and the evidence required to reduce uncertainty across offshore project lifecycles.</p>
+    <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12">
+      <!-- Header -->
+      <div class="text-center max-w-4xl mx-auto mb-20 reveal">
+        <div class="hud-badge mb-4">
+          <i class="fa-solid fa-book-open" aria-hidden="true"></i> TECHNICAL INTELLIGENCE
+        </div>
+        <h1 class="heading-section">Context for offshore decisions</h1>
+        <p class="text-lg md:text-2xl text-slate-300 font-light leading-relaxed">
+          Focused technical briefs on offshore monitoring, deepwater site characterisation, and evidence protocols needed to eliminate subsurface uncertainty.
+        </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+      <!-- Insights Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
         {sortedInsights.map((insight, index) => (
-          <article class="glass-card p-8 md:p-10 flex flex-col justify-between group reveal" style={`transition-delay: ${index * 100}ms;`}>
+          <article
+            class="glass-card p-8 md:p-12 flex flex-col justify-between group reveal relative overflow-hidden"
+            style={`transition-delay: ${index * 100}ms;`}
+          >
             <div>
               <div class="flex flex-wrap items-center gap-3 mb-6">
                 <time datetime={insight.data.publishDate.toISOString()} class="text-xs font-mono text-cyan-400">
                   {insight.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </time>
+                <span class="text-slate-600">•</span>
                 {insight.data.tags.map((tag) => <span class="evidence-chip">{tag}</span>)}
               </div>
 
               <h2 class="text-2xl md:text-3xl font-black leading-tight text-white group-hover:text-cyan-300 transition-colors mb-4 font-display">
                 <a href={url(`insights/${insight.id}/`)}>{insight.data.title}</a>
               </h2>
-              <p class="text-slate-400 text-sm md:text-base font-light leading-relaxed mb-8">{insight.data.description}</p>
+
+              <p class="text-slate-300 text-sm md:text-base font-light leading-relaxed mb-8">
+                {insight.data.description}
+              </p>
             </div>
 
             <div class="flex items-center justify-between pt-6 border-t border-white/10">
-              <span class="text-xs font-mono text-slate-400">{insight.data.author}</span>
-              <a href={url(`insights/${insight.id}/`)} class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-2">
-                <span>Read insight</span>
-                <i class="fa-solid fa-chevron-right text-[10px]" aria-hidden="true"></i>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                <span class="text-xs font-mono text-slate-300">{insight.data.author}</span>
+              </div>
+              <a href={url(`insights/${insight.id}/`)} class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                <span>Read Briefing</span>
+                <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
               </a>
             </div>
           </article>

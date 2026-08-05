@@ -7,42 +7,109 @@ const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
 const focusAreas = await getCollection('focus-areas');
 const sortedFocusAreas = focusAreas.sort((a, b) => a.data.order - b.data.order);
 
-const iconMap: Record<string, { icon: string; badge: string }> = {
-  ccus: { icon: 'fa-cloud-arrow-up', badge: 'CARBON STORAGE' },
-  'marine-ecology': { icon: 'fa-leaf', badge: 'ENVIRONMENT' },
-  'offshore-energy': { icon: 'fa-wind', badge: 'SITE DEVELOPMENT' },
-  'offshore-infrastructure': { icon: 'fa-anchor', badge: 'ASSET INTEGRITY' }
+const metaMap: Record<string, {
+  icon: string;
+  badge: string;
+  depthHorizon: string;
+  techTags: string[];
+}> = {
+  ccus: {
+    icon: 'fa-cloud-arrow-up',
+    badge: 'CARBON STORAGE & MRV',
+    depthHorizon: '800m – 3,200m Sub-seabed',
+    techTags: ['4D DAS Seismic', 'Plume Imaging', 'Caprock Integrity']
+  },
+  'marine-ecology': {
+    icon: 'fa-leaf',
+    badge: 'ENVIRONMENTAL INTELLIGENCE',
+    depthHorizon: 'Full Water Column & Benthos',
+    techTags: ['PAM Acoustics', 'eDNA Sequencing', 'Habitat Baseline']
+  },
+  'offshore-energy': {
+    icon: 'fa-wind',
+    badge: 'SITE CHARACTERISATION',
+    depthHorizon: '0m – 120m Seabed Penetration',
+    techTags: ['Deep CPTu In-Situ', 'UHR 3D Seismic', 'Foundation Ground Model']
+  },
+  'offshore-infrastructure': {
+    icon: 'fa-anchor',
+    badge: 'ASSET & ROUTE INTEGRITY',
+    depthHorizon: 'Seabed Surface & Trench Horizon',
+    techTags: ['Autonomous USV', 'Sub-bottom Profiler', 'Free-span / Scour']
+  }
 };
 ---
 
-<Layout title="Offshore Focus Areas | OceanHub" description="Explore OceanHub focus areas across offshore CCUS, renewable energy, infrastructure and marine ecology.">
+<Layout
+  title="Offshore Focus Areas | OceanHub"
+  description="Explore OceanHub multidisciplinary focus areas across offshore CCUS, renewable energy, marine infrastructure, and ecological monitoring."
+>
   <section class="py-20 md:py-32">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="text-center max-w-3xl mx-auto mb-16 reveal">
-        <div class="hud-badge mb-4"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> OFFSHORE PROBLEM SPACES</div>
+    <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12">
+      <!-- Header -->
+      <div class="text-center max-w-4xl mx-auto mb-20 reveal">
+        <div class="hud-badge mb-4">
+          <i class="fa-solid fa-layer-group" aria-hidden="true"></i> OFFSHORE PROBLEM SPACES
+        </div>
         <h1 class="heading-section">Four connected focus areas</h1>
-        <p class="text-lg text-slate-300 font-light leading-relaxed">Each area links a practical offshore decision to the observations, interpretation and specialist capabilities needed to support it.</p>
+        <p class="text-lg md:text-2xl text-slate-300 font-light leading-relaxed">
+          Each domain frames a critical offshore decision, identifies the multidisciplinary evidence required, and links specialized technical capability.
+        </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {sortedFocusAreas.map((area, index) => (
-          <a href={url(`focus-areas/${area.id}/`)} class="glass-card p-8 md:p-10 flex flex-col justify-between group reveal" style={`transition-delay: ${index * 100}ms;`}>
-            <div>
-              <div class="flex items-center justify-between mb-8">
-                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500/15 to-blue-600/20 border border-cyan-400/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-all">
-                  <i class={`fa-solid ${iconMap[area.id]?.icon || 'fa-anchor'} text-2xl`} aria-hidden="true"></i>
+      <!-- Focus Areas Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+        {sortedFocusAreas.map((area, index) => {
+          const meta = metaMap[area.id] || {
+            icon: 'fa-anchor',
+            badge: 'OFFSHORE',
+            depthHorizon: 'Sub-surface & Seabed',
+            techTags: ['Marine Survey']
+          };
+          return (
+            <a
+              href={url(`focus-areas/${area.id}/`)}
+              class="glass-card p-8 md:p-12 flex flex-col justify-between group relative overflow-hidden reveal"
+              style={`transition-delay: ${index * 100}ms;`}
+            >
+              <div>
+                <div class="flex items-center justify-between mb-8">
+                  <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/30 border border-cyan-400/30 flex items-center justify-center text-cyan-300 group-hover:bg-cyan-400 group-hover:text-slate-950 transition-all duration-300 shadow-lg">
+                    <i class={`fa-solid ${meta.icon} text-2xl`} aria-hidden="true"></i>
+                  </div>
+                  <span class="hud-badge text-[11px]">{meta.badge}</span>
                 </div>
-                <span class="hud-badge text-[10px]">{iconMap[area.id]?.badge || 'OFFSHORE'}</span>
+
+                <div class="flex items-center gap-2 mb-4 text-xs font-mono text-sky-400">
+                  <i class="fa-solid fa-arrows-up-down text-[10px]" aria-hidden="true"></i>
+                  <span>{meta.depthHorizon}</span>
+                </div>
+
+                <h2 class="text-2xl md:text-3xl font-black text-white mb-4 tracking-tight group-hover:text-cyan-300 transition-colors font-display">
+                  {area.data.title}
+                </h2>
+                
+                <p class="text-slate-300 mb-8 font-light leading-relaxed text-sm md:text-base">
+                  {area.data.description}
+                </p>
+
+                <!-- Technical tags -->
+                <div class="flex flex-wrap gap-2 mb-8">
+                  {meta.techTags.map((tag) => (
+                    <span class="sensor-chip">{tag}</span>
+                  ))}
+                </div>
               </div>
-              <h2 class="text-2xl md:text-3xl font-black text-white mb-4 tracking-tight group-hover:text-cyan-300 transition-colors font-display">{area.data.title}</h2>
-              <p class="text-slate-400 mb-8 font-light leading-relaxed text-sm md:text-base">{area.data.description}</p>
-            </div>
-            <div class="pt-6 border-t border-white/10 flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">View problem and approach</span>
-              <i class="fa-solid fa-arrow-right text-cyan-400" aria-hidden="true"></i>
-            </div>
-          </a>
-        ))}
+
+              <div class="pt-6 border-t border-white/10 flex items-center justify-between">
+                <span class="text-xs font-mono font-bold text-cyan-400 group-hover:text-cyan-300 uppercase tracking-wider">
+                  View problem & evidence approach
+                </span>
+                <i class="fa-solid fa-arrow-right text-cyan-400 group-hover:translate-x-2 transition-transform" aria-hidden="true"></i>
+              </div>
+            </a>
+          );
+        })}
       </div>
     </div>
   </section>

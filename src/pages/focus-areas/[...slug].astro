@@ -16,15 +16,29 @@ const { Content } = await render(entry);
 const version = contentVersion(entry);
 ---
 
-<Layout title={`${entry.data.title} | OceanHub`} description={entry.data.description}>
-  <article class="max-w-4xl mx-auto px-6 py-16 md:py-24">
+<Layout title={`${entry.data.title} | OceanHub Focus Area`} description={entry.data.description}>
+  <article class="max-w-5xl mx-auto px-6 sm:px-8 py-16 md:py-24">
+    <!-- Header -->
     <header class="mb-14 reveal">
-      <a href={url('focus-areas/')} class="inline-flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-widest mb-6 transition-colors">
-        <i class="fa-solid fa-arrow-left text-xs" aria-hidden="true"></i>
+      <a href={url('focus-areas/')} class="inline-flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-widest mb-8 transition-colors group">
+        <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform" aria-hidden="true"></i>
         <span>Back to Focus Areas</span>
       </a>
-      <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-6 font-display">{entry.data.title}</h1>
-      <p class="text-lg md:text-xl text-slate-300 font-light leading-relaxed">{entry.data.description}</p>
+
+      <div class="flex flex-wrap items-center gap-3 mb-6">
+        <span class="hud-badge text-[11px]"><i class="fa-solid fa-compass" aria-hidden="true"></i> STRATEGIC FOCUS DOMAIN</span>
+        <span class="depth-badge">DECISION EVIDENCE CHAIN</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6 font-display leading-[1.05]">
+        {entry.data.title}
+      </h1>
+      
+      <p class="text-xl md:text-2xl text-slate-300 font-light leading-relaxed mb-8">
+        {entry.data.description}
+      </p>
+
+      <!-- Offline Briefcase Save Panel -->
       <div class="mt-8">
         <OfflineSaveButton
           contentId={`focus-area:${entry.id}`}
@@ -37,31 +51,40 @@ const version = contentVersion(entry);
       </div>
     </header>
 
+    <!-- Decision Risks vs Evidence Outcomes Matrix -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 reveal">
-      <section class="glass-card p-8 border-amber-500/25" aria-labelledby="decision-risks-title">
-        <h2 id="decision-risks-title" class="text-amber-300 font-mono font-bold text-sm uppercase tracking-wider mb-6 flex items-center gap-2.5">
-          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-          <span>Decision risks</span>
-        </h2>
+      <!-- Risks -->
+      <section class="glass-card p-8 border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-[#040812]" aria-labelledby="decision-risks-title">
+        <div class="flex items-center justify-between mb-6">
+          <h2 id="decision-risks-title" class="text-amber-300 font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2.5">
+            <i class="fa-solid fa-triangle-exclamation text-amber-400" aria-hidden="true"></i>
+            <span>Critical Decision Risks</span>
+          </h2>
+          <span class="hud-badge-amber text-[10px]">RISK RADAR</span>
+        </div>
         <ul class="space-y-4">
           {entry.data.painPoints.map((item) => (
-            <li class="text-slate-300 text-sm font-light flex items-start gap-3">
-              <span class="mt-1.5 w-1.5 h-1.5 bg-amber-300 rounded-full shrink-0"></span>
+            <li class="text-slate-300 text-sm font-light leading-relaxed flex items-start gap-3">
+              <span class="mt-1.5 w-1.5 h-1.5 bg-amber-400 rounded-full shrink-0 shadow-[0_0_8px_rgba(245,158,11,0.6)]"></span>
               <span>{item}</span>
             </li>
           ))}
         </ul>
       </section>
 
-      <section class="glass-card p-8 border-cyan-500/25" aria-labelledby="evidence-outcomes-title">
-        <h2 id="evidence-outcomes-title" class="text-cyan-300 font-mono font-bold text-sm uppercase tracking-wider mb-6 flex items-center gap-2.5">
-          <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-          <span>Evidence outcomes</span>
-        </h2>
+      <!-- Outcomes -->
+      <section class="glass-card p-8 border-cyan-500/30 bg-gradient-to-b from-cyan-950/20 to-[#040812]" aria-labelledby="evidence-outcomes-title">
+        <div class="flex items-center justify-between mb-6">
+          <h2 id="evidence-outcomes-title" class="text-cyan-300 font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2.5">
+            <i class="fa-solid fa-circle-check text-cyan-400" aria-hidden="true"></i>
+            <span>Evidence Outcomes</span>
+          </h2>
+          <span class="hud-badge text-[10px]">DE-RISKED</span>
+        </div>
         <ul class="space-y-4">
           {entry.data.benefits.map((item) => (
-            <li class="text-slate-300 text-sm font-light flex items-start gap-3">
-              <span class="mt-1.5 w-1.5 h-1.5 bg-cyan-300 rounded-full shrink-0"></span>
+            <li class="text-slate-300 text-sm font-light leading-relaxed flex items-start gap-3">
+              <span class="mt-1.5 w-1.5 h-1.5 bg-cyan-400 rounded-full shrink-0 shadow-[0_0_8px_rgba(0,240,255,0.6)]"></span>
               <span>{item}</span>
             </li>
           ))}
@@ -69,29 +92,44 @@ const version = contentVersion(entry);
       </section>
     </div>
 
+    <!-- Long-form Markdown Content with Cyber Prose Style -->
     <div class="prose prose-invert prose-cyan max-w-none reveal">
       <Content />
     </div>
 
-    <section class="mt-20 p-8 md:p-10 rounded-3xl glass-card text-center border-cyan-500/30 reveal" aria-labelledby="collaboration-title">
-      <div class="hud-badge mb-4"><i class="fa-solid fa-handshake-angle" aria-hidden="true"></i> COLLABORATION</div>
-      <h2 id="collaboration-title" class="text-2xl md:text-3xl font-black text-white mb-4 font-display">Start with your project decision</h2>
-      <p class="text-slate-400 text-sm md:text-base max-w-xl mx-auto mb-8 font-light">Share the offshore question, existing evidence and unresolved uncertainty. OceanHub can help frame a practical capability and data pathway.</p>
-      <a href="mailto:info@oceanhub.com" class="inline-flex items-center gap-3 px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-widest transition-all">
-        <span>Propose a Collaboration</span>
-        <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
-      </a>
+    <!-- Bottom Collaboration CTA Card -->
+    <section class="mt-20 p-8 md:p-12 rounded-3xl glass-card text-center border-cyan-500/35 relative overflow-hidden reveal" aria-labelledby="collaboration-title">
+      <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="relative z-10">
+        <div class="hud-badge mb-4"><i class="fa-solid fa-handshake-angle" aria-hidden="true"></i> MULTIDISCIPLINARY COLLABORATION</div>
+        <h2 id="collaboration-title" class="text-3xl sm:text-4xl font-black text-white mb-4 font-display">
+          Start with your project decision
+        </h2>
+        <p class="text-slate-300 text-base md:text-lg max-w-2xl mx-auto mb-8 font-light leading-relaxed">
+          Share your offshore operational question, existing geophysical/geotechnical datasets, or unresolved uncertainty. OceanHub will assemble the relevant evidence pathway.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="mailto:info@oceanhub.com" class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-widest transition-all shadow-[0_0_25px_rgba(0,240,255,0.3)]">
+            <span>Propose a Collaboration</span>
+            <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
+          </a>
+          <a href={url('focus-areas/')} class="inline-flex items-center gap-2 px-6 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all">
+            Browse Other Domains
+          </a>
+        </div>
+      </div>
     </section>
   </article>
 </Layout>
 
 <style is:global>
   @reference "../../styles/global.css";
-  .prose h2 { @apply text-2xl md:text-3xl font-black text-white mt-12 mb-6 font-display border-b border-white/10 pb-3; }
-  .prose h3 { @apply text-xl md:text-2xl font-bold text-cyan-300 mt-8 mb-4 font-display; }
-  .prose p { @apply text-slate-300 font-light leading-relaxed mb-6 text-base; }
-  .prose ul { @apply list-disc list-outside ml-6 text-slate-300 space-y-2.5 mb-6 text-sm md:text-base; }
+  .prose h2 { @apply text-2xl md:text-4xl font-black text-white mt-14 mb-6 font-display border-b border-white/10 pb-4; }
+  .prose h3 { @apply text-xl md:text-2xl font-bold text-cyan-300 mt-10 mb-4 font-display; }
+  .prose p { @apply text-slate-300 font-light leading-relaxed mb-6 text-base md:text-lg; }
+  .prose ul { @apply list-disc list-outside ml-6 text-slate-300 space-y-3 mb-8 text-base md:text-lg; }
   .prose li { @apply marker:text-cyan-400 pl-1; }
   .prose strong { @apply text-white font-semibold; }
-  .prose blockquote { @apply border-l-2 border-cyan-400 pl-4 py-2 italic text-slate-300 bg-cyan-950/20 rounded-r-xl; }
+  .prose blockquote { @apply border-l-2 border-cyan-400 pl-6 py-3 italic text-slate-200 bg-cyan-950/30 rounded-r-2xl my-8; }
 </style>

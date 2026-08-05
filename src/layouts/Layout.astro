@@ -33,7 +33,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#060B14" />
+    <meta name="theme-color" content="#040812" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -51,56 +51,89 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   </head>
-  <body class="bg-[#060B14] text-slate-100 min-h-screen flex flex-col font-sans">
+  <body class="bg-[#040812] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500/20 selection:text-cyan-200">
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <TechBackground />
 
-    <nav id="main-nav" class="fixed top-0 w-full z-50 transition-all duration-500 glass-nav py-4" aria-label="Primary navigation">
-      <div class="max-w-[1720px] mx-auto px-6 md:px-12 flex justify-between items-center">
+    <!-- Navigation Header -->
+    <nav id="main-nav" class="fixed top-0 w-full z-50 transition-all duration-500 glass-nav py-3.5" aria-label="Primary navigation">
+      <div class="max-w-[1760px] mx-auto px-5 sm:px-8 md:px-12 flex justify-between items-center">
+        <!-- Logo & Telemetry Indicator -->
         <div class="flex items-center gap-6">
-          <a href={url()} class="flex items-center gap-3 group" aria-label="OceanHub home">
-            <div class="relative">
-              <Image src={logo} alt="OceanHub" width={200} class="w-36 md:w-48 brightness-0 invert opacity-95 group-hover:opacity-100 transition-opacity" />
-              <div class="absolute -inset-1 bg-cyan-500/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
+          <a href={url()} class="flex items-center gap-3 group relative" aria-label="OceanHub home">
+            <div class="relative py-1">
+              <Image src={logo} alt="OceanHub" width={220} class="w-36 sm:w-44 md:w-48 brightness-0 invert opacity-95 group-hover:opacity-100 transition-opacity" />
+              <div class="absolute -inset-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity -z-10 rounded-xl"></div>
             </div>
           </a>
-          <div class="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/20 text-[11px] font-mono text-cyan-300/80">
-            <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-            <span>OFFSHORE DATA COLLABORATION</span>
+          
+          <div class="hidden 2xl:flex items-center gap-2.5 px-3.5 py-1 rounded-full bg-cyan-950/40 border border-cyan-500/20 text-[11px] font-mono text-cyan-300">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
+            </span>
+            <span class="tracking-wider">OFFSHORE EVIDENCE GRID</span>
           </div>
         </div>
 
-        <div class="hidden lg:flex items-center space-x-8 xl:space-x-10">
-          <a href={url('#focus-areas')} class="nav-link text-xs font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-400 transition-colors py-2 relative group">
+        <!-- Desktop Navigation Items -->
+        <div class="hidden lg:flex items-center space-x-6 xl:space-x-8">
+          <a href={url('#focus-areas')} class="nav-link text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-300 transition-colors py-2 relative group">
             Focus Areas
             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
           </a>
-          <a href={url('insights/')} class="nav-link text-xs font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-400 transition-colors py-2 relative group">
+          <a href={url('insights/')} class="nav-link text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-300 transition-colors py-2 relative group">
             Intelligence
             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
           </a>
-          <a href={url('about/')} class="nav-link text-xs font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-400 transition-colors py-2 relative group">
-            About
+          <a href={url('about/')} class="nav-link text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-300 transition-colors py-2 relative group">
+            Platform Mission
             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
           </a>
 
-          <button class="nav-pwa-install-btn hidden items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 text-xs font-mono font-semibold tracking-wider uppercase transition-all" type="button">
-            <i class="fa-solid fa-download text-xs" aria-hidden="true"></i>
-            <span>Install</span>
+          <!-- Offline Briefcase Quick Indicator -->
+          <a href={url('briefcase/')} class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/80 hover:bg-cyan-950/60 border border-white/10 hover:border-cyan-500/30 text-[11px] font-mono text-slate-300 hover:text-cyan-300 transition-all group" title="Open Offline Briefcase">
+            <i class="fa-solid fa-briefcase text-xs text-cyan-400 group-hover:scale-110 transition-transform" aria-hidden="true"></i>
+            <span>Briefcase</span>
+            <span id="nav-briefcase-count" class="hidden px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-bold">0</span>
+          </a>
+
+          <!-- Quick Search Button -->
+          <button id="nav-search-trigger" type="button" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-400 hover:text-white text-xs transition-all font-mono" aria-label="Search OceanHub">
+            <i class="fa-solid fa-magnifying-glass text-xs text-cyan-400" aria-hidden="true"></i>
+            <span class="hidden xl:inline text-[11px]">Search</span>
+            <kbd class="hidden xl:inline px-1.5 py-0.5 text-[9px] bg-slate-800 border border-slate-700 rounded text-slate-400">⌘K</kbd>
           </button>
 
-          <a href="mailto:info@oceanhub.com" class="relative group inline-flex items-center justify-center p-0.5 overflow-hidden rounded-full font-bold text-xs uppercase tracking-[0.2em]">
-            <span class="w-full h-full bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 group-hover:from-cyan-300 group-hover:to-blue-400 absolute"></span>
-            <span class="relative px-6 py-2.5 transition-all ease-out bg-[#060B14] rounded-full group-hover:bg-opacity-0 text-white font-mono tracking-wider">Propose a Collaboration</span>
+          <!-- PWA Install Button -->
+          <button class="nav-pwa-install-btn hidden items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 hover:bg-cyan-500/20 hover:border-cyan-300 text-xs font-mono font-bold tracking-wider uppercase transition-all" type="button">
+            <i class="fa-solid fa-cloud-arrow-down text-xs" aria-hidden="true"></i>
+            <span>Install App</span>
+          </button>
+
+          <!-- Collaboration Action -->
+          <a href="mailto:info@oceanhub.com" class="relative group inline-flex items-center justify-center p-0.5 overflow-hidden rounded-full font-bold text-xs uppercase tracking-[0.15em] shadow-[0_0_20px_rgba(0,240,255,0.2)]">
+            <span class="w-full h-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 group-hover:from-cyan-300 group-hover:to-blue-400 absolute"></span>
+            <span class="relative px-5 py-2.5 transition-all ease-out bg-[#040812] rounded-full group-hover:bg-opacity-0 text-white font-mono tracking-wider flex items-center gap-2">
+              <span>Propose Collaboration</span>
+              <i class="fa-solid fa-arrow-right text-[10px] text-cyan-400 group-hover:text-slate-950 transition-colors" aria-hidden="true"></i>
+            </span>
           </a>
         </div>
 
-        <div class="flex items-center gap-3 lg:hidden">
+        <!-- Mobile Quick Controls -->
+        <div class="flex items-center gap-2.5 lg:hidden">
+          <button id="mobile-search-trigger" class="p-2.5 rounded-xl bg-white/5 border border-white/10 text-cyan-300 text-sm" type="button" aria-label="Open Search">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          </button>
+          <a href={url('briefcase/')} class="p-2.5 rounded-xl bg-white/5 border border-white/10 text-cyan-300 text-sm" aria-label="Offline Briefcase">
+            <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+          </a>
           <button class="nav-pwa-install-btn hidden p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-sm" type="button" aria-label="Install OceanHub">
-            <i class="fa-solid fa-download" aria-hidden="true"></i>
+            <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>
           </button>
           <button id="mobile-menu-toggle" class="p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white" type="button" aria-label="Open navigation menu" aria-controls="mobile-drawer" aria-expanded="false">
             <i id="menu-icon" class="fa-solid fa-bars text-lg" aria-hidden="true"></i>
@@ -108,45 +141,144 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         </div>
       </div>
 
-      <div id="mobile-drawer" class="lg:hidden hidden border-t border-cyan-500/10 bg-[#060B14]/95 backdrop-blur-2xl px-6 py-6" aria-hidden="true">
+      <!-- Mobile Navigation Drawer -->
+      <div id="mobile-drawer" class="lg:hidden hidden border-t border-cyan-500/15 bg-[#040812]/98 backdrop-blur-3xl px-6 py-6 transition-all duration-300" aria-hidden="true">
         <div class="flex flex-col space-y-4">
-          <a href={url('#focus-areas')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-300 hover:text-cyan-400 py-2 border-b border-white/5">Strategic Focus Areas</a>
-          <a href={url('insights/')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-300 hover:text-cyan-400 py-2 border-b border-white/5">Marine Intelligence</a>
-          <a href={url('about/')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-300 hover:text-cyan-400 py-2 border-b border-white/5">About OceanHub</a>
-          <div class="pt-2 flex flex-col gap-3">
-            <button class="nav-pwa-install-btn hidden w-full py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider items-center justify-center gap-2" type="button">
-              <i class="fa-solid fa-download" aria-hidden="true"></i> Install OceanHub
+          <div class="flex items-center justify-between pb-3 border-b border-white/10">
+            <span class="text-xs font-mono text-cyan-300 uppercase tracking-widest">Navigation</span>
+            <span class="text-[10px] font-mono text-slate-400">OCEAN DATA COLLABORATION</span>
+          </div>
+          <a href={url('#focus-areas')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-200 hover:text-cyan-400 py-2 border-b border-white/5 flex items-center justify-between">
+            <span>Strategic Focus Areas</span>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-500" aria-hidden="true"></i>
+          </a>
+          <a href={url('insights/')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-200 hover:text-cyan-400 py-2 border-b border-white/5 flex items-center justify-between">
+            <span>Marine Intelligence</span>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-500" aria-hidden="true"></i>
+          </a>
+          <a href={url('about/')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-200 hover:text-cyan-400 py-2 border-b border-white/5 flex items-center justify-between">
+            <span>Platform Mission</span>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-500" aria-hidden="true"></i>
+          </a>
+          <a href={url('briefcase/')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-200 hover:text-cyan-400 py-2 border-b border-white/5 flex items-center justify-between">
+            <span>Offline Briefcase</span>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-500" aria-hidden="true"></i>
+          </a>
+
+          <div class="pt-3 flex flex-col gap-3">
+            <button class="nav-pwa-install-btn hidden w-full py-3.5 rounded-xl bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider items-center justify-center gap-2" type="button">
+              <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i> Install OceanHub App
             </button>
-            <a href="mailto:info@oceanhub.com" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 text-center text-xs font-bold uppercase tracking-widest font-mono">Propose a Collaboration</a>
+            <a href="mailto:info@oceanhub.com" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 text-slate-950 font-black text-center text-xs uppercase tracking-widest font-mono shadow-[0_0_20px_rgba(0,240,255,0.3)]">
+              Propose a Collaboration
+            </a>
           </div>
         </div>
       </div>
     </nav>
 
+    <!-- Global Search & Command Modal -->
+    <div id="search-modal" class="fixed inset-0 z-[120] hidden bg-black/80 backdrop-blur-xl flex items-start justify-center pt-20 px-4" role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
+      <div class="w-full max-w-2xl bg-[#081226] border border-cyan-500/30 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden">
+        <div class="p-5 border-b border-white/10 flex items-center gap-3">
+          <i class="fa-solid fa-magnifying-glass text-cyan-400 text-base" aria-hidden="true"></i>
+          <input
+            id="search-input"
+            type="search"
+            placeholder="Search focus areas, technologies, CCUS, seismic, geotechnics..."
+            class="w-full bg-transparent text-white placeholder-slate-400 text-base focus:outline-none font-sans"
+            autocomplete="off"
+          />
+          <button id="search-close" type="button" class="px-2.5 py-1 rounded-lg bg-white/5 text-slate-400 hover:text-white text-xs font-mono" aria-label="Close search">
+            ESC
+          </button>
+        </div>
+        <div id="search-results" class="max-h-96 overflow-y-auto p-4 space-y-2">
+          <!-- Preset quick navigation items -->
+          <div class="text-[11px] font-mono uppercase tracking-widest text-cyan-400 px-3 py-1.5">Quick Jumps</div>
+          <a href={url('focus-areas/ccus/')} class="flex items-center justify-between p-3 rounded-xl hover:bg-cyan-500/10 hover:border-cyan-500/30 border border-transparent transition-all group">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400"><i class="fa-solid fa-cloud-arrow-up text-sm" aria-hidden="true"></i></div>
+              <div>
+                <div class="text-sm font-bold text-white group-hover:text-cyan-300">Offshore CCUS & Monitoring</div>
+                <div class="text-xs text-slate-400">Carbon storage integrity & 4D DAS seismic</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-500 group-hover:text-cyan-400" aria-hidden="true"></i>
+          </a>
+          <a href={url('focus-areas/offshore-energy/')} class="flex items-center justify-between p-3 rounded-xl hover:bg-cyan-500/10 hover:border-cyan-500/30 border border-transparent transition-all group">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400"><i class="fa-solid fa-wind text-sm" aria-hidden="true"></i></div>
+              <div>
+                <div class="text-sm font-bold text-white group-hover:text-cyan-300">Offshore Energy Site Development</div>
+                <div class="text-xs text-slate-400">Wind foundations, seabed geohazards & CPTu</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-500 group-hover:text-cyan-400" aria-hidden="true"></i>
+          </a>
+          <a href={url('focus-areas/marine-ecology/')} class="flex items-center justify-between p-3 rounded-xl hover:bg-cyan-500/10 hover:border-cyan-500/30 border border-transparent transition-all group">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400"><i class="fa-solid fa-leaf text-sm" aria-hidden="true"></i></div>
+              <div>
+                <div class="text-sm font-bold text-white group-hover:text-cyan-300">Marine Ecology & Environmental Baseline</div>
+                <div class="text-xs text-slate-400">Acoustic impact, eDNA & baseline observations</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-500 group-hover:text-cyan-400" aria-hidden="true"></i>
+          </a>
+          <a href={url('focus-areas/offshore-infrastructure/')} class="flex items-center justify-between p-3 rounded-xl hover:bg-cyan-500/10 hover:border-cyan-500/30 border border-transparent transition-all group">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400"><i class="fa-solid fa-anchor text-sm" aria-hidden="true"></i></div>
+              <div>
+                <div class="text-sm font-bold text-white group-hover:text-cyan-300">Offshore Infrastructure & Asset Integrity</div>
+                <div class="text-xs text-slate-400">Pipelines, subsea cables & seabed stability</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-500 group-hover:text-cyan-400" aria-hidden="true"></i>
+          </a>
+        </div>
+        <div class="p-3 bg-black/40 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-slate-400 px-5">
+          <span>Navigate with <kbd class="px-1.5 py-0.5 bg-white/5 rounded border border-white/10 text-slate-300">↑</kbd> <kbd class="px-1.5 py-0.5 bg-white/5 rounded border border-white/10 text-slate-300">↓</kbd></span>
+          <span>Press <kbd class="px-1.5 py-0.5 bg-white/5 rounded border border-white/10 text-slate-300">ESC</kbd> to exit</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Slot -->
     <main id="main-content" class="flex-grow pt-20" tabindex="-1">
       <slot />
     </main>
 
+    <!-- PWA Controller (Service worker, offline toast, install prompt) -->
     <PWAController base={base} />
 
-    <footer class="bg-[#04070D] text-slate-400 border-t border-cyan-500/10 py-20 md:py-28 relative overflow-hidden mt-20">
-      <div class="absolute -top-32 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-[140px] pointer-events-none"></div>
-      <div class="absolute -bottom-32 left-10 w-96 h-96 bg-blue-600/5 rounded-full blur-[140px] pointer-events-none"></div>
-      <div class="max-w-[1720px] mx-auto px-6 md:px-12 relative z-10">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-20">
+    <!-- Ultra-Sleek Marine Tech Footer -->
+    <footer class="bg-[#03060E] text-slate-400 border-t border-cyan-500/15 py-20 md:py-28 relative overflow-hidden mt-24">
+      <div class="absolute -top-40 right-1/4 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[180px] pointer-events-none"></div>
+      <div class="absolute -bottom-40 left-10 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[180px] pointer-events-none"></div>
+      
+      <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-16">
           <div class="lg:col-span-5 space-y-6">
             <Image src={logo} alt="OceanHub" width={220} class="w-48 brightness-0 invert opacity-95" />
-            <p class="text-base text-slate-400 font-light leading-relaxed max-w-lg">A shared platform connecting offshore operators, marine-data specialists and technical partners around decision-ready evidence.</p>
-            <p class="text-xs font-mono text-cyan-300/80">STATIC-FIRST DELIVERY · INSTALLABLE · OFFLINE FALLBACK</p>
+            <p class="text-base text-slate-300 font-light leading-relaxed max-w-lg">
+              A shared multi-disciplinary platform connecting offshore operators, marine geophysics, geotechnical specialists, and technical partners around decision-ready evidence.
+            </p>
+            <div class="flex flex-wrap gap-2 pt-2">
+              <span class="hud-badge text-[10px]"><i class="fa-solid fa-bolt" aria-hidden="true"></i> STATIC-FIRST DELIVERY</span>
+              <span class="hud-badge text-[10px]"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> ZERO TRACKERS</span>
+              <span class="hud-badge text-[10px]"><i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i> PWA INSTALLABLE</span>
+            </div>
           </div>
 
           <div class="lg:col-span-2 space-y-4">
             <h2 class="text-xs font-mono font-bold uppercase tracking-[0.25em] text-cyan-400">Explore</h2>
             <ul class="space-y-3 text-sm">
-              <li><a href={url('#focus-areas')} class="text-slate-400 hover:text-cyan-300 transition-colors">Focus Areas</a></li>
-              <li><a href={url('insights/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Intelligence</a></li>
+              <li><a href={url('#focus-areas')} class="text-slate-400 hover:text-cyan-300 transition-colors">Strategic Focus Areas</a></li>
+              <li><a href={url('insights/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Marine Intelligence</a></li>
               <li><a href={url('about/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Platform Mission</a></li>
-              <li><a href={url('offline/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Offline Access</a></li>
+              <li><a href={url('briefcase/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Offline Briefcase</a></li>
+              <li><a href={url('offline/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Offline Fallback View</a></li>
             </ul>
           </div>
 
@@ -156,28 +288,43 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
               <li><a href={url('focus-areas/ccus/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Offshore CCUS</a></li>
               <li><a href={url('focus-areas/offshore-energy/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Offshore Energy</a></li>
               <li><a href={url('focus-areas/marine-ecology/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Marine Ecology</a></li>
-              <li><a href={url('focus-areas/offshore-infrastructure/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Infrastructure</a></li>
+              <li><a href={url('focus-areas/offshore-infrastructure/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Infrastructure Integrity</a></li>
             </ul>
           </div>
 
-          <div class="lg:col-span-3 space-y-4">
-            <h2 class="text-xs font-mono font-bold uppercase tracking-[0.25em] text-cyan-400">Connect</h2>
-            <p class="text-sm text-slate-400">Bring an offshore problem, dataset or capability to the network.</p>
-            <div class="flex gap-4 pt-2">
-              <a href="mailto:info@oceanhub.com" class="w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/50 hover:bg-cyan-500/10 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition-all" aria-label="Email OceanHub"><i class="fa-solid fa-envelope" aria-hidden="true"></i></a>
-              <a href="https://rio25.sbgf.org.br/Pages/oceanHub.php" target="_blank" rel="noopener noreferrer" class="w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/50 hover:bg-cyan-500/10 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition-all" aria-label="OceanHub at SBGf Rio 25"><i class="fa-solid fa-globe" aria-hidden="true"></i></a>
+          <div class="lg:col-span-3 space-y-5">
+            <h2 class="text-xs font-mono font-bold uppercase tracking-[0.25em] text-cyan-400">Network & Dialog</h2>
+            <p class="text-sm text-slate-400 leading-relaxed">
+              Bring an offshore operational question, marine dataset, or field capability to the open network.
+            </p>
+            <div class="flex items-center gap-3 pt-2">
+              <a href="mailto:info@oceanhub.com" class="w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/50 hover:bg-cyan-500/15 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition-all shadow-md" aria-label="Email OceanHub" title="Email OceanHub">
+                <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+              </a>
+              <a href="https://rio25.sbgf.org.br/Pages/oceanHub.php" target="_blank" rel="noopener noreferrer" class="w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/50 hover:bg-cyan-500/15 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition-all shadow-md" aria-label="OceanHub at SBGf Rio 25" title="OceanHub @ SBGf Rio 25">
+                <i class="fa-solid fa-globe" aria-hidden="true"></i>
+              </a>
+              <button id="back-to-top" type="button" class="w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/50 hover:bg-cyan-500/15 text-slate-300 hover:text-cyan-300 flex items-center justify-center transition-all shadow-md ml-auto" aria-label="Back to top" title="Back to top">
+                <i class="fa-solid fa-arrow-up text-xs" aria-hidden="true"></i>
+              </button>
             </div>
           </div>
         </div>
 
-        <div class="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-slate-500">
-          <p>&copy; {new Date().getFullYear()} OceanHub. Marine data for offshore decisions.</p>
-          <span>BUILT WITH ASTRO · DEPLOYED ON GITHUB PAGES</span>
+        <div class="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-slate-500">
+          <p>&copy; {new Date().getFullYear()} OceanHub. Marine Intelligence for Offshore Decisions.</p>
+          <div class="flex items-center gap-4">
+            <span class="text-cyan-400/80">LATENCY-FREE CACHE ENABLED</span>
+            <span>•</span>
+            <span>HOSTED ON GITHUB PAGES</span>
+          </div>
         </div>
       </div>
     </footer>
 
+    <!-- Global Client Script -->
     <script>
+      // 1. Scroll Reveal Observer
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const revealItems = document.querySelectorAll('.reveal');
 
@@ -195,12 +342,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         revealItems.forEach((item) => revealObserver.observe(item));
       }
 
+      // 2. Nav Scroll state
       const nav = document.getElementById('main-nav');
       window.addEventListener('scroll', () => {
         if (!nav) return;
-        nav.classList.toggle('nav-scrolled', window.scrollY > 40);
+        nav.classList.toggle('nav-scrolled', window.scrollY > 30);
       }, { passive: true });
 
+      // 3. Mobile Menu Toggle
       const menuToggle = document.getElementById('mobile-menu-toggle');
       const mobileDrawer = document.getElementById('mobile-drawer');
       const menuIcon = document.getElementById('menu-icon');
@@ -219,12 +368,73 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         setMenu(menuToggle.getAttribute('aria-expanded') !== 'true');
       });
       document.querySelectorAll('.mobile-nav-link').forEach((link) => link.addEventListener('click', () => setMenu(false)));
+
+      // 4. Back to top button
+      document.getElementById('back-to-top')?.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // 5. Global Search & Command Modal
+      const searchModal = document.getElementById('search-modal');
+      const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
+      const searchClose = document.getElementById('search-close');
+      const searchTrigger = document.getElementById('nav-search-trigger');
+      const mobileSearchTrigger = document.getElementById('mobile-search-trigger');
+
+      function openSearch() {
+        if (!searchModal) return;
+        searchModal.classList.remove('hidden');
+        searchInput?.focus();
+      }
+
+      function closeSearch() {
+        if (!searchModal) return;
+        searchModal.classList.add('hidden');
+      }
+
+      searchTrigger?.addEventListener('click', openSearch);
+      mobileSearchTrigger?.addEventListener('click', openSearch);
+      searchClose?.addEventListener('click', closeSearch);
+
+      searchModal?.addEventListener('click', (e) => {
+        if (e.target === searchModal) closeSearch();
+      });
+
       document.addEventListener('keydown', (event) => {
+        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+          event.preventDefault();
+          if (searchModal?.classList.contains('hidden')) {
+            openSearch();
+          } else {
+            closeSearch();
+          }
+        }
         if (event.key === 'Escape') {
           setMenu(false);
-          menuToggle?.focus();
+          closeSearch();
         }
       });
+
+      // 6. Sync Briefcase Count in Navigation
+      function updateBriefcaseBadge() {
+        try {
+          const raw = localStorage.getItem('oceanhub-briefcase-v1');
+          const countBadge = document.getElementById('nav-briefcase-count');
+          if (raw && countBadge) {
+            const list = JSON.parse(raw);
+            if (Array.isArray(list) && list.length > 0) {
+              countBadge.textContent = String(list.length);
+              countBadge.classList.remove('hidden');
+            } else {
+              countBadge.classList.add('hidden');
+            }
+          }
+        } catch {
+          // ignore
+        }
+      }
+      updateBriefcaseBadge();
+      window.addEventListener('storage', updateBriefcaseBadge);
     </script>
   </body>
 </html>
