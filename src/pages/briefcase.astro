@@ -84,7 +84,7 @@ const catalogue = [
       id: string;
       title: string;
       description: string;
-      type: 'focus-area' | 'insight';
+      type: 'focus-area' | 'insight' | 'jip' | string;
       route: string;
       version: string;
     }
@@ -189,7 +189,7 @@ const catalogue = [
         const badges = document.createElement('div');
         badges.className = 'flex flex-wrap items-center gap-2 mb-5';
         badges.append(
-          createTextElement('span', 'evidence-chip', saved.type === 'focus-area' ? 'Focus Area' : 'Intelligence'),
+          createTextElement('span', 'evidence-chip', saved.type === 'focus-area' ? 'Focus Area' : saved.type === 'jip' ? 'JIP Initiative' : 'Intelligence'),
           createTextElement(
             'span',
             available

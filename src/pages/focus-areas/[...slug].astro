@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import OfflineSaveButton from '../../components/OfflineSaveButton.astro';
+import JoinAllianceModal from '../../components/JoinAllianceModal.astro';
 import { contentVersion } from '../../lib/contentVersion';
 
 export async function getStaticPaths() {
@@ -14,6 +15,46 @@ const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const version = contentVersion(entry);
+
+// Mapping to relevant Joint Industry Project (JIP)
+const jipMap: Record<string, {
+  jipNumber: string;
+  jipTitle: string;
+  jipDesc: string;
+  jipStandard: string;
+  jipId: string;
+}> = {
+  ccus: {
+    jipNumber: 'JIP-01',
+    jipTitle: 'Offshore CCUS 4D Optical DAS & Microseismic Storage MRV',
+    jipDesc: 'Permanent seafloor optical fiber strain sensing & continuous plume migration verification compliant with ISO 27914.',
+    jipStandard: 'ISO 27914 / London Protocol Art. 6',
+    jipId: 'ccus-4d-mrv'
+  },
+  'marine-ecology': {
+    jipNumber: 'JIP-03',
+    jipTitle: 'Ultra-Low Impact Marine Acoustics & Active Bubble Curtain Damping',
+    jipDesc: 'Predictive sound propagation modeling (RAM/PE) and autonomous real-time PAM arrays for marine mammal protection.',
+    jipStandard: 'OSPAR Rec 2012/03 / NOAA Criteria',
+    jipId: 'low-impact-acoustics'
+  },
+  'offshore-energy': {
+    jipNumber: 'JIP-02',
+    jipTitle: 'Floating Offshore Wind Foundation & Cyclic Soil Mechanics',
+    jipDesc: 'Deepwater suction caisson holding capacity, in-situ CPTu integration, and cyclic p-y soil degradation standardisation.',
+    jipStandard: 'DNV-ST-0119 / ISO 19901-4',
+    jipId: 'floating-wind-foundations'
+  },
+  'offshore-infrastructure': {
+    jipNumber: 'JIP-04',
+    jipTitle: 'Subsea Green Energy Corridor & Autonomous USV Inspection',
+    jipDesc: 'HVDC export cable scour stability, dynamic freespan VIV fatigue modeling, and zero-emission autonomous USV patrols.',
+    jipStandard: 'DNV-RP-F105 / CIGRE TB 623',
+    jipId: 'subsea-energy-corridors'
+  }
+};
+
+const relatedJip = jipMap[entry.id];
 ---
 
 <Layout title={`${entry.data.title} | OceanHub Focus Area`} description={entry.data.description}>
@@ -26,7 +67,7 @@ const version = contentVersion(entry);
       </a>
 
       <div class="flex flex-wrap items-center gap-3 mb-6">
-        <span class="hud-badge text-[11px]"><i class="fa-solid fa-compass" aria-hidden="true"></i> STRATEGIC FOCUS DOMAIN</span>
+        <span class="hud-badge text-[11px]"><i class="fa-solid fa-compass text-cyan-400" aria-hidden="true"></i> STRATEGIC FOCUS DOMAIN</span>
         <span class="depth-badge">DECISION EVIDENCE CHAIN</span>
       </div>
 
@@ -97,12 +138,50 @@ const version = contentVersion(entry);
       <Content />
     </div>
 
+    <!-- Related Joint Industry Project (JIP) Track Card -->
+    {relatedJip && (
+      <section class="mt-16 p-8 rounded-3xl glass-panel border border-cyan-500/30 bg-[#060E22]/90 relative overflow-hidden reveal">
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+          <div class="flex items-center gap-2">
+            <span class="hud-badge text-[10px]"><i class="fa-solid fa-handshake-angle text-cyan-400"></i> ACTIVE JIP COLLABORATION</span>
+            <span class="text-xs font-mono font-bold text-cyan-300">{relatedJip.jipNumber}</span>
+          </div>
+          <span class="text-[11px] font-mono text-emerald-400 font-bold">{relatedJip.jipStandard}</span>
+        </div>
+
+        <h3 class="text-xl sm:text-2xl font-bold text-white font-display mb-2">
+          {relatedJip.jipTitle}
+        </h3>
+        <p class="text-sm text-slate-300 font-light leading-relaxed mb-6">
+          {relatedJip.jipDesc}
+        </p>
+
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/5">
+          <a
+            href={url('jips/#jip-catalogue')}
+            class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-wider inline-flex items-center gap-2"
+          >
+            <span>Inspect JIP Work Packages & Roadmap</span>
+            <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
+          </a>
+
+          <button
+            type="button"
+            data-open-alliance-modal
+            class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,240,255,0.25)] cursor-pointer"
+          >
+            Join This Alliance Track
+          </button>
+        </div>
+      </section>
+    )}
+
     <!-- Bottom Collaboration CTA Card -->
-    <section class="mt-20 p-8 md:p-12 rounded-3xl glass-card text-center border-cyan-500/35 relative overflow-hidden reveal" aria-labelledby="collaboration-title">
+    <section class="mt-16 p-8 md:p-12 rounded-3xl glass-card text-center border-cyan-500/35 relative overflow-hidden reveal" aria-labelledby="collaboration-title">
       <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
       
       <div class="relative z-10">
-        <div class="hud-badge mb-4"><i class="fa-solid fa-handshake-angle" aria-hidden="true"></i> MULTIDISCIPLINARY COLLABORATION</div>
+        <div class="hud-badge mb-4"><i class="fa-solid fa-handshake-angle text-cyan-400" aria-hidden="true"></i> MULTIDISCIPLINARY COLLABORATION</div>
         <h2 id="collaboration-title" class="text-3xl sm:text-4xl font-black text-white mb-4 font-display">
           Start with your project decision
         </h2>
@@ -110,10 +189,14 @@ const version = contentVersion(entry);
           Share your offshore operational question, existing geophysical/geotechnical datasets, or unresolved uncertainty. OceanHub will assemble the relevant evidence pathway.
         </p>
         <div class="flex flex-wrap justify-center gap-4">
-          <a href="mailto:info@oceanhub.com" class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-widest transition-all shadow-[0_0_25px_rgba(0,240,255,0.3)]">
+          <button
+            type="button"
+            data-open-alliance-modal
+            class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-widest transition-all shadow-[0_0_25px_rgba(0,240,255,0.3)] cursor-pointer"
+          >
             <span>Propose a Collaboration</span>
             <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
-          </a>
+          </button>
           <a href={url('focus-areas/')} class="inline-flex items-center gap-2 px-6 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all">
             Browse Other Domains
           </a>
@@ -121,6 +204,9 @@ const version = contentVersion(entry);
       </div>
     </section>
   </article>
+
+  <!-- Alliance Onboarding Modal -->
+  <JoinAllianceModal />
 </Layout>
 
 <style is:global>

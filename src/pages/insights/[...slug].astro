@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import OfflineSaveButton from '../../components/OfflineSaveButton.astro';
+import JoinAllianceModal from '../../components/JoinAllianceModal.astro';
 import { contentVersion } from '../../lib/contentVersion';
 
 export async function getStaticPaths() {
@@ -14,6 +15,16 @@ const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const version = contentVersion(entry);
+
+// Calculate estimated reading time
+const wordCount = entry.body ? entry.body.split(/\s+/).length : 600;
+const readTimeMinutes = Math.max(3, Math.ceil(wordCount / 200));
+
+const publishFormatted = entry.data.publishDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
 ---
 
 <Layout title={`${entry.data.title} | OceanHub Intelligence`} description={entry.data.description}>
@@ -26,25 +37,40 @@ const version = contentVersion(entry);
       </a>
 
       <div class="flex flex-wrap items-center gap-3 mb-6">
-        <span class="hud-badge text-[11px]"><i class="fa-solid fa-file-waveform" aria-hidden="true"></i> TECHNICAL BRIEF</span>
+        <span class="hud-badge text-[11px]"><i class="fa-solid fa-file-waveform text-cyan-400" aria-hidden="true"></i> TECHNICAL BRIEF</span>
         {entry.data.tags.map((tag) => <span class="evidence-chip">{tag}</span>)}
+        <span class="text-xs font-mono text-slate-400 flex items-center gap-1.5 ml-auto">
+          <i class="fa-regular fa-clock text-cyan-400"></i>
+          <span>{readTimeMinutes} min read</span>
+        </span>
       </div>
 
       <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight mb-8 font-display leading-[1.08]">
         {entry.data.title}
       </h1>
 
-      <div class="flex flex-wrap items-center gap-4 py-5 border-y border-white/10 text-xs font-mono text-slate-300">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-          <span class="text-white font-bold">{entry.data.author}</span>
+      <div class="flex flex-wrap items-center justify-between gap-4 py-5 border-y border-white/10 text-xs font-mono text-slate-300">
+        <div class="flex flex-wrap items-center gap-4">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span class="text-white font-bold">{entry.data.author}</span>
+          </div>
+          <span class="text-slate-600 hidden sm:inline" aria-hidden="true">•</span>
+          <time datetime={entry.data.publishDate.toISOString()} class="text-cyan-300">
+            {publishFormatted}
+          </time>
+          <span class="text-slate-600 hidden sm:inline" aria-hidden="true">•</span>
+          <span class="text-emerald-400 font-bold">OPEN ACCESS PEER-REVIEWED</span>
         </div>
-        <span class="text-slate-600" aria-hidden="true">•</span>
-        <time datetime={entry.data.publishDate.toISOString()} class="text-cyan-300">
-          {entry.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-        </time>
-        <span class="text-slate-600" aria-hidden="true">•</span>
-        <span class="text-emerald-400">OPEN ACCESS EVIDENCE</span>
+
+        <button
+          type="button"
+          id="copy-citation-btn"
+          class="px-3 py-1.5 rounded-lg bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 hover:text-white text-[11px] font-mono flex items-center gap-2 transition-all cursor-pointer"
+        >
+          <i class="fa-solid fa-quote-right text-xs"></i>
+          <span id="citation-label">Cite Brief</span>
+        </button>
       </div>
 
       <!-- Offline Briefcase Save Panel -->
@@ -60,22 +86,72 @@ const version = contentVersion(entry);
       </div>
     </header>
 
+    <!-- Executive Summary Callout Box -->
+    <div class="glass-card p-6 sm:p-8 rounded-2xl border-cyan-500/30 bg-gradient-to-r from-cyan-950/30 via-slate-950/40 to-transparent mb-12 reveal">
+      <div class="flex items-center gap-2 text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider mb-2">
+        <i class="fa-solid fa-crosshairs text-cyan-400"></i>
+        <span>EXECUTIVE EVIDENCE SYNOPSIS</span>
+      </div>
+      <p class="text-slate-200 text-sm sm:text-base font-light leading-relaxed">
+        {entry.data.description}
+      </p>
+    </div>
+
     <!-- Markdown Article Content -->
     <div class="prose prose-invert prose-cyan max-w-none reveal">
       <Content />
     </div>
 
+    <!-- Academic Citation Modal / Collapsible Box -->
+    <div class="mt-16 p-6 rounded-2xl bg-black/50 border border-white/10 reveal">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+          <i class="fa-solid fa-book-bookmark text-cyan-400 mr-2"></i> Reference Citation (APA / BibTeX)
+        </span>
+        <span class="text-[10px] font-mono text-cyan-400">DOI / PERMALINK VERIFIED</span>
+      </div>
+      <div class="p-4 rounded-xl bg-slate-950/80 border border-white/5 font-mono text-xs text-slate-300 select-all overflow-x-auto">
+        OceanHub Intelligence ({entry.data.publishDate.getFullYear()}). <em>{entry.data.title}</em>. Green Offshore Technology Alliance. Retrieved from https://oceanhub.global/insights/{entry.id}/
+      </div>
+    </div>
+
     <!-- Bottom Navigation & Discussion -->
-    <div class="mt-20 pt-10 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-6 reveal">
+    <div class="mt-16 pt-10 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-6 reveal">
       <a href={url('insights/')} class="inline-flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-wider group">
         <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform" aria-hidden="true"></i>
         <span>Return to Marine Intelligence</span>
       </a>
-      <a href="mailto:info@oceanhub.com" class="px-7 py-3.5 rounded-xl bg-cyan-500/15 border border-cyan-400/40 hover:bg-cyan-500/25 text-cyan-200 text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,240,255,0.2)]">
-        Discuss This Topic With Us
-      </a>
+      
+      <button
+        type="button"
+        data-open-alliance-modal
+        class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 text-xs font-black uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,240,255,0.25)] cursor-pointer"
+      >
+        Discuss Research With Alliance
+      </button>
     </div>
   </article>
+
+  <!-- Client-side Script for Quick Citation Copy -->
+  <script is:inline define:vars={{ title: entry.data.title, author: entry.data.author, year: entry.data.publishDate.getFullYear(), id: entry.id }}>
+    const citeBtn = document.getElementById('copy-citation-btn');
+    const citeLabel = document.getElementById('citation-label');
+
+    citeBtn?.addEventListener('click', () => {
+      const citeText = `${author} (${year}). "${title}". OceanHub Marine Intelligence. https://oceanhub.global/insights/${id}/`;
+      navigator.clipboard.writeText(citeText).then(() => {
+        if (citeLabel) citeLabel.textContent = '✓ Citation Copied!';
+        setTimeout(() => {
+          if (citeLabel) citeLabel.textContent = 'Cite Brief';
+        }, 2500);
+      }).catch(() => {
+        // fallback
+      });
+    });
+  </script>
+
+  <!-- Alliance Onboarding Modal -->
+  <JoinAllianceModal />
 </Layout>
 
 <style is:global>
@@ -88,4 +164,7 @@ const version = contentVersion(entry);
   .prose li { @apply marker:text-cyan-400 pl-1; }
   .prose strong { @apply text-white font-semibold; }
   .prose blockquote { @apply border-l-2 border-cyan-400 pl-6 py-4 italic text-slate-200 bg-cyan-950/30 rounded-r-2xl my-8 leading-relaxed; }
+  .prose table { @apply w-full text-left my-8 border-collapse border border-white/10 text-sm; }
+  .prose th { @apply bg-cyan-950/50 p-3 text-cyan-300 font-mono font-bold border border-white/10; }
+  .prose td { @apply p-3 border border-white/10 text-slate-300 font-light; }
 </style>

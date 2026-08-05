@@ -162,24 +162,45 @@ const focusAreaMetadata: Record<string, {
               </button>
             </div>
 
-            <!-- Dynamic Telemetry Screen -->
-            <div class="py-6 min-h-[220px]" id="hud-channel-content">
+            <!-- Dynamic Telemetry Screen & Live Canvas Oscilloscope -->
+            <div class="py-6 min-h-[250px]" id="hud-channel-content">
+              <!-- Shared Live Procedural Oscilloscope Canvas -->
+              <div class="relative mb-5">
+                <canvas id="hud-telemetry-canvas" class="w-full h-24 rounded-xl bg-[#02050E] border border-cyan-500/30 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]"></canvas>
+                <div class="absolute top-2 left-3 flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                  <span class="text-[10px] font-mono font-bold tracking-widest text-cyan-300 uppercase" id="canvas-mode-tag">SEISMIC STREAM 3D</span>
+                </div>
+                <div class="absolute top-2 right-3 text-[10px] font-mono text-emerald-400 font-bold" id="canvas-status-tag">
+                  GEOHAZARD: CLEAR
+                </div>
+                <div class="absolute bottom-1.5 right-3 text-[9px] font-mono text-slate-500" id="canvas-freq-tag">
+                  SAMPLING: 2.0 kHz · TIME-SERIES
+                </div>
+              </div>
+
               <!-- Channel 0 Content (Default: Seismic) -->
               <div class="hud-pane" id="pane-0">
                 <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
-                  <span class="text-cyan-300 font-bold">Ultra-High-Resolution 3D Seismic</span>
-                  <span>Horizon: 0 - 800m</span>
+                  <span class="text-cyan-300 font-bold">Ultra-High-Resolution 3D Seismic Stream</span>
+                  <span>Horizon: 0 – 800m Sub-seabed</span>
                 </div>
-                <div class="h-20 w-full bg-slate-950/80 rounded-xl border border-cyan-500/20 p-3 mb-4 flex items-center justify-center relative overflow-hidden">
-                  <!-- Simulated Seismic Waveform SVG -->
-                  <svg class="w-full h-12 text-cyan-400 opacity-80" viewBox="0 0 300 40" preserveAspectRatio="none">
-                    <path d="M0 20 Q 25 5, 50 20 T 100 20 T 150 5 T 200 35 T 250 20 T 300 20" fill="none" stroke="currentColor" stroke-width="2" />
-                    <path d="M0 20 Q 30 35, 60 20 T 120 10 T 180 30 T 240 15 T 300 20" fill="none" stroke="#0EA5E9" stroke-width="1.5" stroke-dasharray="2,2" />
-                  </svg>
-                  <div class="absolute right-3 top-2 text-[10px] font-mono text-emerald-400">GEOHAZARD: CLEAR</div>
+                <div class="grid grid-cols-3 gap-2 text-center p-3 rounded-xl bg-slate-950/60 border border-white/5 mb-3">
+                  <div>
+                    <div class="text-[10px] font-mono text-slate-500">Reflector Z</div>
+                    <div class="text-xs font-mono font-bold text-cyan-300" id="seismic-depth-val">248.5 m</div>
+                  </div>
+                  <div>
+                    <div class="text-[10px] font-mono text-slate-500">Impedance</div>
+                    <div class="text-xs font-mono font-bold text-sky-400">2.85×10⁶</div>
+                  </div>
+                  <div>
+                    <div class="text-[10px] font-mono text-slate-500">Gas Pockets</div>
+                    <div class="text-xs font-mono font-bold text-emerald-400">0.0% (None)</div>
+                  </div>
                 </div>
                 <p class="text-xs text-slate-300 leading-relaxed font-light">
-                  Detects shallow gas pockets, paleo-channels, boulder fields, and fault displacements prior to foundation piling.
+                  Detects shallow gas hazards, paleo-channels, boulder anomalies, and fault displacements prior to foundation installation.
                 </p>
               </div>
 
@@ -187,49 +208,49 @@ const focusAreaMetadata: Record<string, {
               <div class="hud-pane hidden" id="pane-1">
                 <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
                   <span class="text-sky-300 font-bold">Deepwater In-Situ CPTu Telemetry</span>
-                  <span>Penetration: 0 - 120m</span>
+                  <span>Penetration: 0 – 120m Seabed</span>
                 </div>
-                <div class="h-20 w-full bg-slate-950/80 rounded-xl border border-sky-500/20 p-3 mb-4 flex items-center justify-around relative">
-                  <div class="text-center">
-                    <div class="text-xs font-mono text-slate-500">Tip Res (qc)</div>
-                    <div class="text-base font-mono font-bold text-sky-400">42.8 MPa</div>
+                <div class="grid grid-cols-3 gap-2 text-center p-3 rounded-xl bg-slate-950/60 border border-white/5 mb-3">
+                  <div>
+                    <div class="text-[10px] font-mono text-slate-500">Tip Res (qc)</div>
+                    <div class="text-xs font-mono font-bold text-sky-400" id="cptu-qc-val">42.8 MPa</div>
                   </div>
-                  <div class="w-px h-10 bg-white/10"></div>
-                  <div class="text-center">
-                    <div class="text-xs font-mono text-slate-500">Sleeve Fric (fs)</div>
-                    <div class="text-base font-mono font-bold text-sky-400">185 kPa</div>
+                  <div>
+                    <div class="text-[10px] font-mono text-slate-500">Sleeve (fs)</div>
+                    <div class="text-xs font-mono font-bold text-cyan-300">185 kPa</div>
                   </div>
-                  <div class="w-px h-10 bg-white/10"></div>
-                  <div class="text-center">
-                    <div class="text-xs font-mono text-slate-500">Pore Press (u2)</div>
-                    <div class="text-base font-mono font-bold text-emerald-400">3.4 MPa</div>
+                  <div>
+                    <div class="text-[10px] font-mono text-slate-500">Pore (u2)</div>
+                    <div class="text-xs font-mono font-bold text-emerald-400">3.42 MPa</div>
                   </div>
                 </div>
                 <p class="text-xs text-slate-300 leading-relaxed font-light">
-                  High-precision seabed soil strength characterisation directly informing wind monopile and jacket foundation fatigue limits.
+                  High-precision seabed soil strength characterisation directly informing wind monopile and suction anchor cyclic fatigue limits.
                 </p>
               </div>
 
               <!-- Channel 2 Content (CCUS) -->
               <div class="hud-pane hidden" id="pane-2">
                 <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
-                  <span class="text-cyan-300 font-bold">4D DAS Fiber Plume Monitoring</span>
-                  <span>Depth: 1,800m Reservoir</span>
+                  <span class="text-cyan-300 font-bold">4D DAS Fiber Optic Plume Monitoring</span>
+                  <span>Depth: 1,800m Saline Reservoir</span>
                 </div>
-                <div class="h-20 w-full bg-slate-950/80 rounded-xl border border-cyan-500/20 p-3 mb-4 flex items-center justify-between relative px-4">
+                <div class="grid grid-cols-3 gap-2 text-center p-3 rounded-xl bg-slate-950/60 border border-white/5 mb-3">
                   <div>
-                    <div class="text-[10px] font-mono text-slate-400">CO₂ PLUME INTEGRITY</div>
-                    <div class="text-sm font-mono font-bold text-emerald-400 flex items-center gap-1.5 mt-0.5">
-                      <i class="fa-solid fa-circle-check text-xs"></i> 100% CONTAINED
-                    </div>
+                    <div class="text-[10px] font-mono text-slate-500">DAS Strain</div>
+                    <div class="text-xs font-mono font-bold text-cyan-300" id="ccus-strain-val">±0.012 με</div>
                   </div>
-                  <div class="text-right">
-                    <div class="text-[10px] font-mono text-slate-400">STRAIN VARIATION</div>
-                    <div class="text-sm font-mono font-bold text-cyan-300 mt-0.5">±0.02 με</div>
+                  <div>
+                    <div class="text-[10px] font-mono text-slate-500">Caprock Margin</div>
+                    <div class="text-xs font-mono font-bold text-emerald-400">+5.1 MPa</div>
+                  </div>
+                  <div>
+                    <div class="text-[10px] font-mono text-slate-500">Plume Status</div>
+                    <div class="text-xs font-mono font-bold text-emerald-400">100% Contained</div>
                   </div>
                 </div>
                 <p class="text-xs text-slate-300 leading-relaxed font-light">
-                  Continuous acoustic strain telemetry along optic fibers verifying zero caprock leakage and stable plume migration.
+                  Continuous acoustic strain telemetry along subsea fibers verifying zero caprock leakage and stable CO₂ storage migration.
                 </p>
               </div>
 
@@ -237,20 +258,24 @@ const focusAreaMetadata: Record<string, {
               <div class="hud-pane hidden" id="pane-3">
                 <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
                   <span class="text-emerald-300 font-bold">Passive Acoustic Monitoring (PAM)</span>
-                  <span>Bandwidth: 10Hz - 160kHz</span>
+                  <span>Bandwidth: 10Hz – 160kHz</span>
                 </div>
-                <div class="h-20 w-full bg-slate-950/80 rounded-xl border border-emerald-500/20 p-3 mb-4 flex items-center justify-between px-4 relative">
+                <div class="grid grid-cols-3 gap-2 text-center p-3 rounded-xl bg-slate-950/60 border border-white/5 mb-3">
                   <div>
-                    <div class="text-[10px] font-mono text-slate-400">CETACEAN VOCALISATION</div>
-                    <div class="text-sm font-mono font-bold text-cyan-400 mt-0.5">Odontocete Clicks (85kHz)</div>
+                    <div class="text-[10px] font-mono text-slate-500">Peak Signal</div>
+                    <div class="text-xs font-mono font-bold text-cyan-400" id="pam-peak-val">85.2 kHz</div>
                   </div>
-                  <div class="text-right">
-                    <div class="text-[10px] font-mono text-slate-400">EXCLUSION ZONE</div>
-                    <div class="text-sm font-mono font-bold text-emerald-400 mt-0.5">CLEAR (5.2 km)</div>
+                  <div>
+                    <div class="text-[10px] font-mono text-slate-500">Buffer Zone</div>
+                    <div class="text-xs font-mono font-bold text-emerald-400">5.0 km Clear</div>
+                  </div>
+                  <div>
+                    <div class="text-[10px] font-mono text-slate-500">Ambient SPL</div>
+                    <div class="text-xs font-mono font-bold text-sky-300">92.4 dB</div>
                   </div>
                 </div>
                 <p class="text-xs text-slate-300 leading-relaxed font-light">
-                  Continuous marine mammal acoustic protection and environmental baseline tracking to support regulatory licensing.
+                  Continuous marine mammal acoustic protection and environmental baseline tracking ensuring full OSPAR/EIA licensing compliance.
                 </p>
               </div>
             </div>
@@ -260,7 +285,7 @@ const focusAreaMetadata: Record<string, {
               <span class="evidence-chip">GEOPHYSICS</span>
               <span class="evidence-chip">GEOTECHNICS</span>
               <span class="evidence-chip">ENVIRONMENT</span>
-              <span class="evidence-chip">MONITORING</span>
+              <span class="evidence-chip">4D MONITORING</span>
             </div>
           </div>
         </div>
@@ -705,9 +730,9 @@ const focusAreaMetadata: Record<string, {
           <p class="text-xs sm:text-sm text-slate-300 mb-6 font-light leading-relaxed">
             Bring a novel sensor technology, field dataset, or offshore use case to the collaborative platform.
           </p>
-          <a href="mailto:info@oceanhub.com" class="px-6 py-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-xs font-mono font-bold text-cyan-200 hover:text-white uppercase tracking-wider transition-all">
+          <button type="button" data-open-alliance-modal class="px-6 py-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-xs font-mono font-bold text-cyan-200 hover:text-white uppercase tracking-wider transition-all cursor-pointer">
             Propose a Collaboration →
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -729,9 +754,9 @@ const focusAreaMetadata: Record<string, {
       </p>
       
       <div class="flex flex-wrap justify-center gap-4">
-        <a href="mailto:info@oceanhub.com" class="px-9 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black uppercase tracking-wider text-xs transition-all shadow-[0_0_35px_rgba(0,240,255,0.35)] hover:scale-105 active:scale-95">
+        <button type="button" data-open-alliance-modal class="px-9 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black uppercase tracking-wider text-xs transition-all shadow-[0_0_35px_rgba(0,240,255,0.35)] hover:scale-105 active:scale-95 cursor-pointer">
           Propose a Collaboration
-        </a>
+        </button>
         <a href={url('about/')} class="px-9 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 hover:border-cyan-400/40 text-white font-bold uppercase tracking-wider text-xs transition-all backdrop-blur-md">
           How OceanHub Works
         </a>
@@ -741,13 +766,26 @@ const focusAreaMetadata: Record<string, {
 
   <!-- Client-side Interactive HUD & Matrix Controller -->
   <script>
-    // 1. Interactive HUD Channel Switcher
+    // 1. Interactive HUD Channel Switcher & Live Canvas Engine
     const tabs = document.querySelectorAll('.hud-tab');
     const panes = document.querySelectorAll('.hud-pane');
+    const modeTag = document.getElementById('canvas-mode-tag');
+    const statusTag = document.getElementById('canvas-status-tag');
+    const freqTag = document.getElementById('canvas-freq-tag');
+    const canvas = document.getElementById('hud-telemetry-canvas') as HTMLCanvasElement | null;
+
+    let activeChannel = 0;
+    const modeMeta = [
+      { mode: 'SEISMIC STREAM 3D', status: 'GEOHAZARD: CLEAR', statusColor: '#10B981', freq: 'SAMPLING: 2.0 kHz · TIME-SERIES' },
+      { mode: 'CPTu IN-SITU PROFILE', status: 'THRUST: NORMAL', statusColor: '#38BDF8', freq: 'SAMPLING: 10 Hz · DEPTH-SERIES' },
+      { mode: '4D DAS FIBER OPTIC', status: 'CAPROCK: SEALED', statusColor: '#10B981', freq: 'SAMPLING: 5.0 kHz · ACOUSTIC INTERFEROMETRY' },
+      { mode: 'PAM HYDROPHONE FFT', status: 'ZONE: MONITORED', statusColor: '#10B981', freq: 'SAMPLING: 192 kHz · FULL-SPECTRUM' }
+    ];
 
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
-        const channel = tab.getAttribute('data-channel');
+        const channel = Number(tab.getAttribute('data-channel') || '0');
+        activeChannel = channel;
         tabs.forEach((t) => {
           t.classList.remove('active', 'bg-cyan-500/20', 'text-cyan-300', 'border-cyan-400/40');
           t.classList.add('text-slate-400', 'border-transparent');
@@ -760,10 +798,214 @@ const focusAreaMetadata: Record<string, {
         });
         const activePane = document.getElementById(`pane-${channel}`);
         activePane?.classList.remove('hidden');
+
+        if (modeMeta[channel]) {
+          if (modeTag) modeTag.textContent = modeMeta[channel].mode;
+          if (statusTag) {
+            statusTag.textContent = modeMeta[channel].status;
+            statusTag.style.color = modeMeta[channel].statusColor;
+          }
+          if (freqTag) freqTag.textContent = modeMeta[channel].freq;
+        }
       });
     });
 
-    // 2. Interactive Stage Filter Pills
+    // 2. High-Performance Procedural Telemetry Canvas Simulation
+    if (canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const ctx = canvas.getContext('2d');
+      let animId = 0;
+      let tick = 0;
+      let running = true;
+
+      function resize() {
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(rect.width * dpr);
+        canvas.height = Math.round(rect.height * dpr);
+        ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function draw() {
+        if (!ctx || !canvas || !running) return;
+        const w = canvas.getBoundingClientRect().width;
+        const h = canvas.getBoundingClientRect().height;
+        ctx.clearRect(0, 0, w, h);
+        tick += 0.03;
+
+        // Draw background grid lines
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.07)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < w; x += 30) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+          ctx.stroke();
+        }
+        for (let y = 0; y < h; y += 20) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.stroke();
+        }
+
+        if (activeChannel === 0) {
+          // Channel 0: 3D Seismic Wiggle Waveform Stream
+          const numTraces = 5;
+          for (let t = 0; t < numTraces; t++) {
+            const baseY = 20 + t * 14;
+            ctx.beginPath();
+            for (let x = 0; x < w; x += 2) {
+              const freq = 0.045 + t * 0.008;
+              const amp = Math.sin(x * freq + tick * 1.8 + t) * Math.cos(x * 0.015 - tick * 0.8) * 8;
+              const y = baseY + amp;
+              if (x === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = t === 2 ? 'rgba(0, 240, 255, 0.9)' : 'rgba(14, 165, 233, 0.4)';
+            ctx.lineWidth = t === 2 ? 1.8 : 1.0;
+            ctx.stroke();
+          }
+
+          // Sweeping radar scan line
+          const scanX = ((tick * 40) % (w + 40)) - 20;
+          const grad = ctx.createLinearGradient(scanX - 25, 0, scanX, 0);
+          grad.addColorStop(0, 'rgba(0, 240, 255, 0)');
+          grad.addColorStop(1, 'rgba(0, 240, 255, 0.35)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(scanX - 25, 0, 25, h);
+
+        } else if (activeChannel === 1) {
+          // Channel 1: CPTu In-Situ Stratigraphy & Cone Resistance Profile
+          ctx.beginPath();
+          const midY = h * 0.5;
+          for (let x = 0; x < w; x += 3) {
+            // Simulated stratified soil layer resistance with localized spikes (boulders/hard layers)
+            const noise = Math.sin(x * 0.08 + tick * 0.5) * 4 + Math.sin(x * 0.25) * 8;
+            const spike = (x > w * 0.35 && x < w * 0.42) ? 18 : 0;
+            const y = midY - (noise + spike);
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.9)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Bottom fill for soil resistance area
+          ctx.lineTo(w, h);
+          ctx.lineTo(0, h);
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
+          ctx.fill();
+
+          // Pore pressure curve (u2)
+          ctx.beginPath();
+          for (let x = 0; x < w; x += 4) {
+            const u2 = midY + 12 + Math.sin(x * 0.05 + tick) * 6;
+            if (x === 0) ctx.moveTo(x, u2);
+            else ctx.lineTo(x, u2);
+          }
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.7)';
+          ctx.lineWidth = 1.2;
+          ctx.setLineDash([3, 3]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+        } else if (activeChannel === 2) {
+          // Channel 2: 4D DAS Optical Fiber Strain Pulse Packet
+          const midY = h * 0.5;
+          ctx.beginPath();
+          for (let x = 0; x < w; x += 2) {
+            // Gaussian modulated packet traveling along fiber
+            const packetCenter = ((tick * 50) % (w + 80)) - 40;
+            const dist = x - packetCenter;
+            const envelope = Math.exp(-(dist * dist) / 450);
+            const carrier = Math.sin(x * 0.3);
+            const strainAmp = envelope * carrier * 28;
+            const y = midY + strainAmp + Math.sin(x * 0.03 + tick) * 2;
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.strokeStyle = 'rgba(0, 240, 255, 0.95)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Upper and lower caprock seal safety envelope limits
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(0, midY - 30); ctx.lineTo(w, midY - 30);
+          ctx.moveTo(0, midY + 30); ctx.lineTo(w, midY + 30);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+        } else if (activeChannel === 3) {
+          // Channel 3: PAM Hydrophone 32-band FFT Spectrum Analyzer
+          const numBars = 36;
+          const barWidth = (w - (numBars * 3)) / numBars;
+          for (let i = 0; i < numBars; i++) {
+            const freqNorm = i / numBars;
+            // Simulated bio-acoustic peaks (low whale whistles on left, click spikes on right)
+            let baseH = Math.sin(freqNorm * Math.PI + tick * 2 + i * 0.3) * 16 + 18;
+            if (i > 24 && i < 28) {
+              // Cetacean 85kHz peak spike
+              baseH += Math.abs(Math.sin(tick * 5)) * 32;
+            }
+            const barH = Math.max(4, Math.min(h - 10, baseH));
+            const x = i * (barWidth + 3);
+            const y = h - barH - 4;
+
+            const barGrad = ctx.createLinearGradient(x, y, x, h);
+            if (i > 24 && i < 28) {
+              barGrad.addColorStop(0, 'rgba(0, 240, 255, 0.95)');
+              barGrad.addColorStop(1, 'rgba(16, 185, 129, 0.4)');
+            } else {
+              barGrad.addColorStop(0, 'rgba(16, 185, 129, 0.8)');
+              barGrad.addColorStop(1, 'rgba(14, 165, 233, 0.2)');
+            }
+            ctx.fillStyle = barGrad;
+            ctx.fillRect(x, y, barWidth, barH);
+          }
+        }
+
+        animId = requestAnimationFrame(draw);
+      }
+
+      resize();
+      window.addEventListener('resize', resize, { passive: true });
+      animId = requestAnimationFrame(draw);
+
+      document.addEventListener('visibilitychange', () => {
+        running = !document.hidden;
+        if (running && !animId) animId = requestAnimationFrame(draw);
+      });
+    }
+
+    // 3. Subtle Live Telemetry Value Flickers
+    setInterval(() => {
+      const zEl = document.getElementById('seismic-depth-val');
+      if (zEl && activeChannel === 0) {
+        const val = (248.5 + (Math.random() - 0.5) * 0.4).toFixed(1);
+        zEl.textContent = `${val} m`;
+      }
+      const qcEl = document.getElementById('cptu-qc-val');
+      if (qcEl && activeChannel === 1) {
+        const val = (42.8 + (Math.random() - 0.5) * 0.3).toFixed(1);
+        qcEl.textContent = `${val} MPa`;
+      }
+      const strainEl = document.getElementById('ccus-strain-val');
+      if (strainEl && activeChannel === 2) {
+        const val = (0.012 + (Math.random() - 0.5) * 0.002).toFixed(3);
+        strainEl.textContent = `±${val} με`;
+      }
+      const pamEl = document.getElementById('pam-peak-val');
+      if (pamEl && activeChannel === 3) {
+        const val = (85.2 + (Math.random() - 0.5) * 0.2).toFixed(1);
+        pamEl.textContent = `${val} kHz`;
+      }
+    }, 1800);
+
+    // 4. Interactive Stage Filter Pills
     const stagePills = document.querySelectorAll('.stage-pill');
     const stageCards = document.querySelectorAll('.stage-card');
 
