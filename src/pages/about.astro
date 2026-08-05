@@ -16,24 +16,30 @@ const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
   <section class="relative py-24 md:py-36 overflow-hidden">
     <div class="max-w-5xl mx-auto px-6 sm:px-8 text-center relative z-10">
       <div class="hud-badge mb-6 reveal">
-        <i class="fa-solid fa-compass" aria-hidden="true"></i> PLATFORM MISSION & ARCHITECTURE
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1"></span>
+        <i class="fa-solid fa-handshake" aria-hidden="true"></i> GREEN OFFSHORE TECHNOLOGY ALLIANCE
       </div>
       <h1 class="text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tight mb-8 font-display reveal" style="transition-delay: 80ms;">
-        Connect offshore capability<br />
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 glow-text-cyan">
-          around the decision.
+        Exploring next-generation<br />
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-300 glow-text-cyan">
+          green offshore engineering.
         </span>
       </h1>
       <p class="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed font-light mb-10 reveal" style="transition-delay: 140ms;">
-        OceanHub is an open engineering and data collaboration protocol for framing offshore challenges, integrating multidisciplinary expertise, and delivering evidence that withstands regulatory and operational scrutiny.
+        OceanHub is a collaborative marine innovation alliance dedicated to exploring next-generation green engineering technologies and launching Joint Industry Projects (JIPs) that power sustainable ocean development.
       </p>
       <div class="flex flex-wrap justify-center gap-4 reveal" style="transition-delay: 200ms;">
-        <a href={url('focus-areas/')} class="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black uppercase tracking-wider text-xs transition-all shadow-[0_0_25px_rgba(0,240,255,0.3)]">
-          Explore Focus Areas
+        <a href={url('jips/')} class="px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-500 hover:from-emerald-300 hover:to-cyan-400 text-slate-950 font-black uppercase tracking-wider text-xs transition-all shadow-[0_0_25px_rgba(16,185,129,0.3)]">
+          Explore Joint Projects (JIPs)
         </a>
-        <a href={url('insights/')} class="px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-white font-bold uppercase tracking-wider text-xs transition-all">
-          Browse Intelligence
-        </a>
+        <button
+          type="button"
+          data-open-alliance-modal
+          class="px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-white font-bold uppercase tracking-wider text-xs transition-all flex items-center gap-2"
+        >
+          <i class="fa-solid fa-user-plus text-xs text-cyan-400" aria-hidden="true"></i>
+          <span>Join Alliance Network</span>
+        </button>
       </div>
     </div>
   </section>
@@ -180,11 +186,15 @@ const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
         </div>
 
         <div class="glass-card p-8 flex flex-col items-center justify-center border-dashed border-cyan-500/40 bg-gradient-to-b from-cyan-950/20 to-transparent">
-          <div class="text-white font-bold text-lg mb-2 font-display">Join the Network</div>
+          <div class="text-white font-bold text-lg mb-2 font-display">Join the Alliance</div>
           <p class="text-xs text-slate-300 mb-4 font-light">Operators, researchers & sensor providers</p>
-          <a href="mailto:info@oceanhub.com" class="text-xs font-mono font-bold text-cyan-300 hover:text-cyan-200 uppercase tracking-wider">
-            Propose Collaboration →
-          </a>
+          <button
+            type="button"
+            data-open-alliance-modal
+            class="text-xs font-mono font-bold text-cyan-300 hover:text-cyan-200 uppercase tracking-wider flex items-center gap-1.5"
+          >
+            <span>Propose Collaboration →</span>
+          </button>
         </div>
       </div>
     </div>

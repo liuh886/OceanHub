@@ -1,0 +1,103 @@
+{
+  "branch_protection": {
+    "recommended_required_checks": [
+      "Validate OceanHub / Type, build and offline product contract",
+      "CI Governance / Policy"
+    ],
+    "settings_managed_outside_repository": true
+  },
+  "default_branch": "main",
+  "governed_workflow_count": 3,
+  "repository": "liuh886/OceanHub",
+  "schema_version": "1.0.0",
+  "violations": [],
+  "workflow_count": 4,
+  "workflows": [
+    {
+      "actions": [
+        "actions/checkout@v6",
+        "actions/upload-artifact@v4"
+      ],
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "governed": true,
+      "path": ".github/workflows/ci-governance.yml",
+      "permissions": {
+        "contents": "read"
+      },
+      "required_pr": true,
+      "violations": [],
+      "warnings": []
+    },
+    {
+      "actions": [
+        "actions/checkout@v6",
+        "actions/setup-node@v6",
+        "actions/upload-artifact@v4"
+      ],
+      "events": [
+        "pull_request",
+        "push",
+        "workflow_dispatch"
+      ],
+      "governed": true,
+      "path": ".github/workflows/ci.yml",
+      "permissions": {
+        "contents": "read"
+      },
+      "required_pr": true,
+      "violations": [],
+      "warnings": []
+    },
+    {
+      "actions": [
+        "actions/checkout@v4",
+        "actions/setup-node@v4",
+        "actions/upload-artifact@v4"
+      ],
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "governed": false,
+      "path": ".github/workflows/dependency-audit.yml",
+      "permissions": {
+        "contents": "read"
+      },
+      "required_pr": false,
+      "violations": [],
+      "warnings": [
+        "legacy action runtime: actions/checkout@v4",
+        "legacy action runtime: actions/setup-node@v4"
+      ]
+    },
+    {
+      "actions": [
+        "actions/checkout@v6",
+        "actions/configure-pages@v5",
+        "actions/deploy-pages@v4",
+        "actions/download-artifact@v4",
+        "actions/setup-node@v6",
+        "actions/upload-pages-artifact@v3"
+      ],
+      "events": [
+        "workflow_run"
+      ],
+      "governed": true,
+      "path": ".github/workflows/deploy.yml",
+      "permissions": {
+        "actions": "read",
+        "contents": "read",
+        "id-token": "write",
+        "pages": "write",
+        "statuses": "write"
+      },
+      "required_pr": false,
+      "violations": [],
+      "warnings": []
+    }
+  ]
+}

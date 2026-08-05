@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import logo from '../assets/oceanhub-logo-v2.png';
 import TechBackground from '../components/TechBackground.astro';
 import PWAController from '../components/PWAController.astro';
+import JoinAllianceModal from '../components/JoinAllianceModal.astro';
 
 interface Props {
   title: string;
@@ -80,17 +81,22 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         </div>
 
         <!-- Desktop Navigation Items -->
-        <div class="hidden lg:flex items-center space-x-6 xl:space-x-8">
-          <a href={url('#focus-areas')} class="nav-link text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-300 transition-colors py-2 relative group">
+        <div class="hidden lg:flex items-center space-x-5 xl:space-x-7">
+          <a href={url('#focus-areas')} class="nav-link text-[11px] font-mono font-bold uppercase tracking-[0.16em] text-slate-300 hover:text-cyan-300 transition-colors py-2 relative group">
             Focus Areas
             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
           </a>
-          <a href={url('insights/')} class="nav-link text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-300 transition-colors py-2 relative group">
+          <a href={url('jips/')} class="nav-link text-[11px] font-mono font-bold uppercase tracking-[0.16em] text-emerald-300 hover:text-emerald-200 transition-colors py-2 relative group flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Joint Projects (JIPs)</span>
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-400 group-hover:w-full transition-all duration-300"></span>
+          </a>
+          <a href={url('insights/')} class="nav-link text-[11px] font-mono font-bold uppercase tracking-[0.16em] text-slate-300 hover:text-cyan-300 transition-colors py-2 relative group">
             Intelligence
             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
           </a>
-          <a href={url('about/')} class="nav-link text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-slate-300 hover:text-cyan-300 transition-colors py-2 relative group">
-            Platform Mission
+          <a href={url('about/')} class="nav-link text-[11px] font-mono font-bold uppercase tracking-[0.16em] text-slate-300 hover:text-cyan-300 transition-colors py-2 relative group">
+            Alliance Mission
             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
           </a>
 
@@ -114,14 +120,18 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
             <span>Install App</span>
           </button>
 
-          <!-- Collaboration Action -->
-          <a href="mailto:info@oceanhub.com" class="relative group inline-flex items-center justify-center p-0.5 overflow-hidden rounded-full font-bold text-xs uppercase tracking-[0.15em] shadow-[0_0_20px_rgba(0,240,255,0.2)]">
+          <!-- Join Alliance Modal Trigger Action -->
+          <button
+            type="button"
+            data-open-alliance-modal
+            class="relative group inline-flex items-center justify-center p-0.5 overflow-hidden rounded-full font-bold text-xs uppercase tracking-[0.15em] shadow-[0_0_20px_rgba(0,240,255,0.2)] active:scale-95 transition-transform"
+          >
             <span class="w-full h-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 group-hover:from-cyan-300 group-hover:to-blue-400 absolute"></span>
             <span class="relative px-5 py-2.5 transition-all ease-out bg-[#040812] rounded-full group-hover:bg-opacity-0 text-white font-mono tracking-wider flex items-center gap-2">
-              <span>Propose Collaboration</span>
+              <span>Join Alliance</span>
               <i class="fa-solid fa-arrow-right text-[10px] text-cyan-400 group-hover:text-slate-950 transition-colors" aria-hidden="true"></i>
             </span>
-          </a>
+          </button>
         </div>
 
         <!-- Mobile Quick Controls -->
@@ -146,24 +156,38 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         <div class="flex flex-col space-y-4">
           <div class="flex items-center justify-between pb-3 border-b border-white/10">
             <span class="text-xs font-mono text-cyan-300 uppercase tracking-widest">Navigation</span>
-            <span class="text-[10px] font-mono text-slate-400">OCEAN DATA COLLABORATION</span>
+            <span class="text-[10px] font-mono text-slate-400">GREEN TECH ALLIANCE</span>
           </div>
           <a href={url('#focus-areas')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-200 hover:text-cyan-400 py-2 border-b border-white/5 flex items-center justify-between">
             <span>Strategic Focus Areas</span>
             <i class="fa-solid fa-chevron-right text-xs text-slate-500" aria-hidden="true"></i>
+          </a>
+          <a href={url('jips/')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-emerald-300 hover:text-emerald-200 py-2 border-b border-white/5 flex items-center justify-between">
+            <span>Joint Industry Projects (JIPs)</span>
+            <i class="fa-solid fa-chevron-right text-xs text-emerald-400" aria-hidden="true"></i>
           </a>
           <a href={url('insights/')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-200 hover:text-cyan-400 py-2 border-b border-white/5 flex items-center justify-between">
             <span>Marine Intelligence</span>
             <i class="fa-solid fa-chevron-right text-xs text-slate-500" aria-hidden="true"></i>
           </a>
           <a href={url('about/')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-200 hover:text-cyan-400 py-2 border-b border-white/5 flex items-center justify-between">
-            <span>Platform Mission</span>
+            <span>Alliance Mission</span>
             <i class="fa-solid fa-chevron-right text-xs text-slate-500" aria-hidden="true"></i>
           </a>
           <a href={url('briefcase/')} class="mobile-nav-link text-sm font-bold uppercase tracking-widest text-slate-200 hover:text-cyan-400 py-2 border-b border-white/5 flex items-center justify-between">
             <span>Offline Briefcase</span>
             <i class="fa-solid fa-chevron-right text-xs text-slate-500" aria-hidden="true"></i>
           </a>
+
+          <div class="pt-3 flex flex-col gap-3">
+            <button
+              type="button"
+              data-open-alliance-modal
+              class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 text-xs font-mono font-black uppercase tracking-wider flex items-center justify-center gap-2"
+            >
+              <span>Join Alliance / Propose JIP</span>
+              <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
+            </button>
 
           <div class="pt-3 flex flex-col gap-3">
             <button class="nav-pwa-install-btn hidden w-full py-3.5 rounded-xl bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider items-center justify-center gap-2" type="button">
@@ -252,6 +276,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <!-- PWA Controller (Service worker, offline toast, install prompt) -->
     <PWAController base={base} />
 
+    <!-- Global Join Alliance Modal -->
+    <JoinAllianceModal />
+
     <!-- Ultra-Sleek Marine Tech Footer -->
     <footer class="bg-[#03060E] text-slate-400 border-t border-cyan-500/15 py-20 md:py-28 relative overflow-hidden mt-24">
       <div class="absolute -top-40 right-1/4 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[180px] pointer-events-none"></div>
@@ -262,23 +289,23 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           <div class="lg:col-span-5 space-y-6">
             <Image src={logo} alt="OceanHub" width={220} class="w-48 brightness-0 invert opacity-95" />
             <p class="text-base text-slate-300 font-light leading-relaxed max-w-lg">
-              A shared multi-disciplinary platform connecting offshore operators, marine geophysics, geotechnical specialists, and technical partners around decision-ready evidence.
+              A Green Offshore Technology Alliance & Collaborative Innovation Network dedicated to exploring next-generation green engineering technologies for sustainable ocean development.
             </p>
             <div class="flex flex-wrap gap-2 pt-2">
-              <span class="hud-badge text-[10px]"><i class="fa-solid fa-bolt" aria-hidden="true"></i> STATIC-FIRST DELIVERY</span>
-              <span class="hud-badge text-[10px]"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> ZERO TRACKERS</span>
+              <span class="hud-badge text-[10px]"><i class="fa-solid fa-leaf" aria-hidden="true"></i> GREEN TECH ALLIANCE</span>
+              <span class="hud-badge text-[10px]"><i class="fa-solid fa-handshake" aria-hidden="true"></i> JOINT JIP RESEARCH</span>
               <span class="hud-badge text-[10px]"><i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i> PWA INSTALLABLE</span>
             </div>
           </div>
 
           <div class="lg:col-span-2 space-y-4">
-            <h2 class="text-xs font-mono font-bold uppercase tracking-[0.25em] text-cyan-400">Explore</h2>
+            <h2 class="text-xs font-mono font-bold uppercase tracking-[0.25em] text-cyan-400">Alliance Hub</h2>
             <ul class="space-y-3 text-sm">
+              <li><a href={url('jips/')} class="text-emerald-300 hover:text-emerald-200 transition-colors flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Joint Projects (JIPs)</a></li>
               <li><a href={url('#focus-areas')} class="text-slate-400 hover:text-cyan-300 transition-colors">Strategic Focus Areas</a></li>
               <li><a href={url('insights/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Marine Intelligence</a></li>
-              <li><a href={url('about/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Platform Mission</a></li>
+              <li><a href={url('about/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Alliance Mission</a></li>
               <li><a href={url('briefcase/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Offline Briefcase</a></li>
-              <li><a href={url('offline/')} class="text-slate-400 hover:text-cyan-300 transition-colors">Offline Fallback View</a></li>
             </ul>
           </div>
 
@@ -434,7 +461,28 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           icon: 'fa-book-open'
         },
         {
-          title: 'Platform Mission & Collaboration Architecture',
+          title: 'Joint Industry Projects (JIPs) Hub',
+          desc: 'Collaborative green engineering JIPs across CCUS 4D DAS, floating wind & low-impact acoustics',
+          category: 'Alliance JIP',
+          url: `${clientBase}jips/`,
+          icon: 'fa-handshake-angle'
+        },
+        {
+          title: 'JIP-01: Offshore CCUS 4D Optical DAS & Microseismic MRV',
+          desc: 'Permanent seafloor optical fiber strain sensing & continuous plume migration verification',
+          category: 'Alliance JIP',
+          url: `${clientBase}jips/#ccus-4d-mrv`,
+          icon: 'fa-diagram-project'
+        },
+        {
+          title: 'JIP-02: Floating Offshore Wind Foundation & Cyclic Soil Mechanics',
+          desc: 'Deepwater suction anchor holding capacity & non-linear cyclic p-y soil degradation',
+          category: 'Alliance JIP',
+          url: `${clientBase}jips/#floating-wind-foundations`,
+          icon: 'fa-wind'
+        },
+        {
+          title: 'Platform Mission & Alliance Charter',
           desc: 'Three foundational collaboration principles, open architecture & SBGf Rio talks',
           category: 'About',
           url: `${clientBase}about/`,

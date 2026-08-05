@@ -1,48 +1,48 @@
-# OceanHub 深度极致优化计划 (In-Depth Platform Optimization Plan)
+# OceanHub 技术联盟与绿色工程联合攻关 (JIP) 升级计划
 
-## 核心优化目标 (Objectives)
-将 OceanHub 从现代化静态展示站点全面升级为**深海工程级交互决策中枢与数字化情报工作台**，达到国际顶级海洋工程科技平台（如 Fugro / SLB / DNV / Wood Mackenzie）水准。
-
----
-
-## 深度优化任务清单 (Task Breakdown)
-
-### 1. 深度交互组件：交互式全水深地层剖面透视器 (`src/components/SubsurfaceVisualizer.astro`)
-- [x] 打造沉浸式 4 阶全深度海洋地层交互剖面（Surface Water -> Seabed Bathymetry -> Shallow Soil 0-120m -> Deep Reservoir 800-3000m）
-- [x] 支持点击/滑动不同深度层位，实时透视多波束、CPTu 锥尖阻力、浅层气断层、4D DAS 光纤与海洋哺乳动物声学场
-- [x] 嵌入首页与各大领域页面，提供沉浸式工程级交互
-
-### 2. 工程决策辅助工具：交互式海洋决策与勘察测绘方案配置器 (`src/components/DecisionScoper.astro`)
-- [x] 构建交互式工程选型与勘察方案生成器（Decision Scoping Engine）
-- [x] 用户选择工程类型（海上风电/深海CCUS/海缆路由/海洋基线）、作业水深与海底地质条件
-- [x] 实时动态生成推荐的多学科地球物理、深水原位岩土 CPTu、生态声学及长效 MRV 监测方案包
-- [x] 支持一键保存方案至离线公文包（Briefcase）或导出标准决策简报
-
-### 3. 全局 Command Palette 实时全文本地搜索优化 (`src/layouts/Layout.astro`)
-- [x] 为 `⌘K` 弹窗构建全量内容索引（包含 4 大领域、全量 Intelligence 研报及平台使命）
-- [x] 支持键盘上下键选择、实时关键词高亮匹配与无刷新直达
-
-### 4. 离线公文包工作台深度增强 (`src/pages/briefcase.astro`)
-- [x] 增加公文包数据一键导出（Export as Markdown Dossier / Printable Briefing）
-- [x] 增加离线存储容量与本地缓存健康度可视化仪表
-- [x] 提供打印友好模式（Printable Decision Briefing）
-
-### 5. 四大核心领域深度内容扩展与工程参数升级
-- [x] `src/content/focus-areas/ccus.md`: 增加 4D DAS 光纤布设、盖层毛细管压力不确定性、ISO 27914 合规标准与 ASCII 架构图
-- [x] `src/content/focus-areas/offshore-energy.md`: 增加超大直径单桩横向循环受荷 (P-Y)、深水漂浮式吸力锚与 CPTu 联合反演
-- [x] `src/content/focus-areas/marine-ecology.md`: 增加打桩噪声水下声传播损失模型 (RAM/PE)、PAM 水听器阵列与 eDNA
-- [x] `src/content/focus-areas/offshore-infrastructure.md`: 增加海底滑坡与浊流冲击力、海缆悬跨冲刷与自主 USV 声学巡检
-
-### 6. 全面质量验证与构建确认
-- [x] 执行 `npm run check` 确保 0 错误 0 警告
-- [x] 执行 `npm run build` 确保所有 14+ 页面与优化组件极速静态打包
-- [x] 运行 CI 策略与安全检查（`python scripts/check-ci-policy.py --enforce`）
-- [x] 提交并推送到远端仓库
+## 核心定位对齐 (Aligned Positioning)
+- **定位**：**绿色海洋工程技术联盟 (Green Offshore Technology Alliance & Collaborative Innovation Network)**
+- **使命**：**探索下一代绿色工程技术，助力海洋绿色可持续开发 (Exploring next-generation green offshore engineering technologies for sustainable marine development)**
+- **核心抓手**：**联合工业攻关项目 (Joint Industry Projects / JIP)**，汇聚业主、物探船队、岩土专家与科研机构攻克重大工程断裂与绿色转型难题。
 
 ---
 
-## 阶段总结与评审 (Review)
-1. **交互体验跃迁**：首页新增的 `SubsurfaceVisualizer`（水深地层剖面透视器）与 `DecisionScoper`（工程勘察决策方案配置器）极大增强了工业级专业度和科技感。
-2. **全局搜索赋能**：`⌘K` 实现了客户端 0 延迟实时多字段检索，能够快速定位焦点领域、深度研报和离线工作台。
-3. **公文包工作站升级**：支持导出 Markdown 格式决策证据档案（Evidence Dossier）并支持一键打印，满足海上工程团队无网作业下的协同需求。
-4. **内容专业深度**：4 大核心战略领域均补充了严格的工程参数（如 CPTu $q_c$、DNV-RP-F105 跨长振动、RAM 抛物方程声学模型、ISO 27914 封存标准）与可视化 ASCII 架构图。
+## 实施任务清单 (Task Breakdown)
+
+### 1. 全局品牌与定位文案重塑 (Brand & Tagline Re-alignment)
+- [x] 更新 `Layout.astro`、`index.astro`、`about.astro` 导航、页脚与头部标语：
+  - “A Collaborative Green Marine Innovation Network: Exploring next-generation green engineering technologies for sustainable ocean development.”
+  - 强化“绿色海洋工程技术联盟”与“打通跨学科证据链”的核心心智。
+
+### 2. 打造专属「绿色工程联合攻关专区」 (JIP Hub: `src/pages/jips/index.astro` & 首页模块)
+- [x] 创建 `src/pages/jips/index.astro` 页面，系统展示 4 大标志性联合攻关方向：
+  - **JIP 01: Offshore CCUS 4D Optical DAS & Microseismic MRV** (深水 CCUS 4D 永久光纤与微地震长期封存监测联合攻关)
+  - **JIP 02: Floating Offshore Wind Foundation & Cyclic Soil Mechanics** (漂浮式深远海风电吸力锚与复杂地层循环受荷联合攻关)
+  - **JIP 03: Ultra-Low Impact Marine Acoustics & Active Bubble Curtain** (极低生态扰动施工与水下噪声主动微气泡降噪联合攻关)
+  - **JIP 04: Subsea Green Energy Corridor & Autonomous USV Integrity** (深海绿电/绿氢海缆冲刷悬跨与自主 USV 智能巡护联合攻关)
+- [x] 首页新增 JIP 联合攻关专区，支持直观浏览课题目标、参研准入与发起协作。
+
+### 3. 构建全站「加入技术联盟 / 提交合作意向」交互模态框 (`JoinAllianceModal.astro`)
+- [x] 打造交互式多步骤申请流程（取代普通 mailto 链接）：
+  - **Step 1 机构类型选择**：项目业主/开发商、测绘与装备提供商、科研高校、海事工程总包
+  - **Step 2 合作课题匹配**：选择感兴趣的 JIP 攻关方向或提出新课题
+  - **Step 3 核心能力与诉求**：填写技术优势、作业船队/实验室资源与预期目标
+  - **Step 4 意向书生成与提交**：支持一键导出合作意向书草案并触发直连通道
+- [x] 全站导航栏、CTA 按钮统一绑定该交互模态框。
+
+### 4. 导航、离线公文包与全局搜索 (`⌘K`) 深度联动
+- [x] 在主导航栏与移动端抽屉中增加「Joint Projects (JIPs)」和「Join Alliance」入口。
+- [x] 将 JIP 项目与联盟章程索引至 `Layout.astro` 的客户端 `⌘K` 搜索引擎。
+- [x] 离线公文包（`briefcase.astro`）同步支持离线缓存 JIP 攻关方案与合作草案。
+
+### 5. 全面质量验证与构建确认
+- [x] 运行 `npm run check` 确保 0 错误 0 警告 (28 files verified)
+- [x] 运行 `npm run build` 确保所有 15+ 页面极速静态生成 (15 pages in 5.95s)
+- [x] 运行 `python scripts/check-ci-policy.py --enforce` 确保合规 (0 violations)
+
+---
+
+## 阶段成果回顾 (Review)
+1. **战略定位跃迁**：从泛化的数据共享平台，升华为具有实体工程研发号召力的“**绿色海洋工程技术联盟 (Green Offshore Technology Alliance)**”。
+2. **落地抓手成型**：推出 4 大具象化 JIP 课题，解决行业痛点（CCUS 4D DAS 长期监测、漂浮式风电吸力锚土体弱化、水下微气泡降噪、海缆冲刷与 USV 智能巡检）。
+3. **转化闭环建立**：全站配备 `JoinAllianceModal`，将单向内容展示转化为双向产业合作发起通道，极大提升了平台专业度与行业公信力。
