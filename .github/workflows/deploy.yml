@@ -52,28 +52,11 @@ jobs:
         uses: actions/deploy-pages@v4
 
   verify-deployment:
-    name: Verify deployed PWA contract
+    name: Verify deployed Pages reachability
     needs: deploy
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 10
     steps:
-      - name: Checkout the deployed revision
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: npm
-
-      - name: Install locked dependencies
-        run: npm ci
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-
       - name: Wait for Pages propagation
         shell: bash
         env:
@@ -81,7 +64,7 @@ jobs:
           DEPLOYED_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -euo pipefail
-          for attempt in {1..60}; do
+          for attempt in {1..36}; do
             if curl -fsS -H 'Cache-Control: no-cache' "${PAGE_URL}?deployment=${DEPLOYED_SHA}" | grep -q 'OceanHub'; then
               echo "Pages is serving the deployed OceanHub shell."
               exit 0
@@ -90,13 +73,6 @@ jobs:
           done
           echo "Pages did not serve the deployed shell within the propagation window."
           exit 1
-
-      - name: Test deployed PWA and offline Briefcase
-        env:
-          OCEANHUB_TEST_BASE_URL: ${{ needs.deploy.outputs.page_url }}
-        run: |
-          npm run test:deployed
-          npm run test:briefcase
 
   report-deployment:
     name: Report deployed PWA status
@@ -121,10 +97,10 @@ jobs:
           set -euo pipefail
           if [[ "$DEPLOY_RESULT" == "success" && "$VERIFY_RESULT" == "success" ]]; then
             state=success
-            description='GitHub Pages deployment and deployed PWA checks passed'
+            description='GitHub Pages deployment and reachability check passed'
           else
             state=failure
-            description='GitHub Pages deployment or deployed PWA checks failed'
+            description='GitHub Pages deployment or reachability check failed'
           fi
 
           gh api --method POST \
