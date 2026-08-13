@@ -1,241 +1,340 @@
 ---
-// Interactive Offshore Decision & Survey Campaign Scoping Engine
-// Generates tailored multidisciplinary evidence protocols based on project archetypes.
+import { getEvidencePlan } from '../lib/matchEvidencePlan';
+import type { LifecycleStage } from '../lib/decisionEvidence';
+
+const base = import.meta.env.BASE_URL;
+const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
+
+const stageOptions: Array<{ value: LifecycleStage; label: string }> = [
+  { value: 'feasibility', label: 'Feasibility — storage-site qualification' },
+  { value: 'pre-feed', label: 'Pre-FEED — characterization & baseline design' },
+  { value: 'feed', label: 'FEED — monitoring design definition' },
+  { value: 'operations', label: 'Operations — injection surveillance' },
+  { value: 'monitoring', label: 'Monitoring — assurance & verification' }
+];
+
+const focusOptions = [
+  { value: 'all', label: 'All matched evidence', tags: undefined },
+  { value: 'baseline', label: 'Pre-injection baseline & characterization', tags: ['baseline'] },
+  { value: 'containment', label: 'Plume migration & containment', tags: ['containment'] },
+  { value: 'induced-seismicity', label: 'Injection-related seismicity', tags: ['induced-seismicity'] }
+] as const;
+
+const planLookup = Object.fromEntries(
+  stageOptions.flatMap((stage) =>
+    focusOptions.map((focus) => [
+      `${stage.value}:${focus.value}`,
+      getEvidencePlan({
+        projectArchetype: 'offshore-ccs',
+        lifecycleStage: stage.value,
+        tags: focus.tags ? [...focus.tags] : undefined
+      })
+    ])
+  )
+);
 ---
 
-<div class="glass-panel p-6 sm:p-10 rounded-3xl border border-cyan-500/30 relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.6)] my-12" id="decision-scoper-root">
-  <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-white/10 gap-4">
-    <div>
-      <div class="hud-badge mb-2">
-        <i class="fa-solid fa-sliders text-[10px]" aria-hidden="true"></i> INTERACTIVE DECISION SCOPING ENGINE
-      </div>
-      <h3 class="text-2xl sm:text-3xl font-black text-white font-display">
-        Tailor Your Multidisciplinary Evidence Protocol
-      </h3>
-      <p class="text-sm text-slate-300 font-light mt-1">
-        Select your project parameters to dynamically assemble the recommended geophysical, geotechnical, and environmental evidence chain.
+<section
+  class="glass-panel my-12 overflow-hidden rounded-3xl border border-cyan-500/25 shadow-[0_20px_60px_rgba(0,0,0,0.45)]"
+  id="decision-scoper-root"
+  aria-labelledby="decision-scoper-title"
+>
+  <div class="border-b border-white/10 px-6 py-8 sm:px-10 sm:py-10">
+    <div class="max-w-4xl">
+      <p class="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-300">Decision Scoper</p>
+      <h2 id="decision-scoper-title" class="font-display text-3xl font-black tracking-tight text-white sm:text-4xl">
+        Build a traceable offshore CCS evidence plan
+      </h2>
+      <p class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-300 sm:text-base">
+        Start from the project decision, then trace each recommendation through uncertainty, required evidence, delivery capability and the engineering precedent behind it.
       </p>
     </div>
-    <span class="text-xs font-mono px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 self-start sm:self-center">
-      DECISION ALGORITHM V2.4
-    </span>
   </div>
 
-  <!-- Interactive Controls & Output Grid -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-8">
-    <!-- Left Column: Parameter Selection -->
-    <div class="lg:col-span-5 space-y-6">
-      <!-- 1. Project Archetype -->
-      <div>
-        <label for="scoper-archetype" class="block text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-2">
-          1. Project Archetype
-        </label>
-        <select id="scoper-archetype" class="w-full bg-[#081226] border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400 font-sans">
-          <option value="fixed-wind">Fixed Bottom Offshore Wind (Monopile / Jacket)</option>
-          <option value="floating-wind">Floating Offshore Wind (Suction Caissons / Drag Anchors)</option>
-          <option value="ccus-storage">Sub-seabed Carbon Storage & Caprock MRV</option>
-          <option value="subsea-cable">Subsea HVDC Cable / Pipeline Route Corridor</option>
-        </select>
-      </div>
-
-      <!-- 2. Geological Setting -->
-      <div>
-        <label for="scoper-geology" class="block text-xs font-mono font-bold text-sky-400 uppercase tracking-wider mb-2">
-          2. Seabed Geological Regime
-        </label>
-        <select id="scoper-geology" class="w-full bg-[#081226] border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sky-400 font-sans">
-          <option value="dense-sand">Dense Sand with Mobile Bedforms & Scour Risk</option>
-          <option value="soft-clay">Soft Normally Consolidated Marine Clays (Cyclic Degradation)</option>
-          <option value="carbonates">Complex Carbonate Seabed & Cavity Geohazards</option>
-          <option value="fault-slope">Steep Continental Slope with Fault Escarpments</option>
-        </select>
-      </div>
-
-      <!-- 3. Lifecycle Stage -->
-      <div>
-        <label for="scoper-stage" class="block text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider mb-2">
-          3. Project Decision Milestone
-        </label>
-        <select id="scoper-stage" class="w-full bg-[#081226] border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-400 font-sans">
-          <option value="feasibility">Feasibility & Broad Geohazard Scoping</option>
-          <option value="pre-feed">Pre-FEED Detailed Ground Model & Foundation Sizing</option>
-          <option value="eia-consent">Regulatory Consenting & Environmental Impact Assessment</option>
-          <option value="post-install">Installation Verification & Long-term 4D MRV</option>
-        </select>
-      </div>
-
-      <!-- Quick Summary Status Box -->
-      <div class="p-5 rounded-2xl bg-cyan-950/20 border border-cyan-500/20">
-        <div class="text-[11px] font-mono text-cyan-300 font-bold mb-1">EVIDENCE READINESS INDEX</div>
-        <div class="flex items-center gap-3">
-          <div class="text-2xl font-mono font-bold text-white" id="scoper-fidelity">98.5%</div>
-          <div class="text-xs text-slate-400">Target uncertainty reduction threshold achieved</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Column: Assembled Evidence Protocol Screen -->
-    <div class="lg:col-span-7">
-      <div class="glass-card p-6 sm:p-8 h-full flex flex-col justify-between border-cyan-500/30 bg-[#060D1E]/95">
+  <div class="grid grid-cols-1 gap-0 lg:grid-cols-12">
+    <div class="border-b border-white/10 p-6 sm:p-8 lg:col-span-4 lg:border-b-0 lg:border-r">
+      <div class="space-y-6">
         <div>
-          <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-            <span class="text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider" id="scoper-protocol-title">
-              RECOMMENDED EVIDENCE PROTOCOL
-            </span>
-            <span class="hud-badge text-[10px]" id="scoper-std-badge">ISO 19901 / OSPAR COMPLIANT</span>
-          </div>
-
-          <!-- Dynamic Output Blocks -->
-          <div class="space-y-4" id="scoper-output-blocks">
-            <!-- Block 1: Geophysics -->
-            <div class="p-4 rounded-xl bg-black/40 border border-cyan-500/20">
-              <div class="text-[11px] font-mono font-bold text-cyan-400 mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-water text-xs"></i> 1. Marine Geophysics & Acoustic Imaging
-              </div>
-              <p class="text-xs text-slate-300 font-light" id="scoper-geophys-desc">
-                Ultra-high-resolution 3D seismic grid (12.5m bin) combined with multi-beam echo-sounder bathymetry and side-scan sonar for micro-topography.
-              </p>
-            </div>
-
-            <!-- Block 2: Geotechnics -->
-            <div class="p-4 rounded-xl bg-black/40 border border-sky-500/20">
-              <div class="text-[11px] font-mono font-bold text-sky-400 mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-wind text-xs"></i> 2. Deep In-Situ Seabed Geotechnics
-              </div>
-              <p class="text-xs text-slate-300 font-light" id="scoper-geotech-desc">
-                Seabed continuous CPTu to 40m penetration, high-frequency pore pressure dissipation tests, and advanced cyclic triaxial laboratory verification.
-              </p>
-            </div>
-
-            <!-- Block 3: Environmental & MRV -->
-            <div class="p-4 rounded-xl bg-black/40 border border-emerald-500/20">
-              <div class="text-[11px] font-mono font-bold text-emerald-400 mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-leaf text-xs"></i> 3. Environmental Baseline & 4D Monitoring
-              </div>
-              <p class="text-xs text-slate-300 font-light" id="scoper-environ-desc">
-                Passive acoustic hydrophone grid (10Hz - 160kHz), underwater noise propagation modelling (RAM), and seasonal eDNA water sampling.
-              </p>
-            </div>
-          </div>
+          <label for="scoper-archetype" class="mb-2 block text-xs font-bold text-slate-200">1. Project archetype</label>
+          <select
+            id="scoper-archetype"
+            class="w-full rounded-xl border border-white/15 bg-[#081226] px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none"
+          >
+            <option value="offshore-ccs">Offshore CO₂ geological storage</option>
+          </select>
+          <p class="mt-2 text-xs leading-relaxed text-slate-500">This first evidence-backed slice intentionally covers offshore CCS only.</p>
         </div>
 
-        <!-- Actions -->
-        <div class="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4 mt-6">
-          <button id="scoper-save-briefcase-btn" type="button" class="px-5 py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-300 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all">
-            <i class="fa-solid fa-briefcase text-xs"></i>
-            <span id="scoper-save-label">Save Scoping to Briefcase</span>
-          </button>
-          
-          <button type="button" data-open-alliance-modal class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,240,255,0.3)] cursor-pointer">
-            Mobilize Capability →
+        <div>
+          <label for="scoper-stage" class="mb-2 block text-xs font-bold text-slate-200">2. Lifecycle / decision stage</label>
+          <select
+            id="scoper-stage"
+            class="w-full rounded-xl border border-white/15 bg-[#081226] px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none"
+          >
+            {stageOptions.map((stage) => (
+              <option value={stage.value} selected={stage.value === 'pre-feed'}>{stage.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label for="scoper-focus" class="mb-2 block text-xs font-bold text-slate-200">3. Decision focus</label>
+          <select
+            id="scoper-focus"
+            class="w-full rounded-xl border border-white/15 bg-[#081226] px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none"
+          >
+            {focusOptions.map((focus) => <option value={focus.value}>{focus.label}</option>)}
+          </select>
+          <p class="mt-2 text-xs leading-relaxed text-slate-500">Use a focus only when it materially narrows the evidence question.</p>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-black/20 p-5">
+          <p class="text-[11px] font-mono font-bold uppercase tracking-[0.14em] text-slate-400">Reference scope</p>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">
+            Public offshore storage precedents currently include Sleipner and Northern Lights Aurora, linked to operator/project evidence and ISO 27914:2026.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 sm:p-8 lg:col-span-8 lg:p-10">
+      <ol class="mb-8 grid grid-cols-1 gap-2 sm:grid-cols-5" aria-label="OceanHub evidence trace">
+        {['Decision', 'Uncertainty', 'Evidence', 'Capability', 'Provenance'].map((step, index) => (
+          <li class="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.025] px-3 py-3 sm:block">
+            <span class="font-mono text-[10px] text-cyan-400">0{index + 1}</span>
+            <span class="text-xs font-bold text-slate-200 sm:mt-1 sm:block">{step}</span>
+          </li>
+        ))}
+      </ol>
+
+      <div class="mb-6 flex flex-col gap-2 border-b border-white/10 pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="text-[11px] font-mono font-bold uppercase tracking-[0.16em] text-cyan-300">Evidence plan</p>
+          <p id="scoper-plan-summary" class="mt-2 text-sm text-slate-400" aria-live="polite"></p>
+        </div>
+        <p class="text-xs text-slate-500">Recommendations remain traceable to the cited precedent.</p>
+      </div>
+
+      <div id="scoper-plan-list" class="space-y-6" aria-live="polite"></div>
+
+      <div class="mt-8 flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p class="max-w-xl text-xs leading-relaxed text-slate-500">
+          OceanHub structures evidence for project discussion; it does not replace project-specific engineering judgement, consenting review or specialist design.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a
+            href={url('jips/')}
+            class="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-xs font-bold text-white transition-colors hover:bg-white/10"
+          >
+            Explore proposed JIPs
+          </a>
+          <button
+            type="button"
+            data-open-alliance-modal
+            class="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-5 py-3 text-xs font-black text-slate-950 transition-colors hover:bg-cyan-300"
+          >
+            Discuss capability needs
           </button>
         </div>
       </div>
     </div>
   </div>
-</div>
+</section>
+
+<script id="decision-scoper-data" type="application/json" set:html={JSON.stringify(planLookup)}></script>
 
 <script>
-  const scoperArchetype = document.getElementById('scoper-archetype') as HTMLSelectElement | null;
-  const scoperGeology = document.getElementById('scoper-geology') as HTMLSelectElement | null;
-  const scoperStage = document.getElementById('scoper-stage') as HTMLSelectElement | null;
-
-  const geophysDesc = document.getElementById('scoper-geophys-desc');
-  const geotechDesc = document.getElementById('scoper-geotech-desc');
-  const environDesc = document.getElementById('scoper-environ-desc');
-  const fidelityEl = document.getElementById('scoper-fidelity');
-  const saveBtn = document.getElementById('scoper-save-briefcase-btn');
-  const saveLabel = document.getElementById('scoper-save-label');
-
-  interface ScoperResult {
-    geophys: string;
-    geotech: string;
-    environ: string;
-    fidelity: string;
+  interface EvidenceSource {
+    title: string;
+    publisher: string;
+    url: string;
+    publishedYear: number;
+    sourceType: string;
   }
 
-  function calculateProtocol(): ScoperResult {
-    const arch = scoperArchetype?.value || 'fixed-wind';
-    const geo = scoperGeology?.value || 'dense-sand';
-
-    if (arch === 'ccus-storage') {
-      return {
-        geophys: '4D Baseline & Time-lapse Seismic imaging, high-density streamer configuration with full-waveform inversion (FWI) resolving deep fault seals (800m - 3000m).',
-        geotech: 'Deep wellbore caprock integrity coring, geomechanical triaxial stress testing, and fracture breakdown pressure analysis under supercritical CO2.',
-        environ: 'Permanently trenched 4D DAS optical fiber cables, seabed methane/CO2 bubble flare hydro-acoustic sniffers, and continuous benthic fauna monitoring.',
-        fidelity: '99.2%'
-      };
-    }
-
-    if (arch === 'floating-wind') {
-      return {
-        geophys: 'Sub-bottom profiler (Chirp 2-16kHz), high-resolution bathymetry for anchor mooring corridors, and shallow gas pocket blanking hazard identification.',
-        geotech: 'Heavy seabed CPTu (up to 30m) with continuous pore pressure measurement, box coring for suction caisson holding capacity, and cyclic t-z / q-z curves.',
-        environ: 'Mooring line acoustic vibration and cetacean entanglement prevention hydrophone array with real-time AIS/satellite alert integration.',
-        fidelity: '97.8%'
-      };
-    }
-
-    if (arch === 'subsea-cable') {
-      return {
-        geophys: 'Ultra-dense multi-beam bathymetry (0.2m grid), side-scan sonar for seabed boulder/debris detection, and magnetometer array for unexploded ordnance (UXO).',
-        geotech: 'Shallow seabed CPTu (0-6m) and continuous thermal resistivity testing for cable thermal dissipation and jet-trenching burial feasibility.',
-        environ: 'Benthic habitat vulnerability baseline, reef avoidance buffer corridors, and post-installation EMF (electromagnetic field) monitoring.',
-        fidelity: '98.9%'
-      };
-    }
-
-    // Default: Fixed Wind
-    return {
-      geophys: 'Ultra-high-resolution 3D shallow seismic (12.5m bin), Sparker profiling for paleo-channels, and multi-beam bathymetry for scour mitigation.',
-      geotech: 'Deep continuous seabed CPTu to 50m penetration, cyclic p-y lateral degradation modeling, and rotational shear tests for large-diameter monopile fatigue limits.',
-      environ: 'Continuous passive acoustic monitoring (PAM) during piling, acoustic deterrence device (ADD) triggers, and sound propagation RAM parabolic equation modeling.',
-      fidelity: geo === 'dense-sand' ? '98.5%' : '97.4%'
-    };
+  interface EvidenceRequirement {
+    id: string;
+    discipline: string;
+    uncertainty: string;
+    evidenceNeeded: string;
+    methods: string[];
+    capabilities: string[];
+    deliverables: string[];
+    standards: string[];
+    rationale: string;
   }
 
-  function updateProtocol() {
-    const res = calculateProtocol();
-    if (geophysDesc) geophysDesc.textContent = res.geophys;
-    if (geotechDesc) geotechDesc.textContent = res.geotech;
-    if (environDesc) environDesc.textContent = res.environ;
-    if (fidelityEl) fidelityEl.textContent = res.fidelity;
+  interface EvidencePlanItem {
+    caseId: string;
+    caseTitle: string;
+    decision: string;
+    outcome: string;
+    projectContext: string;
+    requirement: EvidenceRequirement;
+    sources: EvidenceSource[];
   }
 
-  scoperArchetype?.addEventListener('change', updateProtocol);
-  scoperGeology?.addEventListener('change', updateProtocol);
-  scoperStage?.addEventListener('change', updateProtocol);
+  const dataNode = document.getElementById('decision-scoper-data');
+  const stageSelect = document.getElementById('scoper-stage') as HTMLSelectElement | null;
+  const focusSelect = document.getElementById('scoper-focus') as HTMLSelectElement | null;
+  const summary = document.getElementById('scoper-plan-summary');
+  const planList = document.getElementById('scoper-plan-list');
+  const planLookup = JSON.parse(dataNode?.textContent ?? '{}') as Record<string, EvidencePlanItem[]>;
 
-  saveBtn?.addEventListener('click', () => {
-    try {
-      const archText = scoperArchetype?.options[scoperArchetype.selectedIndex].text || 'Offshore Campaign';
-      const geoText = scoperGeology?.options[scoperGeology.selectedIndex].text || '';
-      const stageText = scoperStage?.options[scoperStage.selectedIndex].text || '';
-      const res = calculateProtocol();
+  const disciplineLabels: Record<string, string> = {
+    geophysics: 'Geophysics',
+    geology: 'Geology',
+    geomechanics: 'Geomechanics',
+    wells: 'Wells & direct evidence',
+    environment: 'Environment',
+    monitoring: 'Monitoring',
+    'data-integration': 'Data integration'
+  };
 
-      const item = {
-        id: `scoper:${Date.now()}`,
-        title: `Decision Scoping: ${archText}`,
-        description: `Geology: ${geoText} | Milestone: ${stageText} | Protocol: ${res.geophys.slice(0, 80)}...`,
-        route: 'briefcase/',
-        type: 'insight',
-        version: 'scoper-v1',
-        savedAt: new Date().toISOString()
+  function escapeHtml(value: string) {
+    return value.replace(/[&<>'"]/g, (character) => {
+      const entities: Record<string, string> = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#039;',
+        '"': '&quot;'
       };
+      return entities[character] ?? character;
+    });
+  }
 
-      const key = 'oceanhub-briefcase-v1';
-      const list = JSON.parse(localStorage.getItem(key) || '[]');
-      list.unshift(item);
-      localStorage.setItem(key, JSON.stringify(list));
+  function renderBulletList(items: string[]) {
+    return `<ul class="mt-2 space-y-1.5 text-sm leading-relaxed text-slate-300">${items
+      .map((item) => `<li class="flex gap-2"><span class="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-cyan-400/70"></span><span>${escapeHtml(item)}</span></li>`)
+      .join('')}</ul>`;
+  }
 
-      if (saveLabel) saveLabel.textContent = '✓ Saved to Briefcase!';
-      window.dispatchEvent(new CustomEvent('oceanhub:briefcase-updated'));
-      setTimeout(() => {
-        if (saveLabel) saveLabel.textContent = 'Save Scoping to Briefcase';
-      }, 2500);
-    } catch {
-      // ignore
+  function renderSources(sources: EvidenceSource[]) {
+    return sources
+      .map(
+        (source) => `
+          <a
+            href="${escapeHtml(source.url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block rounded-lg border border-white/10 bg-black/20 px-3 py-2.5 transition-colors hover:border-cyan-400/30 hover:bg-cyan-500/5"
+          >
+            <span class="block text-xs font-bold text-slate-200">${escapeHtml(source.title)}</span>
+            <span class="mt-1 block text-[11px] text-slate-500">${escapeHtml(source.publisher)} · ${source.publishedYear} · ${escapeHtml(source.sourceType)}</span>
+          </a>
+        `
+      )
+      .join('');
+  }
+
+  function renderRequirement(item: EvidencePlanItem, index: number) {
+    const requirement = item.requirement;
+    return `
+      <section class="border-t border-white/10 pt-6 first:border-t-0 first:pt-0" data-scoper-requirement="${escapeHtml(requirement.id)}">
+        <div class="mb-5 flex items-center gap-3">
+          <span class="flex h-7 w-7 items-center justify-center rounded-lg border border-cyan-400/20 bg-cyan-500/10 font-mono text-[10px] font-bold text-cyan-300">${String(index + 1).padStart(2, '0')}</span>
+          <h4 class="text-sm font-bold text-white">${escapeHtml(disciplineLabels[requirement.discipline] ?? requirement.discipline)}</h4>
+        </div>
+
+        <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
+          <div>
+            <p class="text-[10px] font-mono font-bold uppercase tracking-[0.14em] text-slate-500">Key uncertainty</p>
+            <p class="mt-2 text-sm leading-relaxed text-slate-200">${escapeHtml(requirement.uncertainty)}</p>
+          </div>
+          <div>
+            <p class="text-[10px] font-mono font-bold uppercase tracking-[0.14em] text-slate-500">Evidence required</p>
+            <p class="mt-2 text-sm leading-relaxed text-slate-200">${escapeHtml(requirement.evidenceNeeded)}</p>
+          </div>
+          <div>
+            <p class="text-[10px] font-mono font-bold uppercase tracking-[0.14em] text-slate-500">Recommended methods</p>
+            ${renderBulletList(requirement.methods)}
+          </div>
+          <div>
+            <p class="text-[10px] font-mono font-bold uppercase tracking-[0.14em] text-slate-500">Capability modules</p>
+            ${renderBulletList(requirement.capabilities)}
+          </div>
+          <div>
+            <p class="text-[10px] font-mono font-bold uppercase tracking-[0.14em] text-slate-500">Expected deliverables</p>
+            ${renderBulletList(requirement.deliverables)}
+          </div>
+          <div>
+            <p class="text-[10px] font-mono font-bold uppercase tracking-[0.14em] text-slate-500">Applicable standards</p>
+            ${renderBulletList(requirement.standards)}
+          </div>
+        </div>
+
+        <div class="mt-5 rounded-xl border border-white/10 bg-white/[0.025] p-4">
+          <p class="text-[10px] font-mono font-bold uppercase tracking-[0.14em] text-cyan-300">Why this is in the plan</p>
+          <p class="mt-2 text-sm leading-relaxed text-slate-300">${escapeHtml(requirement.rationale)}</p>
+        </div>
+
+        <div class="mt-5">
+          <p class="mb-2 text-[10px] font-mono font-bold uppercase tracking-[0.14em] text-slate-500">Precedent & provenance</p>
+          <div class="grid grid-cols-1 gap-2 md:grid-cols-2">${renderSources(item.sources)}</div>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderPlan() {
+    if (!stageSelect || !focusSelect || !summary || !planList) return;
+
+    const key = `${stageSelect.value}:${focusSelect.value}`;
+    const plan = planLookup[key] ?? [];
+
+    if (plan.length === 0) {
+      summary.textContent = 'No direct public reference pattern is encoded for this combination yet.';
+      planList.innerHTML = `
+        <div class="rounded-2xl border border-amber-400/20 bg-amber-500/5 p-6">
+          <h3 class="text-base font-bold text-white">Evidence gap, not a fabricated recommendation</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-400">OceanHub does not currently have a source-backed precedent for this stage and focus. Choose a broader focus or add a validated engineering case to the knowledge layer.</p>
+        </div>
+      `;
+      return;
     }
-  });
+
+    const cases = new Map<string, EvidencePlanItem[]>();
+    for (const item of plan) {
+      const entries = cases.get(item.caseId) ?? [];
+      entries.push(item);
+      cases.set(item.caseId, entries);
+    }
+
+    summary.textContent = `${plan.length} evidence workstream${plan.length === 1 ? '' : 's'} from ${cases.size} reference pattern${cases.size === 1 ? '' : 's'}.`;
+
+    planList.innerHTML = [...cases.values()]
+      .map((items) => {
+        const first = items[0];
+        return `
+          <article class="rounded-2xl border border-white/10 bg-[#060D1E]/75 p-5 sm:p-7" data-scoper-case="${escapeHtml(first.caseId)}">
+            <div class="border-b border-white/10 pb-6">
+              <p class="text-[10px] font-mono font-bold uppercase tracking-[0.14em] text-cyan-300">Reference pattern</p>
+              <h3 class="mt-2 text-xl font-black text-white font-display">${escapeHtml(first.caseTitle)}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-slate-400">${escapeHtml(first.projectContext)}</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-5 border-b border-white/10 py-6 xl:grid-cols-2">
+              <div>
+                <p class="text-[10px] font-mono font-bold uppercase tracking-[0.14em] text-slate-500">Decision</p>
+                <p class="mt-2 text-sm font-semibold leading-relaxed text-slate-100">${escapeHtml(first.decision)}</p>
+              </div>
+              <div>
+                <p class="text-[10px] font-mono font-bold uppercase tracking-[0.14em] text-slate-500">Decision outcome</p>
+                <p class="mt-2 text-sm leading-relaxed text-slate-300">${escapeHtml(first.outcome)}</p>
+              </div>
+            </div>
+
+            <div class="space-y-7 pt-6">
+              ${items.map((item, index) => renderRequirement(item, index)).join('')}
+            </div>
+          </article>
+        `;
+      })
+      .join('');
+  }
+
+  stageSelect?.addEventListener('change', renderPlan);
+  focusSelect?.addEventListener('change', renderPlan);
+  renderPlan();
 </script>
