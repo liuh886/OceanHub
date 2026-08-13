@@ -69,6 +69,16 @@ jobs:
       - name: Type-check and build
         run: npm run ci
 
+      - name: Enforce current product semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          forbidden='data-open-alliance-modal|ACTIVE JIP COLLABORATION|OPEN ACCESS PEER-REVIEWED|DOI / PERMALINK VERIFIED|oceanhub\.global'
+          if grep -RniE "$forbidden" src; then
+            echo "Superseded OceanHub product semantics remain in production source."
+            exit 1
+          fi
+
       - name: Install Chromium
         if: needs.scope.outputs.browser == 'true'
         run: npx playwright install --with-deps chromium
