@@ -9,6 +9,7 @@
     "ci": "npm run check && npm run build",
     "test:briefcase": "node scripts/test-briefcase.mjs",
     "test:deployed": "node scripts/test-deployed-pwa.mjs",
+    "test:scoper": "node scripts/test-decision-scoper.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
