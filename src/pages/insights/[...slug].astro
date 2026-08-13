@@ -5,8 +5,8 @@ import OfflineSaveButton from '../../components/OfflineSaveButton.astro';
 import { contentVersion } from '../../lib/contentVersion';
 
 export async function getStaticPaths() {
-  const insightEntries = await getCollection('insights');
-  return insightEntries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+  const entries = await getCollection('insights');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
 const base = import.meta.env.BASE_URL;
@@ -14,153 +14,57 @@ const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const version = contentVersion(entry);
-
-// Calculate estimated reading time
 const wordCount = entry.body ? entry.body.split(/\s+/).length : 600;
 const readTimeMinutes = Math.max(3, Math.ceil(wordCount / 200));
-
-const publishFormatted = entry.data.publishDate.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
-});
+const published = entry.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+const canonicalInsightUrl = new URL(`${base.replace(/^\/+/, '')}insights/${entry.id}/`, Astro.site).toString();
+const citation = `${entry.data.author} (${entry.data.publishDate.getFullYear()}). ${entry.data.title}. OceanHub. ${canonicalInsightUrl}`;
 ---
 
 <Layout title={`${entry.data.title} | OceanHub Intelligence`} description={entry.data.description}>
-  <article class="max-w-5xl mx-auto px-6 sm:px-8 py-16 md:py-24">
-    <!-- Header -->
+  <article class="mx-auto max-w-5xl px-6 py-16 sm:px-8 md:py-24">
     <header class="mb-14 reveal">
-      <a href={url('insights/')} class="inline-flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-widest mb-8 transition-colors group">
-        <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform" aria-hidden="true"></i>
-        <span>Back to Marine Intelligence</span>
-      </a>
-
-      <div class="flex flex-wrap items-center gap-3 mb-6">
-        <span class="hud-badge text-[11px]"><i class="fa-solid fa-file-waveform text-cyan-400" aria-hidden="true"></i> TECHNICAL BRIEF</span>
+      <a href={url('insights/')} class="text-xs font-mono font-bold uppercase tracking-widest text-cyan-400 hover:text-cyan-300">← Engineering Intelligence</a>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <span class="hud-badge text-[11px]">TECHNICAL BRIEF</span>
         {entry.data.tags.map((tag) => <span class="evidence-chip">{tag}</span>)}
-        <span class="text-xs font-mono text-slate-400 flex items-center gap-1.5 ml-auto">
-          <i class="fa-regular fa-clock text-cyan-400"></i>
-          <span>{readTimeMinutes} min read</span>
-        </span>
+        <span class="ml-auto text-xs font-mono text-slate-500">{readTimeMinutes} min read</span>
       </div>
-
-      <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight mb-8 font-display leading-[1.08]">
-        {entry.data.title}
-      </h1>
-
-      <div class="flex flex-wrap items-center justify-between gap-4 py-5 border-y border-white/10 text-xs font-mono text-slate-300">
-        <div class="flex flex-wrap items-center gap-4">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-            <span class="text-white font-bold">{entry.data.author}</span>
-          </div>
-          <span class="text-slate-600 hidden sm:inline" aria-hidden="true">•</span>
-          <time datetime={entry.data.publishDate.toISOString()} class="text-cyan-300">
-            {publishFormatted}
-          </time>
-          <span class="text-slate-600 hidden sm:inline" aria-hidden="true">•</span>
-          <span class="text-emerald-400 font-bold">OPEN ACCESS PEER-REVIEWED</span>
-        </div>
-
-        <button
-          type="button"
-          id="copy-citation-btn"
-          class="px-3 py-1.5 rounded-lg bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 hover:text-white text-[11px] font-mono flex items-center gap-2 transition-all cursor-pointer"
-        >
-          <i class="fa-solid fa-quote-right text-xs"></i>
-          <span id="citation-label">Cite Brief</span>
-        </button>
+      <h1 class="mt-6 font-display text-4xl font-black leading-tight text-white sm:text-6xl">{entry.data.title}</h1>
+      <div class="mt-7 flex flex-wrap gap-4 border-y border-white/10 py-4 text-xs font-mono text-slate-400">
+        <strong class="text-slate-200">{entry.data.author}</strong><span>•</span><time datetime={entry.data.publishDate.toISOString()}>{published}</time><span>•</span><span>OceanHub technical note</span>
       </div>
-
-      <!-- Offline Briefcase Save Panel -->
-      <div class="mt-8">
-        <OfflineSaveButton
-          contentId={`insight:${entry.id}`}
-          title={entry.data.title}
-          description={entry.data.description}
-          route={`insights/${entry.id}`}
-          contentType="insight"
-          version={version}
-        />
-      </div>
+      <div class="mt-7"><OfflineSaveButton contentId={`insight:${entry.id}`} title={entry.data.title} description={entry.data.description} route={`insights/${entry.id}`} contentType="insight" version={version} /></div>
     </header>
 
-    <!-- Executive Summary Callout Box -->
-    <div class="glass-card p-6 sm:p-8 rounded-2xl border-cyan-500/30 bg-gradient-to-r from-cyan-950/30 via-slate-950/40 to-transparent mb-12 reveal">
-      <div class="flex items-center gap-2 text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider mb-2">
-        <i class="fa-solid fa-crosshairs text-cyan-400"></i>
-        <span>EXECUTIVE EVIDENCE SYNOPSIS</span>
-      </div>
-      <p class="text-slate-200 text-sm sm:text-base font-light leading-relaxed">
-        {entry.data.description}
-      </p>
-    </div>
+    <section class="reveal mb-12 rounded-2xl border border-cyan-500/20 bg-cyan-950/20 p-6 sm:p-8">
+      <p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-300">Executive synopsis</p>
+      <p class="mt-3 text-base leading-relaxed text-slate-300">{entry.data.description}</p>
+    </section>
 
-    <!-- Markdown Article Content -->
-    <div class="prose prose-invert prose-cyan max-w-none reveal">
-      <Content />
-    </div>
+    <div class="prose prose-invert prose-cyan max-w-none reveal"><Content /></div>
 
-    <!-- Academic Citation Modal / Collapsible Box -->
-    <div class="mt-16 p-6 rounded-2xl bg-black/50 border border-white/10 reveal">
-      <div class="flex items-center justify-between mb-4">
-        <span class="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-          <i class="fa-solid fa-book-bookmark text-cyan-400 mr-2"></i> Reference Citation (APA / BibTeX)
-        </span>
-        <span class="text-[10px] font-mono text-cyan-400">DOI / PERMALINK VERIFIED</span>
-      </div>
-      <div class="p-4 rounded-xl bg-slate-950/80 border border-white/5 font-mono text-xs text-slate-300 select-all overflow-x-auto">
-        OceanHub Intelligence ({entry.data.publishDate.getFullYear()}). <em>{entry.data.title}</em>. Green Offshore Technology Alliance. Retrieved from https://oceanhub.global/insights/{entry.id}/
-      </div>
-    </div>
+    <section class="reveal mt-16 rounded-2xl border border-white/10 bg-black/30 p-6">
+      <p class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Suggested citation</p>
+      <p class="mt-2 text-xs leading-relaxed text-slate-300">{citation}</p>
+    </section>
 
-    <!-- Bottom Navigation & Discussion -->
-    <div class="mt-16 pt-10 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-6 reveal">
-      <a href={url('insights/')} class="inline-flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-wider group">
-        <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform" aria-hidden="true"></i>
-        <span>Return to Marine Intelligence</span>
-      </a>
-      
-      <button
-        type="button"
-        data-open-alliance-modal
-        class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 text-xs font-black uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,240,255,0.25)] cursor-pointer"
-      >
-        Discuss Research With Alliance
-      </button>
+    <div class="reveal mt-16 flex flex-col gap-5 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
+      <a href={url('insights/')} class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 hover:text-cyan-300">← Return to Engineering Intelligence</a>
+      <button type="button" data-open-collaboration="partner" class="rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-5 py-3 text-xs font-bold text-cyan-200 hover:bg-cyan-500/15">Discuss evidence or capability fit</button>
     </div>
   </article>
-
-  <!-- Client-side Script for Quick Citation Copy -->
-  <script is:inline define:vars={{ title: entry.data.title, author: entry.data.author, year: entry.data.publishDate.getFullYear(), id: entry.id }}>
-    const citeBtn = document.getElementById('copy-citation-btn');
-    const citeLabel = document.getElementById('citation-label');
-
-    citeBtn?.addEventListener('click', () => {
-      const citeText = `${author} (${year}). "${title}". OceanHub Marine Intelligence. https://oceanhub.global/insights/${id}/`;
-      navigator.clipboard.writeText(citeText).then(() => {
-        if (citeLabel) citeLabel.textContent = '✓ Citation Copied!';
-        setTimeout(() => {
-          if (citeLabel) citeLabel.textContent = 'Cite Brief';
-        }, 2500);
-      }).catch(() => {
-        // fallback
-      });
-    });
-  </script>
 </Layout>
 
 <style is:global>
   @reference "../../styles/global.css";
-  .prose h2 { @apply text-2xl md:text-4xl font-black text-white mt-14 mb-6 font-display border-b border-white/10 pb-4; }
-  .prose h3 { @apply text-xl md:text-2xl font-bold text-cyan-300 mt-10 mb-4 font-display; }
-  .prose p { @apply text-slate-300 font-light leading-relaxed mb-6 text-base md:text-lg; }
-  .prose ul { @apply list-disc list-outside ml-6 text-slate-300 space-y-3 mb-8 text-base md:text-lg; }
-  .prose ol { @apply list-decimal list-outside ml-6 text-slate-300 space-y-3 mb-8 text-base md:text-lg; }
-  .prose li { @apply marker:text-cyan-400 pl-1; }
-  .prose strong { @apply text-white font-semibold; }
-  .prose blockquote { @apply border-l-2 border-cyan-400 pl-6 py-4 italic text-slate-200 bg-cyan-950/30 rounded-r-2xl my-8 leading-relaxed; }
-  .prose table { @apply w-full text-left my-8 border-collapse border border-white/10 text-sm; }
-  .prose th { @apply bg-cyan-950/50 p-3 text-cyan-300 font-mono font-bold border border-white/10; }
-  .prose td { @apply p-3 border border-white/10 text-slate-300 font-light; }
+  .prose h2 { @apply mt-14 mb-6 border-b border-white/10 pb-4 font-display text-2xl font-black text-white md:text-4xl; }
+  .prose h3 { @apply mt-10 mb-4 font-display text-xl font-bold text-cyan-300 md:text-2xl; }
+  .prose p { @apply mb-6 text-base font-light leading-relaxed text-slate-300 md:text-lg; }
+  .prose ul, .prose ol { @apply mb-8 ml-6 space-y-3 text-base text-slate-300 md:text-lg; }
+  .prose strong { @apply font-semibold text-white; }
+  .prose blockquote { @apply my-8 rounded-r-2xl border-l-2 border-cyan-400 bg-cyan-950/30 py-4 pl-6 italic text-slate-200; }
+  .prose table { @apply my-8 w-full border-collapse border border-white/10 text-left text-sm; }
+  .prose th { @apply border border-white/10 bg-cyan-950/50 p-3 font-mono font-bold text-cyan-300; }
+  .prose td { @apply border border-white/10 p-3 font-light text-slate-300; }
 </style>
