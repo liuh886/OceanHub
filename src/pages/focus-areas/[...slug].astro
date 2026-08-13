@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import OfflineSaveButton from '../../components/OfflineSaveButton.astro';
+import { proposedJips } from '../../data/proposedJips';
 import { contentVersion } from '../../lib/contentVersion';
 
 export async function getStaticPaths() {
@@ -15,50 +16,18 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const version = contentVersion(entry);
 
-// Mapping to relevant Joint Industry Project (JIP)
-const jipMap: Record<string, {
-  jipNumber: string;
-  jipTitle: string;
-  jipDesc: string;
-  jipStandard: string;
-  jipId: string;
-}> = {
-  ccus: {
-    jipNumber: 'JIP-01',
-    jipTitle: 'Offshore CCUS 4D Optical DAS & Microseismic Storage MRV',
-    jipDesc: 'Permanent seafloor optical fiber strain sensing & continuous plume migration verification compliant with ISO 27914.',
-    jipStandard: 'ISO 27914 / London Protocol Art. 6',
-    jipId: 'ccus-4d-mrv'
-  },
-  'marine-ecology': {
-    jipNumber: 'JIP-03',
-    jipTitle: 'Ultra-Low Impact Marine Acoustics & Active Bubble Curtain Damping',
-    jipDesc: 'Predictive sound propagation modeling (RAM/PE) and autonomous real-time PAM arrays for marine mammal protection.',
-    jipStandard: 'OSPAR Rec 2012/03 / NOAA Criteria',
-    jipId: 'low-impact-acoustics'
-  },
-  'offshore-energy': {
-    jipNumber: 'JIP-02',
-    jipTitle: 'Floating Offshore Wind Foundation & Cyclic Soil Mechanics',
-    jipDesc: 'Deepwater suction caisson holding capacity, in-situ CPTu integration, and cyclic p-y soil degradation standardisation.',
-    jipStandard: 'DNV-ST-0119 / ISO 19901-4',
-    jipId: 'floating-wind-foundations'
-  },
-  'offshore-infrastructure': {
-    jipNumber: 'JIP-04',
-    jipTitle: 'Subsea Green Energy Corridor & Autonomous USV Inspection',
-    jipDesc: 'HVDC export cable scour stability, dynamic freespan VIV fatigue modeling, and zero-emission autonomous USV patrols.',
-    jipStandard: 'DNV-RP-F105 / CIGRE TB 623',
-    jipId: 'subsea-energy-corridors'
-  }
+const jipIdByFocusArea: Record<string, string> = {
+  ccus: 'ccus-4d-mrv',
+  'marine-ecology': 'low-impact-acoustics',
+  'offshore-energy': 'floating-wind-foundations',
+  'offshore-infrastructure': 'subsea-energy-corridors'
 };
 
-const relatedJip = jipMap[entry.id];
+const relatedJip = proposedJips.find((jip) => jip.id === jipIdByFocusArea[entry.id]);
 ---
 
 <Layout title={`${entry.data.title} | OceanHub Focus Area`} description={entry.data.description}>
   <article class="max-w-5xl mx-auto px-6 sm:px-8 py-16 md:py-24">
-    <!-- Header -->
     <header class="mb-14 reveal">
       <a href={url('focus-areas/')} class="inline-flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-widest mb-8 transition-colors group">
         <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform" aria-hidden="true"></i>
@@ -73,12 +42,11 @@ const relatedJip = jipMap[entry.id];
       <h1 class="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6 font-display leading-[1.05]">
         {entry.data.title}
       </h1>
-      
+
       <p class="text-xl md:text-2xl text-slate-300 font-light leading-relaxed mb-8">
         {entry.data.description}
       </p>
 
-      <!-- Offline Briefcase Save Panel -->
       <div class="mt-8">
         <OfflineSaveButton
           contentId={`focus-area:${entry.id}`}
@@ -91,40 +59,35 @@ const relatedJip = jipMap[entry.id];
       </div>
     </header>
 
-    <!-- Decision Risks vs Evidence Outcomes Matrix -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 reveal">
-      <!-- Risks -->
       <section class="glass-card p-8 border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-[#040812]" aria-labelledby="decision-risks-title">
         <div class="flex items-center justify-between mb-6">
           <h2 id="decision-risks-title" class="text-amber-300 font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2.5">
             <i class="fa-solid fa-triangle-exclamation text-amber-400" aria-hidden="true"></i>
             <span>Critical Decision Risks</span>
           </h2>
-          <span class="hud-badge-amber text-[10px]">RISK RADAR</span>
         </div>
         <ul class="space-y-4">
           {entry.data.painPoints.map((item) => (
             <li class="text-slate-300 text-sm font-light leading-relaxed flex items-start gap-3">
-              <span class="mt-1.5 w-1.5 h-1.5 bg-amber-400 rounded-full shrink-0 shadow-[0_0_8px_rgba(245,158,11,0.6)]"></span>
+              <span class="mt-1.5 w-1.5 h-1.5 bg-amber-400 rounded-full shrink-0"></span>
               <span>{item}</span>
             </li>
           ))}
         </ul>
       </section>
 
-      <!-- Outcomes -->
       <section class="glass-card p-8 border-cyan-500/30 bg-gradient-to-b from-cyan-950/20 to-[#040812]" aria-labelledby="evidence-outcomes-title">
         <div class="flex items-center justify-between mb-6">
           <h2 id="evidence-outcomes-title" class="text-cyan-300 font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2.5">
             <i class="fa-solid fa-circle-check text-cyan-400" aria-hidden="true"></i>
             <span>Evidence Outcomes</span>
           </h2>
-          <span class="hud-badge text-[10px]">DE-RISKED</span>
         </div>
         <ul class="space-y-4">
           {entry.data.benefits.map((item) => (
             <li class="text-slate-300 text-sm font-light leading-relaxed flex items-start gap-3">
-              <span class="mt-1.5 w-1.5 h-1.5 bg-cyan-400 rounded-full shrink-0 shadow-[0_0_8px_rgba(0,240,255,0.6)]"></span>
+              <span class="mt-1.5 w-1.5 h-1.5 bg-cyan-400 rounded-full shrink-0"></span>
               <span>{item}</span>
             </li>
           ))}
@@ -132,68 +95,67 @@ const relatedJip = jipMap[entry.id];
       </section>
     </div>
 
-    <!-- Long-form Markdown Content with Cyber Prose Style -->
     <div class="prose prose-invert prose-cyan max-w-none reveal">
       <Content />
     </div>
 
-    <!-- Related Joint Industry Project (JIP) Track Card -->
     {relatedJip && (
-      <section class="mt-16 p-8 rounded-3xl glass-panel border border-cyan-500/30 bg-[#060E22]/90 relative overflow-hidden reveal">
-        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
-          <div class="flex items-center gap-2">
-            <span class="hud-badge text-[10px]"><i class="fa-solid fa-handshake-angle text-cyan-400"></i> ACTIVE JIP COLLABORATION</span>
-            <span class="text-xs font-mono font-bold text-cyan-300">{relatedJip.jipNumber}</span>
+      <section class="mt-16 p-8 rounded-3xl glass-panel border border-emerald-500/30 bg-[#060E22]/90 relative overflow-hidden reveal">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10 mb-6">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-300">PROPOSED JIP</span>
+            <span class="text-xs font-mono font-bold text-emerald-200">{relatedJip.number}</span>
           </div>
-          <span class="text-[11px] font-mono text-emerald-400 font-bold">{relatedJip.jipStandard}</span>
+          <span class="rounded-full border border-emerald-400/20 bg-emerald-500/5 px-3 py-1 text-[10px] font-bold text-emerald-200">{relatedJip.status}</span>
         </div>
 
         <h3 class="text-xl sm:text-2xl font-bold text-white font-display mb-2">
-          {relatedJip.jipTitle}
+          {relatedJip.title}
         </h3>
-        <p class="text-sm text-slate-300 font-light leading-relaxed mb-6">
-          {relatedJip.jipDesc}
+        <p class="text-sm text-slate-300 font-light leading-relaxed mb-5">
+          {relatedJip.premise}
+        </p>
+        <p class="text-xs text-slate-500 leading-relaxed mb-6">
+          This is a forming collaboration proposal. Capability needs and workstreams are exploratory until partner commitments are explicitly confirmed.
         </p>
 
         <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/5">
           <a
-            href={url('jips/#jip-catalogue')}
-            class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 uppercase tracking-wider inline-flex items-center gap-2"
+            href={url(`jips/#${relatedJip.id}`)}
+            class="text-xs font-mono font-bold text-emerald-300 hover:text-emerald-200 uppercase tracking-wider inline-flex items-center gap-2"
           >
-            <span>Inspect JIP Work Packages & Roadmap</span>
+            <span>Inspect proposed workstreams</span>
             <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
           </a>
 
           <button
             type="button"
-            data-open-alliance-modal
-            class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,240,255,0.25)] cursor-pointer"
+            data-open-collaboration="partner"
+            data-jip-id={relatedJip.id}
+            class="px-6 py-2.5 rounded-xl border border-emerald-400/30 bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-200 font-bold text-xs transition-colors cursor-pointer"
           >
-            Join This Alliance Track
+            Discuss capability fit
           </button>
         </div>
       </section>
     )}
 
-    <!-- Bottom Collaboration CTA Card -->
     <section class="mt-16 p-8 md:p-12 rounded-3xl glass-card text-center border-cyan-500/35 relative overflow-hidden reveal" aria-labelledby="collaboration-title">
-      <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      
       <div class="relative z-10">
-        <div class="hud-badge mb-4"><i class="fa-solid fa-handshake-angle text-cyan-400" aria-hidden="true"></i> MULTIDISCIPLINARY COLLABORATION</div>
+        <div class="hud-badge mb-4"><i class="fa-solid fa-diagram-project text-cyan-400" aria-hidden="true"></i> PROJECT DECISION</div>
         <h2 id="collaboration-title" class="text-3xl sm:text-4xl font-black text-white mb-4 font-display">
-          Start with your project decision
+          Start with the decision you need to make
         </h2>
         <p class="text-slate-300 text-base md:text-lg max-w-2xl mx-auto mb-8 font-light leading-relaxed">
-          Share your offshore operational question, existing geophysical/geotechnical datasets, or unresolved uncertainty. OceanHub will assemble the relevant evidence pathway.
+          Share the project stage, unresolved uncertainty and existing evidence. OceanHub uses that context to frame the next evidence and capability discussion.
         </p>
         <div class="flex flex-wrap justify-center gap-4">
           <button
             type="button"
-            data-open-alliance-modal
-            class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-widest transition-all shadow-[0_0_25px_rgba(0,240,255,0.3)] cursor-pointer"
+            data-open-collaboration="project"
+            class="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs uppercase tracking-widest transition-colors cursor-pointer"
           >
-            <span>Propose a Collaboration</span>
+            <span>Discuss a project decision</span>
             <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
           </button>
           <a href={url('focus-areas/')} class="inline-flex items-center gap-2 px-6 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all">
