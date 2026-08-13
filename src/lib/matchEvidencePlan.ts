@@ -1,6 +1,5 @@
-import { engineeringReferenceById } from '../data/engineeringReferences';
+import { resolveEngineeringReferences } from '../data/engineeringReferences';
 import { evidenceSourceById, offshoreReferenceCases } from '../data/offshoreReferenceCases';
-import type { EngineeringReference } from './engineeringReference';
 import type {
   EvidencePlanQuery,
   EvidenceRequirement,
@@ -29,12 +28,6 @@ export function resolveEvidenceSources(requirement: EvidenceRequirement): Eviden
     .filter((source): source is EvidenceSource => Boolean(source));
 }
 
-function resolveReferences(requirement: EvidenceRequirement): EngineeringReference[] {
-  return requirement.referenceIds
-    .map((referenceId) => engineeringReferenceById.get(referenceId))
-    .filter((reference): reference is EngineeringReference => Boolean(reference));
-}
-
 export function getEvidencePlan(query: EvidencePlanQuery) {
   return matchEvidenceCases(query).flatMap(({ case: referenceCase, matchingEvidence }) =>
     matchingEvidence.map((requirement) => ({
@@ -44,7 +37,7 @@ export function getEvidencePlan(query: EvidencePlanQuery) {
       outcome: referenceCase.outcome,
       projectContext: referenceCase.projectContext,
       requirement,
-      references: resolveReferences(requirement),
+      references: resolveEngineeringReferences(requirement.referenceIds),
       sources: resolveEvidenceSources(requirement)
     }))
   );
