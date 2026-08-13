@@ -1,0 +1,91 @@
+---
+const intakeEmail = 'liuzhihao109@foxmail.com';
+---
+
+<script define:vars={{ intakeEmail }}>
+  const modal = document.getElementById('collaboration-modal');
+  const copyButton = document.getElementById('collaboration-copy');
+  const partnerPanel = document.getElementById('partner-intake');
+
+  if (modal && copyButton && partnerPanel) {
+    copyButton.textContent = 'Copy draft';
+    copyButton.classList.remove('bg-cyan-400', 'text-slate-950', 'hover:bg-cyan-300');
+    copyButton.classList.add('border', 'border-white/10', 'bg-white/5', 'text-white', 'hover:bg-white/10');
+
+    const emailLink = document.createElement('a');
+    emailLink.id = 'collaboration-email-draft';
+    emailLink.className = 'shrink-0 rounded-xl bg-cyan-400 px-5 py-3 text-xs font-black text-slate-950 hover:bg-cyan-300';
+    emailLink.dataset.recipient = intakeEmail;
+    copyButton.insertAdjacentElement('afterend', emailLink);
+
+    const value = (id) => {
+      const field = document.getElementById(id);
+      return field && 'value' in field ? String(field.value).trim() : '';
+    };
+
+    const selectedJips = () => Array.from(document.querySelectorAll('.jip-interest:checked'))
+      .map((checkbox) => `${checkbox.value} — ${checkbox.dataset.jipTitle || checkbox.value}`);
+
+    const isPartnerIntent = () => !partnerPanel.classList.contains('hidden');
+
+    const buildDraft = () => {
+      const org = value('collaboration-org') || '[not provided]';
+      const contact = value('collaboration-email') || '[not provided]';
+
+      if (isPartnerIntent()) {
+        const jips = selectedJips();
+        return [
+          'OceanHub — Partner / JIP Expression of Interest',
+          '',
+          `Organization: ${org}`,
+          `Contact email: ${contact}`,
+          `Capability owner type: ${value('partner-type') || '[not provided]'}`,
+          `Operating regions: ${value('partner-regions') || '[not provided]'}`,
+          `JIP interest: ${jips.length ? jips.join('; ') : 'General capability network'}`,
+          '',
+          'Capability evidence:',
+          value('partner-capabilities') || '[not provided]'
+        ].join('\n');
+      }
+
+      return [
+        'OceanHub — Project Inquiry',
+        '',
+        `Organization: ${org}`,
+        `Contact email: ${contact}`,
+        `Project type: ${value('project-archetype') || '[not provided]'}`,
+        `Lifecycle stage: ${value('project-stage') || '[not provided]'}`,
+        `Region / context: ${value('project-location') || '[not provided]'}`,
+        '',
+        'Decision to resolve:',
+        value('project-decision') || '[not provided]',
+        '',
+        'Existing evidence / constraints / capability gaps:',
+        value('project-context') || '[not provided]'
+      ].join('\n');
+    };
+
+    const updateEmailLink = () => {
+      const partner = isPartnerIntent();
+      const org = value('collaboration-org');
+      const subject = partner
+        ? `OceanHub Partner / JIP Interest${org ? ` — ${org}` : ''}`
+        : `OceanHub Project Inquiry${org ? ` — ${org}` : ''}`;
+      emailLink.textContent = partner ? 'Email partner EOI' : 'Email project inquiry';
+      emailLink.href = `mailto:${intakeEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(buildDraft())}`;
+    };
+
+    modal.querySelectorAll('input, select, textarea').forEach((field) => {
+      field.addEventListener('input', updateEmailLink);
+      field.addEventListener('change', updateEmailLink);
+    });
+
+    document.querySelectorAll('[data-intent-switch], [data-open-collaboration]').forEach((trigger) => {
+      trigger.addEventListener('click', () => window.setTimeout(updateEmailLink, 0));
+    });
+
+    const intentObserver = new MutationObserver(updateEmailLink);
+    intentObserver.observe(partnerPanel, { attributes: true, attributeFilter: ['class'] });
+    updateEmailLink();
+  }
+</script>
