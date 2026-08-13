@@ -21,7 +21,7 @@ async function waitForServiceWorkerControl(page, timeoutMs = 30000) {
       );
       if (controlled) return;
     } catch {
-      // The PWA intentionally reloads on first controllerchange. Retry in the new document.
+      // The service worker may take control after the first navigation. Retry in the current document.
     }
     await page.waitForTimeout(250);
   }
@@ -51,6 +51,7 @@ async function fetchRequired(path, expectedType) {
 
 for (const path of [
   '',
+  'scope/',
   'briefcase/',
   'focus-areas/ccus/',
   'insights/ccs-monitoring-trends/',
@@ -141,7 +142,7 @@ try {
   await menuButton.click();
   assert((await menuButton.getAttribute('aria-expanded')) === 'true', 'Mobile navigation did not expose its expanded state.');
   assert((await mobileDrawer.getAttribute('aria-hidden')) === 'false', 'Mobile navigation drawer remained hidden from assistive technology.');
-  await mobileDrawer.getByRole('link', { name: 'Marine Intelligence' }).waitFor();
+  await mobileDrawer.getByRole('link', { name: 'Scope a Project' }).waitFor();
   await mobile.close();
 
   const reducedMotion = await browser.newContext({ reducedMotion: 'reduce' });
