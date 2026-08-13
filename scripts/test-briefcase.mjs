@@ -63,7 +63,7 @@ try {
 
   await context.setOffline(false);
   await page.goto(briefcaseUrl, { waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: 'Clear all saved content' }).click();
+  await page.getByRole('button', { name: 'Clear all' }).click();
   await page.getByRole('heading', { name: 'Nothing saved yet' }).waitFor();
   await page.getByText('0 saved items', { exact: true }).waitFor();
 
