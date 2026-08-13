@@ -49,7 +49,7 @@ try {
   });
   await page.reload({ waitUntil: 'networkidle' });
   await page.getByText('Update available', { exact: true }).first().waitFor();
-  await page.getByRole('button', { name: 'Download update' }).first().click();
+  await page.getByRole('button', { name: 'Update Copy' }).first().click();
   await page.getByText('Update available', { exact: true }).waitFor({ state: 'detached' });
 
   await context.setOffline(true);
@@ -63,7 +63,7 @@ try {
 
   await context.setOffline(false);
   await page.goto(briefcaseUrl, { waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: 'Clear all saved content' }).click();
+  await page.getByRole('button', { name: 'Clear all' }).click();
   await page.getByRole('heading', { name: 'Nothing saved yet' }).waitFor();
   await page.getByText('0 saved items', { exact: true }).waitFor();
 
