@@ -40,12 +40,13 @@ const trustSources = evidenceSources.filter((source) =>
           >
             Scope a Project
           </a>
-          <a
-            href="#alliance"
+          <button
+            type="button"
+            data-open-collaboration="partner"
             class="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
           >
             Join as a Partner
-          </a>
+          </button>
         </div>
         <p class="mt-5 text-xs leading-relaxed text-slate-500">
           First evidence-backed vertical slice: offshore CO₂ geological storage. More domains grow from validated engineering cases, not generic templates.
@@ -163,7 +164,7 @@ const trustSources = evidenceSources.filter((source) =>
           </p>
           <div class="mt-8 flex flex-wrap gap-3">
             <a href={url('jips/')} class="inline-flex rounded-xl bg-emerald-400 px-5 py-3 text-sm font-black text-slate-950 hover:bg-emerald-300">Explore proposed JIPs</a>
-            <button type="button" data-open-alliance-modal class="inline-flex rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">Join the network</button>
+            <button type="button" data-open-collaboration="partner" class="inline-flex rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">Join the network</button>
           </div>
           <p class="mt-4 text-xs leading-relaxed text-slate-500">The alliance and JIPs are forming initiatives. Capability needs are proposed unless a partner commitment is explicitly stated.</p>
         </div>
