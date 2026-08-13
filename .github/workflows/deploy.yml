@@ -64,8 +64,10 @@ jobs:
           DEPLOYED_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -euo pipefail
+          response_file="$(mktemp)"
+          trap 'rm -f "$response_file"' EXIT
           for attempt in {1..60}; do
-            if curl -fsS -H 'Cache-Control: no-cache' "${PAGE_URL}?deployment=${DEPLOYED_SHA}" | grep -q 'OceanHub'; then
+            if curl -fsS -H 'Cache-Control: no-cache' -o "$response_file" "${PAGE_URL}?deployment=${DEPLOYED_SHA}" && grep -q 'OceanHub' "$response_file"; then
               echo "Pages is serving the validated OceanHub artifact."
               exit 0
             fi
