@@ -1,0 +1,278 @@
+---
+import { proposedJips } from '../data/proposedJips';
+---
+
+<div
+  id="collaboration-modal"
+  class="fixed inset-0 z-[150] hidden items-center justify-center overflow-y-auto bg-black/85 p-4 backdrop-blur-xl sm:p-6"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="collaboration-modal-title"
+>
+  <div class="my-auto w-full max-w-3xl overflow-hidden rounded-3xl border border-white/10 bg-[#060D1F] shadow-[0_24px_70px_rgba(0,0,0,0.55)]">
+    <header class="flex items-start justify-between gap-5 border-b border-white/10 p-6 sm:p-8">
+      <div>
+        <p id="collaboration-modal-kicker" class="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-300">OceanHub collaboration</p>
+        <h2 id="collaboration-modal-title" class="mt-2 font-display text-2xl font-black text-white sm:text-3xl">Continue the conversation</h2>
+        <p id="collaboration-modal-description" class="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400"></p>
+      </div>
+      <button id="collaboration-modal-close" type="button" class="shrink-0 rounded-xl border border-white/10 bg-white/5 p-2.5 text-slate-400 hover:text-white" aria-label="Close collaboration form">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <div class="border-b border-white/10 p-4 sm:px-8">
+      <div class="grid grid-cols-2 gap-2" role="group" aria-label="Collaboration intent">
+        <button type="button" data-intent-switch="project" class="collaboration-intent rounded-xl border border-cyan-400/30 bg-cyan-500/10 px-4 py-3 text-left">
+          <span class="block text-xs font-bold text-white">I have a project</span>
+          <span class="mt-1 block text-[11px] text-slate-400">Scope a decision or discuss capability needs</span>
+        </button>
+        <button type="button" data-intent-switch="partner" class="collaboration-intent rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3 text-left">
+          <span class="block text-xs font-bold text-white">I have a capability</span>
+          <span class="mt-1 block text-[11px] text-slate-400">Join the network or a proposed JIP</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="p-6 sm:p-8">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label for="collaboration-org" class="mb-1.5 block text-xs font-semibold text-slate-300">Organization *</label>
+          <input id="collaboration-org" type="text" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none" />
+        </div>
+        <div>
+          <label for="collaboration-email" class="mb-1.5 block text-xs font-semibold text-slate-300">Contact email *</label>
+          <input id="collaboration-email" type="email" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none" />
+        </div>
+      </div>
+
+      <div id="project-intake" class="mt-6 space-y-5">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="project-archetype" class="mb-1.5 block text-xs font-semibold text-slate-300">Project type</label>
+            <select id="project-archetype" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none">
+              <option>Offshore CO₂ storage</option>
+              <option>Fixed-bottom offshore wind</option>
+              <option>Floating offshore wind</option>
+              <option>Subsea cable / pipeline corridor</option>
+              <option>Marine environmental / acoustic programme</option>
+              <option>Other offshore engineering decision</option>
+            </select>
+          </div>
+          <div>
+            <label for="project-stage" class="mb-1.5 block text-xs font-semibold text-slate-300">Lifecycle stage</label>
+            <select id="project-stage" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none">
+              <option>Screening / concept</option>
+              <option>Feasibility</option>
+              <option selected>Pre-FEED</option>
+              <option>FEED</option>
+              <option>Construction / installation</option>
+              <option>Operations / monitoring</option>
+              <option>Closure / decommissioning</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label for="project-location" class="mb-1.5 block text-xs font-semibold text-slate-300">Region / project context</label>
+          <input id="project-location" type="text" placeholder="e.g. Gulf of Thailand · 80 m water depth · depleted field" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-cyan-400 focus:outline-none" />
+        </div>
+        <div>
+          <label for="project-decision" class="mb-1.5 block text-xs font-semibold text-slate-300">What decision are you trying to make? *</label>
+          <textarea id="project-decision" rows="3" placeholder="Describe the engineering, monitoring, consenting or delivery decision that needs evidence." class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-cyan-400 focus:outline-none"></textarea>
+        </div>
+        <div>
+          <label for="project-context" class="mb-1.5 block text-xs font-semibold text-slate-300">Existing data, constraints or capability gaps</label>
+          <textarea id="project-context" rows="3" placeholder="What is already known, and what is still uncertain?" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-cyan-400 focus:outline-none"></textarea>
+        </div>
+      </div>
+
+      <div id="partner-intake" class="mt-6 hidden space-y-5">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="partner-type" class="mb-1.5 block text-xs font-semibold text-slate-300">Capability owner type</label>
+            <select id="partner-type" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-emerald-400 focus:outline-none">
+              <option>Marine geophysical contractor</option>
+              <option>Marine geotechnical contractor / laboratory</option>
+              <option>Engineering / EPCI organization</option>
+              <option>Sensor / technology provider</option>
+              <option>Research institute / university</option>
+              <option>Operator / developer contributing a use case</option>
+              <option>Other specialist capability</option>
+            </select>
+          </div>
+          <div>
+            <label for="partner-regions" class="mb-1.5 block text-xs font-semibold text-slate-300">Operating regions</label>
+            <input id="partner-regions" type="text" placeholder="e.g. North Sea · Gulf of Thailand · APAC" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <p class="mb-2 text-xs font-semibold text-slate-300">Proposed JIP interest</p>
+          <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {proposedJips.map((jip) => (
+              <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.025] p-3.5 hover:border-emerald-400/30">
+                <input type="checkbox" class="jip-interest mt-0.5 accent-emerald-400" value={jip.id} data-jip-title={jip.title} />
+                <span>
+                  <span class="block text-xs font-bold text-white">{jip.number} · {jip.category}</span>
+                  <span class="mt-1 block text-[11px] leading-relaxed text-slate-500">{jip.title}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label for="partner-capabilities" class="mb-1.5 block text-xs font-semibold text-slate-300">Capability evidence *</label>
+          <textarea id="partner-capabilities" rows="4" placeholder="Describe field assets, methods, datasets, standards experience, reference projects or technical expertise that show where you fit." class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <footer class="flex flex-col gap-4 border-t border-white/10 bg-black/20 p-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+      <p id="collaboration-footnote" class="max-w-xl text-[11px] leading-relaxed text-slate-500">Non-binding project inquiry. No commercial engagement is created by preparing this draft.</p>
+      <button id="collaboration-copy" type="button" class="shrink-0 rounded-xl bg-cyan-400 px-5 py-3 text-xs font-black text-slate-950 hover:bg-cyan-300">Copy project inquiry</button>
+    </footer>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('collaboration-modal');
+  const closeButton = document.getElementById('collaboration-modal-close');
+  const title = document.getElementById('collaboration-modal-title');
+  const description = document.getElementById('collaboration-modal-description');
+  const kicker = document.getElementById('collaboration-modal-kicker');
+  const projectPanel = document.getElementById('project-intake');
+  const partnerPanel = document.getElementById('partner-intake');
+  const intentButtons = document.querySelectorAll<HTMLElement>('[data-intent-switch]');
+  const copyButton = document.getElementById('collaboration-copy') as HTMLButtonElement | null;
+  const footnote = document.getElementById('collaboration-footnote');
+  const orgInput = document.getElementById('collaboration-org') as HTMLInputElement | null;
+  const emailInput = document.getElementById('collaboration-email') as HTMLInputElement | null;
+
+  let intent: 'project' | 'partner' = 'project';
+
+  function inputValue(id: string) {
+    const element = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
+    return element?.value.trim() || '';
+  }
+
+  function setIntent(nextIntent: 'project' | 'partner') {
+    intent = nextIntent;
+    const isProject = intent === 'project';
+    projectPanel?.classList.toggle('hidden', !isProject);
+    partnerPanel?.classList.toggle('hidden', isProject);
+
+    if (title) title.textContent = isProject ? 'Discuss a project decision' : 'Present a capability';
+    if (kicker) kicker.textContent = isProject ? 'Project inquiry' : 'Partner / JIP interest';
+    if (description) {
+      description.textContent = isProject
+        ? 'Share the project decision and material uncertainty so the next conversation starts from the evidence need rather than a generic service request.'
+        : 'Show where your field asset, method or specialist expertise fits a capability need or proposed JIP workstream.';
+    }
+    if (copyButton) copyButton.textContent = isProject ? 'Copy project inquiry' : 'Copy partner EOI';
+    if (footnote) {
+      footnote.textContent = isProject
+        ? 'Non-binding project inquiry. No commercial engagement is created by preparing this draft.'
+        : 'Non-binding expression of interest. OceanHub does not treat submitted capability claims as verified until supporting evidence is reviewed.';
+    }
+
+    intentButtons.forEach((button) => {
+      const active = button.dataset.intentSwitch === intent;
+      button.classList.toggle('border-cyan-400/30', active);
+      button.classList.toggle('bg-cyan-500/10', active);
+      button.classList.toggle('border-white/10', !active);
+      button.classList.toggle('bg-white/[0.025]', !active);
+    });
+  }
+
+  function selectedJips() {
+    return Array.from(document.querySelectorAll<HTMLInputElement>('.jip-interest:checked')).map((checkbox) => ({
+      id: checkbox.value,
+      title: checkbox.dataset.jipTitle || checkbox.value
+    }));
+  }
+
+  function projectDraft() {
+    return [
+      'OceanHub — Project Inquiry',
+      '',
+      `Organization: ${orgInput?.value.trim() || '[not provided]'}`,
+      `Contact email: ${emailInput?.value.trim() || '[not provided]'}`,
+      `Project type: ${inputValue('project-archetype') || '[not provided]'}`,
+      `Lifecycle stage: ${inputValue('project-stage') || '[not provided]'}`,
+      `Region / context: ${inputValue('project-location') || '[not provided]'}`,
+      '',
+      'Decision to resolve:',
+      inputValue('project-decision') || '[not provided]',
+      '',
+      'Existing evidence / constraints / capability gaps:',
+      inputValue('project-context') || '[not provided]'
+    ].join('\n');
+  }
+
+  function partnerDraft() {
+    const jips = selectedJips();
+    return [
+      'OceanHub — Partner / JIP Expression of Interest',
+      '',
+      `Organization: ${orgInput?.value.trim() || '[not provided]'}`,
+      `Contact email: ${emailInput?.value.trim() || '[not provided]'}`,
+      `Capability owner type: ${inputValue('partner-type') || '[not provided]'}`,
+      `Operating regions: ${inputValue('partner-regions') || '[not provided]'}`,
+      `JIP interest: ${jips.length ? jips.map((jip) => `${jip.id} — ${jip.title}`).join('; ') : 'General capability network'}`,
+      '',
+      'Capability evidence:',
+      inputValue('partner-capabilities') || '[not provided]'
+    ].join('\n');
+  }
+
+  async function copyDraft() {
+    const draft = intent === 'project' ? projectDraft() : partnerDraft();
+    await navigator.clipboard.writeText(draft);
+    if (!copyButton) return;
+    const original = copyButton.textContent || '';
+    copyButton.textContent = 'Copied';
+    window.setTimeout(() => {
+      copyButton.textContent = original;
+    }, 1800);
+  }
+
+  function openModal(nextIntent: 'project' | 'partner', jipId?: string) {
+    setIntent(nextIntent);
+    if (jipId && nextIntent === 'partner') {
+      document.querySelectorAll<HTMLInputElement>('.jip-interest').forEach((checkbox) => {
+        checkbox.checked = checkbox.value === jipId;
+      });
+    }
+    modal?.classList.remove('hidden');
+    modal?.classList.add('flex');
+    orgInput?.focus();
+  }
+
+  function closeModal() {
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+  }
+
+  intentButtons.forEach((button) => {
+    button.addEventListener('click', () => setIntent(button.dataset.intentSwitch === 'partner' ? 'partner' : 'project'));
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-open-collaboration]').forEach((trigger) => {
+    trigger.addEventListener('click', (event) => {
+      event.preventDefault();
+      openModal(trigger.dataset.openCollaboration === 'partner' ? 'partner' : 'project', trigger.dataset.jipId);
+    });
+  });
+
+  copyButton?.addEventListener('click', copyDraft);
+  closeButton?.addEventListener('click', closeModal);
+  modal?.addEventListener('click', (event) => {
+    if (event.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !modal?.classList.contains('hidden')) closeModal();
+  });
+
+  setIntent('project');
+</script>
