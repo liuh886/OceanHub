@@ -9,6 +9,7 @@ import { subseaRouteCases } from './subsea-route';
 import { seaLinkCase } from './subsea-sea-link';
 import { subseaSverdrupCases } from './subsea-sverdrup';
 import { freedomAuvCase } from './subsea-freedom';
+import { cvowAcousticCase } from './wind-cvow-acoustics';
 import { doggerCableCase } from './wind-dogger-cable';
 import { doggerBankCase } from './wind-dogger-foundation';
 import { hywindElectricalCase } from './wind-hywind-electrical';
@@ -25,6 +26,7 @@ export const referenceCases = [
   ...ccsInfrastructureCases,
   ...windSiteCasesA,
   ...windSiteCasesB,
+  cvowAcousticCase,
   doggerBankCase,
   doggerCableCase,
   hywindTampenCase,
