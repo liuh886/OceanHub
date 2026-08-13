@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DecisionScoper from '../components/DecisionScoper.astro';
+---
+
+<Layout
+  title="Scope an Offshore Project | OceanHub"
+  description="Turn an offshore project decision into a traceable multidisciplinary evidence plan grounded in engineering precedents, standards and sources."
+>
+  <section class="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:px-8 md:pb-12 md:pt-24">
+    <div class="max-w-4xl">
+      <p class="mb-4 font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Scope a Project</p>
+      <h1 class="font-display text-4xl font-black leading-tight tracking-tight text-white sm:text-6xl">
+        Start with the decision, not the technology list.
+      </h1>
+      <p class="mt-6 max-w-3xl text-lg leading-relaxed text-slate-300">
+        Describe the lifecycle stage and decision focus. OceanHub traces the relevant uncertainty, evidence, methods, capabilities, deliverables, standards and source precedents without hiding gaps behind invented scores.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 pb-20 sm:px-8 md:pb-28">
+    <DecisionScoper />
+  </section>
+</Layout>

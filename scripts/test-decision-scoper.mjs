@@ -12,6 +12,7 @@ const origin = process.env.OCEANHUB_TEST_ORIGIN ?? 'http://127.0.0.1:4321';
 const base = normalizeBaseUrl(
   process.env.OCEANHUB_TEST_BASE_URL ?? `${origin.replace(/\/+$/, '')}/OceanHub/`
 );
+const scopeUrl = new URL('scope/', base).href;
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -21,7 +22,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 try {
-  await page.goto(base, { waitUntil: 'networkidle' });
+  await page.goto(scopeUrl, { waitUntil: 'networkidle' });
 
   const scoper = page.locator('#decision-scoper-root');
   await scoper.getByRole('heading', { name: 'Build a traceable offshore CCS evidence plan' }).waitFor();
@@ -51,7 +52,7 @@ try {
   await scoper.getByText('No direct public reference pattern is encoded for this combination yet.', { exact: true }).waitFor();
   await scoper.getByRole('heading', { name: 'Evidence gap, not a fabricated recommendation' }).waitFor();
 
-  console.log(`OceanHub Decision Scoper product contract passed against ${base}`);
+  console.log(`OceanHub Decision Scoper product contract passed against ${scopeUrl}`);
 } finally {
   await browser.close();
 }
