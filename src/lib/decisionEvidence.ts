@@ -41,7 +41,7 @@ export interface EvidenceRequirement {
   methods: string[];
   capabilities: string[];
   deliverables: string[];
-  standards: string[];
+  referenceIds: string[];
   rationale: string;
   sourceIds: string[];
 }
