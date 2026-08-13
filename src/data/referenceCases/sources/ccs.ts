@@ -1,0 +1,17 @@
+import type { EvidenceSource } from '../../../lib/decisionEvidence';
+
+export const ccsEvidenceSources: EvidenceSource[] = [
+  { id: 'sleipner-monitoring-2009', title: 'Greenhouse store staying sealed', publisher: 'Equinor', url: 'https://www.equinor.com/news/archive/2009/03/05/03MarSleipner', publishedYear: 2009, sourceType: 'operator' },
+  { id: 'sleipner-data-2019', title: 'Sleipner partnership releases CO2 storage data', publisher: 'Equinor', url: 'https://www.equinor.com/news/archive/2019-06-12-sleipner-co2-storage-data', publishedYear: 2019, sourceType: 'operator' },
+  { id: 'northern-lights-eos-data-2020', title: 'Sharing data from Northern Lights well', publisher: 'Northern Lights', url: 'https://norlights.com/news/sharing-data-from-northern-lights-well/', publishedYear: 2020, sourceType: 'project' },
+  { id: 'northern-lights-storage-2020', title: 'How does CO2 storage work?', publisher: 'Northern Lights', url: 'https://norlights.com/news/how-does-co2-storage-work/', publishedYear: 2020, sourceType: 'project' },
+  { id: 'northern-lights-wells-2022', title: 'Northern Lights concludes well drilling operations', publisher: 'Northern Lights', url: 'https://norlights.com/news/northern-lights-concludes-well-drilling-operations/', publishedYear: 2022, sourceType: 'project' },
+  { id: 'northern-lights-seismicity-2025', title: 'Northern Lights partners with NORSAR for CO2 storage monitoring', publisher: 'Northern Lights', url: 'https://norlights.com/news/northern-lights-partners-with-norsar-for-co2-storage-monitoring/', publishedYear: 2025, sourceType: 'project' },
+  { id: 'northern-lights-certificates-2025', title: 'Northern Lights has issued first CO2 storage certificates', publisher: 'Northern Lights', url: 'https://norlights.com/news/northern-lights-has-issued-first-co%E2%82%82-storage-certificates/', publishedYear: 2025, sourceType: 'project' },
+  { id: 'northern-lights-phase2-2026', title: 'Northern Lights Phase 2: Expanding Europe’s CO2 Storage Capacity', publisher: 'Northern Lights', url: 'https://norlights.com/news/northern-lights-phase-2-expanding-europes-co%E2%82%82-storage-capacity/', publishedYear: 2026, sourceType: 'project' },
+  { id: 'porthos-project', title: 'Porthos project', publisher: 'Porthos', url: 'https://www.porthosco2.nl/en/project/', publishedYear: 2026, sourceType: 'project' },
+  { id: 'porthos-platform-wells-2025', title: 'Porthos assumes control of TAQA platform and wells', publisher: 'Porthos', url: 'https://www.porthosco2.nl/en/porthos-assumes-control-of-taqa-platform-and-wells/', publishedYear: 2025, sourceType: 'project' },
+  { id: 'greensand-first-storage', title: 'First carbon storage', publisher: 'Project Greensand', url: 'https://pilot.greensandfuture.com/en/first-carbon-storage', publishedYear: 2023, sourceType: 'project' },
+  { id: 'greensand-ready', title: 'Denmark’s first CO2 storage facility is ready to receive large amounts of CO2', publisher: 'Greensand Future', url: 'https://greensandfuture.com/news/denmark-s-first-co2-storage-facility-is-now-ready-to-receive-large-amounts-of-co2/', publishedYear: 2025, sourceType: 'project' },
+  { id: 'ravenna-launch-2024', title: 'Eni and Snam launch Ravenna CCS', publisher: 'Eni', url: 'https://www.eni.com/en-IT/media/press-release/2024/09/eni-snam-launch-ravenna-css-italy-s-first-carbon-capture-storage-project.html', publishedYear: 2024, sourceType: 'operator' }
+];
