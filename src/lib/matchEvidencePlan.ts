@@ -1,5 +1,5 @@
 import { resolveEngineeringReferences } from '../data/engineeringReferences';
-import { evidenceSourceById, offshoreReferenceCases } from '../data/offshoreReferenceCases';
+import { evidenceSourceById, referenceCases } from '../data/referenceCases';
 import type {
   EvidencePlanQuery,
   EvidenceRequirement,
@@ -12,7 +12,7 @@ function hasAnyTag(caseTags: string[], requestedTags: string[]) {
 }
 
 export function matchEvidenceCases(query: EvidencePlanQuery): MatchedEvidenceCase[] {
-  return offshoreReferenceCases
+  return referenceCases
     .filter((referenceCase) => referenceCase.projectArchetype === query.projectArchetype)
     .filter((referenceCase) => !query.lifecycleStage || referenceCase.lifecycleStages.includes(query.lifecycleStage))
     .filter((referenceCase) => !query.tags?.length || hasAnyTag(referenceCase.tags, query.tags))
@@ -23,9 +23,11 @@ export function matchEvidenceCases(query: EvidencePlanQuery): MatchedEvidenceCas
 }
 
 export function resolveEvidenceSources(requirement: EvidenceRequirement): EvidenceSource[] {
-  return requirement.sourceIds
-    .map((sourceId) => evidenceSourceById.get(sourceId))
-    .filter((source): source is EvidenceSource => Boolean(source));
+  return requirement.sourceIds.map((sourceId) => {
+    const source = evidenceSourceById.get(sourceId);
+    if (!source) throw new Error(`Unknown evidence source ID: ${sourceId}`);
+    return source;
+  });
 }
 
 export function getEvidencePlan(query: EvidencePlanQuery) {
