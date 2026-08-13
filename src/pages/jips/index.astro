@@ -1,370 +1,134 @@
 ---
-// src/pages/jips/index.astro
-// Joint Industry Projects (JIP) Hub - Green Offshore Technology Alliance
 import Layout from '../../layouts/Layout.astro';
+import { proposedJips } from '../../data/proposedJips';
 
 const base = import.meta.env.BASE_URL;
 const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
-
-interface JipItem {
-  id: string;
-  number: string;
-  category: 'ccus' | 'wind' | 'acoustics' | 'power';
-  categoryLabel: string;
-  status: string;
-  statusColor: string;
-  trl: string;
-  progress: number;
-  phase: string;
-  title: string;
-  tagline: string;
-  description: string;
-  standards: string[];
-  disciplines: string[];
-  targetDeliverables: string[];
-  foundingLead: string;
-  targetPartners: string;
-  fundingModel: string;
-}
-
-const jips: JipItem[] = [
-  {
-    id: 'ccus-4d-mrv',
-    number: 'JIP-01',
-    category: 'ccus',
-    categoryLabel: 'Offshore CCUS',
-    status: 'ACTIVE CONSORTIUM FORMATION',
-    statusColor: 'emerald',
-    trl: 'TRL 5 → 7',
-    progress: 45,
-    phase: 'Phase 1: Sensor Interrogation Benchmarking',
-    title: 'Offshore CCUS 4D Optical DAS & Microseismic Storage MRV',
-    tagline: 'Permanent seafloor optical fiber strain sensing & continuous plume migration verification',
-    description: 'Addressing the high operational cost and temporal gaps of repeat vessel seismic surveys by demonstrating permanently deployed seabed Distributed Acoustic Sensing (DAS) fiber arrays paired with continuous micro-earthquake listening for gigawatt-scale offshore carbon storage.',
-    standards: ['ISO 27914', 'London Protocol Art. 6', 'DNV-RP-J203', 'OGCI Storage Ready'],
-    disciplines: ['Geophysics', '4D DAS Fiber Optic', 'Reservoir Geomechanics', 'MRV Protocol'],
-    targetDeliverables: [
-      'Field-proven seabed fiber optic DAS interrogation protocol with micro-strain (±0.01 με) resolution',
-      'Continuous microseismic focal mechanism array capable of resolving sub-magnitude (Mw < 0.5) events',
-      'Audit-ready verification data packet compliant with ISO 27914 & London Protocol Article 6 transboundary rules',
-      'Integrated geomechanical fault reactivation early warning trigger criteria'
-    ],
-    foundingLead: 'OceanHub Subsurface Innovation Track',
-    targetPartners: 'Carbon Storage Developers, Optical Cable Fabricators, Subsea EPCIs, Geological Surveys',
-    fundingModel: 'Co-sponsored Joint Consortium (6-8 Industrial Partners)'
-  },
-  {
-    id: 'floating-wind-foundations',
-    number: 'JIP-02',
-    category: 'wind',
-    categoryLabel: 'Floating Wind',
-    status: 'ACTIVE PROPOSAL',
-    statusColor: 'cyan',
-    trl: 'TRL 4 → 6',
-    progress: 35,
-    phase: 'Phase 1: Laboratory Cyclic Testing Protocol',
-    title: 'Floating Offshore Wind Foundation & Cyclic Soil Mechanics',
-    tagline: 'Deepwater suction anchor holding capacity & non-linear cyclic p-y soil degradation',
-    description: 'Standardising geotechnical parameter derivation for deepwater floating wind mooring systems. Synthesising deep CPTu in-situ tests, cyclic simple shear (DSS) lab trials, and large-scale finite element modeling to reduce foundation CAPEX in complex seabed soils.',
-    standards: ['DNV-ST-0119', 'ISO 19901-4', 'API RP 2GEO', 'DNV-RP-E303'],
-    disciplines: ['Geotechnics', 'Cyclic Soil Mechanics', 'Suction Caissons', 'Mooring Taut Lines'],
-    targetDeliverables: [
-      'Harmonised cyclic degradation framework for soft marine clays, silts, and carbonate sands',
-      'Suction caisson continuous penetration resistance & ultimate pull-out capacity engineering handbook',
-      'Traceable ground-model workflow connecting shallow UHR 3D seismic stratigraphy to anchor refusal hazard',
-      'High-cycle Taut/Semi-taut synthetic rope seabed interaction guideline'
-    ],
-    foundingLead: 'OceanHub Geotechnical Collaboration Group',
-    targetPartners: 'Floating Wind Developers, Mooring EPCIs, Marine Geotechnical Laboratories, Classification Societies',
-    fundingModel: 'Multi-Client JIP with Shared Experimental Datasets'
-  },
-  {
-    id: 'low-impact-acoustics',
-    number: 'JIP-03',
-    category: 'acoustics',
-    categoryLabel: 'Acoustics & Ecology',
-    status: 'OPEN FOR CO-SPONSORS',
-    statusColor: 'sky',
-    trl: 'TRL 5 → 8',
-    progress: 60,
-    phase: 'Phase 2: Offshore Pilot Noise Mitigation Trials',
-    title: 'Ultra-Low Impact Marine Acoustics & Active Bubble Curtain Damping',
-    tagline: 'Predictive sound propagation modeling (RAM/PE) & real-time autonomous PAM arrays',
-    description: 'Developing verified acoustic propagation tools and autonomous passive monitoring networks to de-risk high-energy offshore pile driving and seismic surveys against strict international marine fauna protection thresholds.',
-    standards: ['OSPAR Rec 2012/03', 'NOAA Hydroacoustic Criteria', 'BImSchV / BSH Sound Standard', 'ISO 18405'],
-    disciplines: ['Marine Acoustics', 'PAM Buoy Networks', 'Cetacean Bio-acoustics', 'Bubble Curtain Hydrodynamics'],
-    targetDeliverables: [
-      'Calibrated parabolic equation (PE) sound field predictor incorporating CTD thermoclines & geoacoustics',
-      'Automated double big bubble curtain (DBBC) damping verification yielding >= 18 dB SEL mitigation',
-      'Real-time edge AI marine mammal click/whistle detection and automated shutdown trigger log',
-      'Standardized noise emission digital certificate for consenting authorities'
-    ],
-    foundingLead: 'OceanHub Marine Environmental Track',
-    targetPartners: 'Acoustic Sensor Developers, Offshore Wind EPCIs, Environmental Regulators, Marine Bio-acousticians',
-    fundingModel: 'Collaborative Research Grant & Industrial Co-sponsorship'
-  },
-  {
-    id: 'subsea-energy-corridors',
-    number: 'JIP-04',
-    category: 'power',
-    categoryLabel: 'Subsea Power & USV',
-    status: 'CONCEPTUAL DESIGN',
-    statusColor: 'indigo',
-    trl: 'TRL 3 → 5',
-    progress: 20,
-    phase: 'Phase 0: Feasibility & USV Swarm Routing',
-    title: 'Subsea Green Energy Corridor & Autonomous USV Inspection',
-    tagline: 'HVDC export cable scour stability, freespan VIV fatigue & autonomous surface patrol',
-    description: 'Pioneering long-endurance autonomous surface vessel (USV) bathymetric change detection and DNV-RP-F105 dynamic fatigue modeling for gigawatt export power cables and offshore green hydrogen pipelines.',
-    standards: ['DNV-RP-F105', 'CIGRE TB 623', 'ISO 13628-5', 'DNV-ST-N001'],
-    disciplines: ['Subsea Infrastructure', 'Hydrodynamics', 'Autonomous USVs', 'VIV Dynamic Fatigue'],
-    targetDeliverables: [
-      'Automated 4D differential bathymetry pipeline mapping dynamic sandwave migration rates',
-      'DNV-RP-F105 compliant screening algorithm categorising cable free-spans and vortex-induced vibration in real time',
-      'USV deployment protocol eliminating crewed vessel carbon emissions during annual route inspections',
-      'Dynamic thermal rating (DTR) seabed burial depth risk matrix'
-    ],
-    foundingLead: 'OceanHub Infrastructure Integrity Group',
-    targetPartners: 'Transmission System Operators (TSOs), USV Fleet Operators, Subsea Cable Installers, Cable OEM',
-    fundingModel: 'Consortium Milestone Co-Funding'
-  }
-];
 ---
 
 <Layout
-  title="Joint Industry Projects (JIPs) | Green Offshore Technology Alliance"
-  description="Explore collaborative joint industry projects across CCUS 4D DAS monitoring, floating wind foundations, marine acoustics, and autonomous subsea asset integrity."
+  title="Proposed Joint Industry Projects | OceanHub"
+  description="Explore forming Green Offshore Technology Alliance JIP concepts built around concrete offshore engineering problems, capability needs and collaborative field work."
 >
-  <!-- Hero Section -->
-  <section class="relative pt-12 pb-20 md:py-28 overflow-hidden">
-    <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12 relative z-10">
-      <div class="max-w-4xl">
-        <div class="hud-badge mb-6">
-          <i class="fa-solid fa-handshake-angle text-cyan-400" aria-hidden="true"></i> GREEN OFFSHORE TECHNOLOGY ALLIANCE
-        </div>
-
-        <h1 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white mb-6 font-display leading-[1.08]">
-          Collaborative Green Engineering<br />
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 glow-text-cyan">
-            Joint Industry Projects (JIPs).
-          </span>
+  <section class="border-b border-white/10 py-20 md:py-28">
+    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+      <div class="max-w-4xl reveal">
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">Green Offshore Technology Alliance</p>
+        <h1 class="mt-5 font-display text-4xl font-black leading-tight tracking-tight text-white sm:text-6xl">
+          Proposed JIPs built around real capability gaps.
         </h1>
-
-        <p class="text-lg md:text-2xl text-slate-300 mb-10 leading-relaxed font-light">
-          We assemble asset developers, geophysical vessel fleets, geotechnical laboratories, and academic institutions to co-develop next-generation green offshore engineering technologies and solve high-stakes marine bottlenecks.
+        <p class="mt-6 max-w-3xl text-lg leading-relaxed text-slate-300">
+          OceanHub uses Joint Industry Project concepts to turn shared offshore engineering bottlenecks into explicit workstreams, capability needs and collaboration pathways.
         </p>
-
-        <div class="flex flex-wrap gap-4 items-center">
-          <button
-            type="button"
-            data-open-alliance-modal
-            class="px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black uppercase tracking-[0.14em] text-xs transition-all shadow-[0_0_30px_rgba(0,240,255,0.3)] hover:shadow-[0_0_45px_rgba(0,240,255,0.5)] flex items-center gap-3 active:scale-95 cursor-pointer"
-          >
-            <span>Propose / Join a JIP</span>
-            <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
-          </button>
-
-          <a
-            href={url('#jip-catalogue')}
-            class="px-7 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 hover:border-cyan-400/50 text-white font-bold uppercase tracking-[0.14em] text-xs transition-all flex items-center gap-2.5 backdrop-blur-md"
-          >
-            <span>Browse 4 JIP Initiatives</span>
-            <i class="fa-solid fa-arrow-down text-xs text-cyan-400" aria-hidden="true"></i>
-          </a>
+        <div class="mt-8 max-w-3xl border-l-2 border-emerald-400/50 pl-5 text-sm leading-relaxed text-slate-400">
+          These are forming collaboration proposals. A listed JIP is not presented as funded, formally constituted or backed by a named organization unless that commitment is explicitly stated.
+        </div>
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a href={url('scope/')} class="inline-flex rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">Start from a project decision</a>
+          <button type="button" data-open-alliance-modal class="inline-flex rounded-xl bg-emerald-400 px-5 py-3 text-sm font-black text-slate-950 hover:bg-emerald-300">Express partner interest</button>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- JIP Alliance Model Principles Grid -->
-  <section class="py-16 bg-[#03060F]/90 border-y border-cyan-500/15">
-    <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="glass-card p-8 rounded-3xl reveal">
-          <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center text-cyan-300 text-xl mb-6">
-            <i class="fa-solid fa-users-gear" aria-hidden="true"></i>
-          </div>
-          <h3 class="text-xl font-bold text-white font-display mb-3">Co-Funded & Shared Evidence</h3>
-          <p class="text-sm text-slate-300 font-light leading-relaxed">
-            Participants pool specialized field assets, laboratory resources, and development capital to solve systemic offshore challenges at a fraction of single-operator cost.
-          </p>
+  <section class="py-16 md:py-20" aria-labelledby="jip-catalogue-title">
+    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+      <div class="reveal mb-10 flex flex-col gap-4 border-b border-white/10 pb-8 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Formation catalogue</p>
+          <h2 id="jip-catalogue-title" class="mt-2 font-display text-2xl font-black text-white sm:text-3xl">Four starting collaboration scopes</h2>
         </div>
-
-        <div class="glass-card p-8 rounded-3xl reveal" style="transition-delay: 100ms;">
-          <div class="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-400/20 flex items-center justify-center text-sky-300 text-xl mb-6">
-            <i class="fa-solid fa-ship" aria-hidden="true"></i>
-          </div>
-          <h3 class="text-xl font-bold text-white font-display mb-3">Direct Field Fleet Access</h3>
-          <p class="text-sm text-slate-300 font-light leading-relaxed">
-            Mobilise world-class geophysical fleets (e.g. BGP Offshore streamer/OBN vessels) and specialized geotech rigs for actual offshore proving and pilot validation.
-          </p>
-        </div>
-
-        <div class="glass-card p-8 rounded-3xl reveal" style="transition-delay: 200ms;">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center text-emerald-300 text-xl mb-6">
-            <i class="fa-solid fa-file-shield" aria-hidden="true"></i>
-          </div>
-          <h3 class="text-xl font-bold text-white font-display mb-3">Open Engineering Standards</h3>
-          <p class="text-sm text-slate-300 font-light leading-relaxed">
-            Outputs are codified into actionable design handbooks, verified processing workflows, and regulatory data packages aligned with DNV, OSPAR, and ISO standards.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- JIP Catalogue Section with Category Filter Tabs -->
-  <section id="jip-catalogue" class="section-padding relative scroll-mt-20">
-    <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12">
-      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 reveal">
-        <div class="max-w-3xl">
-          <div class="hud-badge mb-4">
-            <i class="fa-solid fa-folder-open text-cyan-400" aria-hidden="true"></i> CURRENT JIP INITIATIVES
-          </div>
-          <h2 class="heading-section">Active and upcoming collaborative programs</h2>
-          <p class="text-lg text-slate-300 font-light leading-relaxed">
-            Select a Joint Industry Project to inspect the technical scope, proposed deliverables, maturity roadmap, and partner onboarding terms.
-          </p>
-        </div>
-
-        <!-- JIP Category Filter Tabs -->
-        <div class="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-slate-950/80 border border-white/10" id="jip-filter-container">
-          <button class="jip-filter-btn active px-4 py-2 rounded-xl text-xs font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 transition-all cursor-pointer" data-category="all">
-            All Programs (4)
-          </button>
-          <button class="jip-filter-btn px-4 py-2 rounded-xl text-xs font-mono font-medium text-slate-400 hover:text-white border border-transparent transition-all cursor-pointer" data-category="ccus">
-            Offshore CCUS
-          </button>
-          <button class="jip-filter-btn px-4 py-2 rounded-xl text-xs font-mono font-medium text-slate-400 hover:text-white border border-transparent transition-all cursor-pointer" data-category="wind">
-            Floating Wind
-          </button>
-          <button class="jip-filter-btn px-4 py-2 rounded-xl text-xs font-mono font-medium text-slate-400 hover:text-white border border-transparent transition-all cursor-pointer" data-category="acoustics">
-            Acoustic & Ecology
-          </button>
-          <button class="jip-filter-btn px-4 py-2 rounded-xl text-xs font-mono font-medium text-slate-400 hover:text-white border border-transparent transition-all cursor-pointer" data-category="power">
-            Subsea Power
-          </button>
-        </div>
+        <p class="max-w-xl text-sm leading-relaxed text-slate-500">Status describes formation maturity only. It is not a completion percentage or technology-performance claim.</p>
       </div>
 
-      <div class="space-y-12" id="jip-cards-list">
-        {jips.map((jip) => (
-          <article class="jip-card glass-panel p-8 sm:p-10 lg:p-12 rounded-3xl border border-white/10 hover:border-cyan-400/40 transition-all reveal group relative overflow-hidden" data-category={jip.category} data-jip-id={jip.id}>
-            {/* Top Accent Line */}
-            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent"></div>
-
-            <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-8 pb-8 border-b border-white/10">
-              <div class="max-w-3xl">
-                <div class="flex flex-wrap items-center gap-3 mb-4">
-                  <span class="text-xs font-mono font-black text-cyan-400 tracking-widest">{jip.number}</span>
-                  <span class="px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase border border-emerald-400/30 bg-emerald-500/10 text-emerald-300">
-                    {jip.status}
-                  </span>
-                  <span class="px-2.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 font-mono text-[10px]">
-                    {jip.trl}
-                  </span>
-                  <span class="text-xs font-mono text-slate-400">Lead: {jip.foundingLead}</span>
-                </div>
-
-                <h3 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-display mb-3 group-hover:text-cyan-300 transition-colors">
-                  {jip.title}
-                </h3>
-                <p class="text-base text-cyan-300/90 font-mono text-sm mb-4">{jip.tagline}</p>
-                <p class="text-sm sm:text-base text-slate-300 font-light leading-relaxed">{jip.description}</p>
+      <div class="space-y-8">
+        {proposedJips.map((jip, index) => (
+          <article id={jip.id} class="reveal scroll-mt-28 border border-white/10 bg-[#060D1E]/55" style={`transition-delay: ${Math.min(index * 60, 180)}ms;`}>
+            <header class="border-b border-white/10 p-6 sm:p-8 lg:p-10">
+              <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <span class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">{jip.number}</span>
+                <span class="text-[10px] uppercase tracking-[0.14em] text-slate-500">{jip.category}</span>
+                <span class="rounded-full border border-emerald-400/20 bg-emerald-500/5 px-3 py-1 text-[10px] font-bold text-emerald-200">{jip.status}</span>
               </div>
+              <h2 class="mt-5 max-w-5xl font-display text-2xl font-black leading-tight text-white sm:text-4xl">{jip.title}</h2>
+              <p class="mt-4 max-w-4xl text-base leading-relaxed text-slate-300">{jip.premise}</p>
+            </header>
 
-              <!-- JIP Action Column & Progress Gauge -->
-              <div class="shrink-0 flex flex-col gap-4 sm:flex-row lg:flex-col lg:min-w-[260px]">
-                <!-- Milestone Progress Box -->
-                <div class="p-4 rounded-2xl bg-black/40 border border-white/5">
-                  <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 mb-1.5">
-                    <span>ROADMAP PROGRESS</span>
-                    <span class="text-cyan-300 font-bold">{jip.progress}%</span>
-                  </div>
-                  <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden mb-2">
-                    <div class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full" style={`width: ${jip.progress}%;`}></div>
-                  </div>
-                  <div class="text-[10px] font-mono text-slate-400 truncate" title={jip.phase}>
-                    {jip.phase}
-                  </div>
-                </div>
-
-                <div class="flex gap-2">
-                  <button
-                    type="button"
-                    data-open-alliance-modal
-                    class="flex-1 px-5 py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,240,255,0.25)] cursor-pointer"
-                  >
-                    <i class="fa-solid fa-user-plus text-xs" aria-hidden="true"></i>
-                    <span>Join this JIP</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    class="jip-save-btn px-4 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-cyan-300 hover:text-white transition-all cursor-pointer"
-                    title="Save JIP Brief to Offline Briefcase"
-                    data-jip-title={jip.title}
-                    data-jip-desc={jip.tagline}
-                    data-jip-id={jip.id}
-                  >
-                    <i class="fa-solid fa-briefcase text-xs" aria-hidden="true"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Deliverables, Standards and Disciplines Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-8">
-              <!-- Deliverables (Col 1-7) -->
-              <div class="lg:col-span-7">
-                <h4 class="text-xs font-mono font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <i class="fa-solid fa-list-check text-cyan-400" aria-hidden="true"></i> Target Engineering Deliverables
-                </h4>
-                <ul class="space-y-2.5">
-                  {jip.targetDeliverables.map((item) => (
-                    <li class="flex items-start gap-3 text-xs sm:text-sm text-slate-300 font-light">
-                      <i class="fa-solid fa-circle-check text-cyan-400 text-xs mt-1 shrink-0" aria-hidden="true"></i>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <!-- Standards & Consortia Info (Col 8-12) -->
-              <div class="lg:col-span-5 space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12">
+              <div class="border-b border-white/10 p-6 sm:p-8 lg:col-span-5 lg:border-b-0 lg:border-r lg:p-10">
                 <div>
-                  <h4 class="text-xs font-mono font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-certificate text-cyan-400" aria-hidden="true"></i> Governing Standards & Guidelines
-                  </h4>
-                  <div class="flex flex-wrap gap-2">
-                    {jip.standards.map((std) => (
-                      <span class="px-2.5 py-1 rounded-lg bg-cyan-950/40 border border-cyan-500/25 text-[11px] font-mono text-cyan-300">
-                        {std}
-                      </span>
-                    ))}
+                  <p class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Industry problem</p>
+                  <p class="mt-3 text-sm leading-relaxed text-slate-300">{jip.problem}</p>
+                </div>
+
+                <div class="mt-8">
+                  <p class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Why collaboration is needed</p>
+                  <p class="mt-3 text-sm leading-relaxed text-slate-300">{jip.whyCollaborate}</p>
+                </div>
+
+                <div class="mt-8 border-l-2 border-cyan-400/40 pl-5">
+                  <p class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-300">Target outcome</p>
+                  <p class="mt-2 text-sm font-semibold leading-relaxed text-slate-100">{jip.targetOutcome}</p>
+                </div>
+
+                <div class="mt-8">
+                  <p class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Proposed collaboration model</p>
+                  <p class="mt-3 text-sm leading-relaxed text-slate-400">{jip.collaborationModel}</p>
+                </div>
+              </div>
+
+              <div class="p-6 sm:p-8 lg:col-span-7 lg:p-10">
+                <div class="grid grid-cols-1 gap-8 xl:grid-cols-2">
+                  <section>
+                    <h3 class="text-sm font-bold text-white">Proposed technical workstreams</h3>
+                    <ol class="mt-4 space-y-3">
+                      {jip.workstreams.map((workstream, workstreamIndex) => (
+                        <li class="grid grid-cols-[2rem_1fr] gap-2 text-sm leading-relaxed text-slate-400">
+                          <span class="font-mono text-[10px] text-cyan-400">0{workstreamIndex + 1}</span>
+                          <span>{workstream}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </section>
+
+                  <section>
+                    <h3 class="text-sm font-bold text-white">Capabilities sought</h3>
+                    <ul class="mt-4 space-y-2.5">
+                      {jip.capabilities.map((capability) => (
+                        <li class="flex gap-2 text-sm leading-relaxed text-slate-400"><span class="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-emerald-400"></span><span>{capability}</span></li>
+                      ))}
+                    </ul>
+                  </section>
+
+                  <section>
+                    <h3 class="text-sm font-bold text-white">Proposed deliverables</h3>
+                    <ul class="mt-4 space-y-2.5">
+                      {jip.deliverables.map((deliverable) => (
+                        <li class="flex gap-2 text-sm leading-relaxed text-slate-400"><span class="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-cyan-400"></span><span>{deliverable}</span></li>
+                      ))}
+                    </ul>
+                  </section>
+
+                  <section>
+                    <h3 class="text-sm font-bold text-white">Who should join</h3>
+                    <ul class="mt-4 space-y-2.5">
+                      {jip.partnerProfiles.map((partner) => (
+                        <li class="flex gap-2 text-sm leading-relaxed text-slate-400"><span class="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-slate-500"></span><span>{partner}</span></li>
+                      ))}
+                    </ul>
+                  </section>
+                </div>
+
+                <div class="mt-9 border-t border-white/10 pt-7">
+                  <p class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Relevant standards / guidance</p>
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    {jip.standards.map((standard) => <span class="rounded-lg border border-white/10 bg-white/[0.025] px-3 py-1.5 text-xs text-slate-300">{standard}</span>)}
                   </div>
                 </div>
 
-                <div>
-                  <h4 class="text-xs font-mono font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-layer-group text-sky-400" aria-hidden="true"></i> Core Disciplines Involved
-                  </h4>
-                  <div class="flex flex-wrap gap-2">
-                    {jip.disciplines.map((d) => (
-                      <span class="evidence-chip">{d}</span>
-                    ))}
-                  </div>
-                </div>
-
-                <div class="pt-4 border-t border-white/5 space-y-1.5">
-                  <div class="text-[11px] font-mono text-slate-400">
-                    <span class="text-slate-500">Target Partners: </span>
-                    <span class="text-cyan-300">{jip.targetPartners}</span>
-                  </div>
-                  <div class="text-[11px] font-mono text-slate-400">
-                    <span class="text-slate-500">Sponsorship Model: </span>
-                    <span class="text-slate-300">{jip.fundingModel}</span>
-                  </div>
+                <div class="mt-8 flex flex-col gap-3 border-t border-white/10 pt-7 sm:flex-row sm:items-center sm:justify-between">
+                  <p class="max-w-xl text-xs leading-relaxed text-slate-500">If your field asset, method, dataset or engineering expertise addresses one of these workstreams, OceanHub wants to understand the fit before any consortium structure is implied.</p>
+                  <button type="button" data-open-alliance-modal class="shrink-0 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-5 py-3 text-xs font-bold text-emerald-200 hover:bg-emerald-500/15">Discuss this capability →</button>
                 </div>
               </div>
             </div>
@@ -374,94 +138,18 @@ const jips: JipItem[] = [
     </div>
   </section>
 
-  <!-- CTA Box -->
-  <section class="section-padding bg-[#02050D] relative">
-    <div class="max-w-[1360px] mx-auto px-6 sm:px-8 md:px-12 text-center reveal">
-      <div class="glass-panel p-10 sm:p-16 rounded-3xl border border-cyan-500/30 relative overflow-hidden">
-        <div class="hud-badge mx-auto mb-6"><i class="fa-solid fa-network-wired text-cyan-400" aria-hidden="true"></i> OPEN INNOVATION</div>
-        <h2 class="text-3xl sm:text-5xl font-black text-white font-display mb-6">Have a high-stakes offshore problem?</h2>
-        <p class="text-base sm:text-xl text-slate-300 font-light max-w-2xl mx-auto mb-10">
-          Propose a bespoke Joint Industry Project or join our existing collaboration tracks to de-risk your offshore asset lifecycle.
-        </p>
-        <div class="flex flex-wrap justify-center gap-4">
-          <button
-            type="button"
-            data-open-alliance-modal
-            class="px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black uppercase tracking-[0.14em] text-xs transition-all shadow-[0_0_30px_rgba(0,240,255,0.3)] cursor-pointer"
-          >
-            Submit JIP Proposal Form
-          </button>
+  <section class="border-t border-white/10 py-20">
+    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+      <div class="reveal grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-center">
+        <div class="lg:col-span-8">
+          <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Bring another problem</p>
+          <h2 class="mt-3 font-display text-3xl font-black text-white">A JIP should start from a shared decision gap, not from a technology looking for a project.</h2>
+          <p class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-400">Use the Decision Scoper to frame the engineering need first. If the evidence chain exposes a capability gap that several parties share, that is a stronger starting point for a new collaboration scope.</p>
+        </div>
+        <div class="lg:col-span-4 lg:text-right">
+          <a href={url('scope/')} class="inline-flex rounded-xl bg-cyan-400 px-6 py-3.5 text-sm font-black text-slate-950 hover:bg-cyan-300">Scope the decision first</a>
         </div>
       </div>
     </div>
   </section>
-
-  <!-- Interactive Client-side Script for JIP Hub Filtering & Briefcase Saving -->
-  <script>
-    // 1. JIP Category Filtering
-    const filterBtns = document.querySelectorAll('.jip-filter-btn');
-    const jipCards = document.querySelectorAll('.jip-card');
-
-    filterBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const cat = btn.getAttribute('data-category');
-        filterBtns.forEach((b) => {
-          b.classList.remove('active', 'bg-cyan-500/20', 'text-cyan-300', 'border-cyan-400/40');
-          b.classList.add('text-slate-400', 'border-transparent');
-        });
-        btn.classList.add('active', 'bg-cyan-500/20', 'text-cyan-300', 'border-cyan-400/40');
-        btn.classList.remove('text-slate-400', 'border-transparent');
-
-        jipCards.forEach((card) => {
-          const cardCat = card.getAttribute('data-category');
-          if (cat === 'all' || cardCat === cat) {
-            card.classList.remove('hidden');
-          } else {
-            card.classList.add('hidden');
-          }
-        });
-      });
-    });
-
-    // 2. JIP Save to Briefcase
-    const saveBtns = document.querySelectorAll('.jip-save-btn');
-    saveBtns.forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const id = btn.getAttribute('data-jip-id') || 'jip';
-        const title = btn.getAttribute('data-jip-title') || 'Joint Industry Project';
-        const desc = btn.getAttribute('data-jip-desc') || '';
-
-        const item = {
-          id: `jip:${id}`,
-          title: `JIP Initiative: ${title}`,
-          description: desc,
-          route: 'jips/',
-          type: 'jip',
-          version: 'v1.0',
-          savedAt: new Date().toISOString()
-        };
-
-        try {
-          const key = 'oceanhub-briefcase-v1';
-          const existing = JSON.parse(localStorage.getItem(key) || '[]');
-          const idx = existing.findIndex((x: any) => x.id === item.id);
-          if (idx >= 0) {
-            existing[idx] = item;
-          } else {
-            existing.unshift(item);
-          }
-          localStorage.setItem(key, JSON.stringify(existing));
-          window.dispatchEvent(new CustomEvent('oceanhub:briefcase-updated'));
-
-          btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400 text-xs"></i>';
-          setTimeout(() => {
-            btn.innerHTML = '<i class="fa-solid fa-briefcase text-xs"></i>';
-          }, 2000);
-        } catch {
-          // ignore
-        }
-      });
-    });
-  </script>
 </Layout>
