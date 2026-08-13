@@ -58,6 +58,7 @@ export interface EvidenceRequirement {
   referenceIds: string[];
   rationale: string;
   sourceIds: string[];
+  tags?: string[];
 }
 
 export interface ReferenceCase {
