@@ -49,7 +49,7 @@ try {
   });
   await page.reload({ waitUntil: 'networkidle' });
   await page.getByText('Update available', { exact: true }).first().waitFor();
-  await page.getByRole('button', { name: 'Download update' }).first().click();
+  await page.getByRole('button', { name: 'Update Copy' }).first().click();
   await page.getByText('Update available', { exact: true }).waitFor({ state: 'detached' });
 
   await context.setOffline(true);
