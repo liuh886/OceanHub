@@ -25,7 +25,7 @@ const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
         </div>
         <div class="mt-9 flex flex-wrap gap-3">
           <a href={url('scope/')} class="inline-flex rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">Start from a project decision</a>
-          <button type="button" data-open-alliance-modal class="inline-flex rounded-xl bg-emerald-400 px-5 py-3 text-sm font-black text-slate-950 hover:bg-emerald-300">Express partner interest</button>
+          <button type="button" data-open-collaboration="partner" class="inline-flex rounded-xl bg-emerald-400 px-5 py-3 text-sm font-black text-slate-950 hover:bg-emerald-300">Express partner interest</button>
         </div>
       </div>
     </div>
@@ -128,7 +128,7 @@ const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
 
                 <div class="mt-8 flex flex-col gap-3 border-t border-white/10 pt-7 sm:flex-row sm:items-center sm:justify-between">
                   <p class="max-w-xl text-xs leading-relaxed text-slate-500">If your field asset, method, dataset or engineering expertise addresses one of these workstreams, OceanHub wants to understand the fit before any consortium structure is implied.</p>
-                  <button type="button" data-open-alliance-modal class="shrink-0 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-5 py-3 text-xs font-bold text-emerald-200 hover:bg-emerald-500/15">Discuss this capability →</button>
+                  <button type="button" data-open-collaboration="partner" data-jip-id={jip.id} class="shrink-0 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-5 py-3 text-xs font-bold text-emerald-200 hover:bg-emerald-500/15">Discuss this capability →</button>
                 </div>
               </div>
             </div>
