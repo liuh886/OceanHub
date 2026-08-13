@@ -1,3 +1,4 @@
+import { resolveEngineeringReferences } from '../data/engineeringReferences';
 import { evidenceSourceById, offshoreReferenceCases } from '../data/offshoreReferenceCases';
 import type {
   EvidencePlanQuery,
@@ -36,6 +37,7 @@ export function getEvidencePlan(query: EvidencePlanQuery) {
       outcome: referenceCase.outcome,
       projectContext: referenceCase.projectContext,
       requirement,
+      references: resolveEngineeringReferences(requirement.referenceIds),
       sources: resolveEvidenceSources(requirement)
     }))
   );

@@ -17,7 +17,8 @@ export interface ProposedJip {
   targetOutcome: string;
   workstreams: string[];
   capabilities: string[];
-  standards: string[];
+  referenceIds: string[];
+  regulatoryNotes?: string[];
   deliverables: string[];
   partnerProfiles: string[];
   collaborationModel: string;
@@ -49,7 +50,7 @@ export const proposedJips: ProposedJip[] = [
       'Reservoir geomechanics and storage modelling',
       'CCS monitoring, verification and regulatory evidence design'
     ],
-    standards: ['ISO 27914', 'DNV-RP-J203', 'London Protocol / transboundary CCS requirements where applicable'],
+    referenceIds: ['iso-27914-2026', 'dnv-rp-j203', 'imo-london-protocol-ccs'],
     deliverables: [
       'Proposed permanent-sensing reference architecture and field-test protocol',
       'Cross-method data-integration and interpretation workflow',
@@ -84,7 +85,8 @@ export const proposedJips: ProposedJip[] = [
       'Finite-element and soil-structure interaction modelling',
       'Mooring-system engineering'
     ],
-    standards: ['DNV-ST-0119', 'ISO 19901-4', 'API RP 2GEO', 'DNV-RP-E303'],
+    referenceIds: ['dnv-st-0119', 'iso-19901-4-2025', 'iso-19901-8-2023', 'dnv-rp-e303'],
+    regulatoryNotes: ['Contracted projects may additionally specify API or national foundation standards; verify the required edition in the project design basis.'],
     deliverables: [
       'Decision-linked site-characterization workflow for floating-wind anchors',
       'Cyclic soil parameter derivation and uncertainty framework',
@@ -119,7 +121,8 @@ export const proposedJips: ProposedJip[] = [
       'Offshore construction / survey operations',
       'Environmental impact and consenting support'
     ],
-    standards: ['ISO 18405', 'Applicable OSPAR / national underwater-noise guidance', 'Project-specific consenting thresholds'],
+    referenceIds: ['iso-18405-2017'],
+    regulatoryNotes: ['Underwater-noise thresholds, protected-species procedures and mitigation requirements are jurisdiction- and consent-specific and must be resolved from the applicable regulator and project consent.'],
     deliverables: [
       'Common field-trial protocol for mitigation performance',
       'Model-to-measurement calibration workflow with uncertainty reporting',
@@ -154,7 +157,8 @@ export const proposedJips: ProposedJip[] = [
       'Scour, free-span and VIV assessment',
       'Geospatial data processing and asset-risk integration'
     ],
-    standards: ['DNV-RP-F105', 'Relevant cable / pipeline integrity standards', 'Project-specific survey and marine-operations requirements'],
+    referenceIds: ['iho-s44-6-2-0', 'dnv-rp-f105', 'dnv-rp-f109', 'dnv-rp-f116', 'dnv-rp-0360'],
+    regulatoryNotes: ['Survey class, cable-owner criteria and marine-operations requirements remain asset- and project-specific.'],
     deliverables: [
       'Autonomous repeat-survey reference workflow',
       'Change-detection QA/QC and minimum-detectable-change framework',

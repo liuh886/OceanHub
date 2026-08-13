@@ -66,7 +66,7 @@ export const offshoreReferenceCases: OffshoreReferenceCase[] = [
         methods: ['Baseline and repeat 3D seismic acquisition', '4D seismic processing and interpretation'],
         capabilities: ['Marine seismic acquisition', '4D repeatability design', 'Time-lapse processing', 'CO2 plume interpretation'],
         deliverables: ['Time-lapse seismic difference volumes', 'Plume extent interpretation', 'Containment-focused monitoring update'],
-        standards: ['ISO 27914:2026'],
+        referenceIds: ['iso-27914-2026', 'dnv-rp-j203'],
         rationale: 'Sleipner demonstrates that repeat seismic can be used to observe plume evolution and test whether storage behaviour remains consistent with expectations.',
         sourceIds: ['equinor-sleipner-monitoring-2009', 'equinor-sleipner-data-2019', 'iso-27914-2026']
       },
@@ -78,7 +78,7 @@ export const offshoreReferenceCases: OffshoreReferenceCase[] = [
         methods: ['Wellhead pressure monitoring', 'Integrated trend review with seismic interpretation'],
         capabilities: ['Injection surveillance', 'Pressure-data QA/QC', 'Integrated reservoir monitoring'],
         deliverables: ['Pressure trend record', 'Integrated monitoring interpretation'],
-        standards: ['ISO 27914:2026'],
+        referenceIds: ['iso-27914-2026', 'dnv-rp-j203'],
         rationale: 'Equinor describes wellhead pressure as a complementary monitoring measurement alongside repeated seismic observations at Sleipner.',
         sourceIds: ['equinor-sleipner-monitoring-2009', 'iso-27914-2026']
       }
@@ -102,7 +102,7 @@ export const offshoreReferenceCases: OffshoreReferenceCase[] = [
         methods: ['Exploration / confirmation well', 'Core acquisition and analysis', 'Well-log interpretation'],
         capabilities: ['Offshore drilling support', 'Core handling and laboratory analysis', 'Petrophysical interpretation', 'Storage geology integration'],
         deliverables: ['Reservoir-quality assessment', 'Seal characterization', 'Well-to-seismic calibration inputs'],
-        standards: ['ISO 27914:2026'],
+        referenceIds: ['iso-27914-2026', 'dnv-rp-j203', 'dnv-se-0617'],
         rationale: 'Northern Lights cites the Eos well and core analysis as evidence confirming reservoir sandstone quality and an overlying sealing layer.',
         sourceIds: ['northern-lights-storage-2020', 'iso-27914-2026']
       },
@@ -114,7 +114,7 @@ export const offshoreReferenceCases: OffshoreReferenceCase[] = [
         methods: ['Well-seismic integration', 'Static storage model construction', 'Baseline monitoring design'],
         capabilities: ['Subsurface data integration', 'Geological modelling', 'Reservoir monitoring design'],
         deliverables: ['Pre-injection reference model', 'Monitoring objectives and baseline evidence register'],
-        standards: ['ISO 27914:2026'],
+        referenceIds: ['iso-27914-2026', 'dnv-rp-j203'],
         rationale: 'The current ISO storage lifecycle explicitly treats characterization and development as site-specific risk and uncertainty work; Northern Lights describes seismic monitoring as a way to refine models and check plume migration.',
         sourceIds: ['northern-lights-storage-2020', 'iso-27914-2026']
       }
@@ -138,7 +138,7 @@ export const offshoreReferenceCases: OffshoreReferenceCase[] = [
         methods: ['Permanent seismic monitoring station', 'Continuous event detection and analysis'],
         capabilities: ['Passive seismic monitoring', 'Event detection', 'Seismological interpretation', 'Operational alert integration'],
         deliverables: ['Seismic event catalogue', 'Operational integrity monitoring record', 'Escalation-ready event interpretation'],
-        standards: ['ISO 27914:2026'],
+        referenceIds: ['iso-27914-2026', 'dnv-rp-j203'],
         rationale: 'Northern Lights states that continuous monitoring of injection and seismic activity supports safe storage and reliable operations at Aurora.',
         sourceIds: ['northern-lights-norsar-2025', 'iso-27914-2026']
       }
