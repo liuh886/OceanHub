@@ -3,7 +3,7 @@ import '../styles/global.css';
 import { Image } from 'astro:assets';
 import logo from '../assets/oceanhub-logo-v2.png';
 import PWAController from '../components/PWAController.astro';
-import JoinAllianceModal from '../components/JoinAllianceModal.astro';
+import CollaborationModal from '../components/CollaborationModal.astro';
 
 interface Props {
   title: string;
@@ -99,7 +99,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     </main>
 
     <PWAController base={base} />
-    <JoinAllianceModal />
+    <CollaborationModal />
 
     <footer class="border-t border-white/10 bg-[#03060E] py-14 text-slate-400">
       <div class="mx-auto max-w-7xl px-6 sm:px-8">
