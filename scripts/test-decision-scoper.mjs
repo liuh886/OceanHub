@@ -41,7 +41,7 @@ try {
   await scoper.locator('#scoper-focus').selectOption('containment');
   await scoper.getByText('2 evidence workstreams from 1 reference pattern.', { exact: true }).waitFor();
   await scoper.getByRole('heading', { name: 'Sleipner — repeat seismic for plume migration and containment' }).waitFor();
-  await scoper.getByRole('link', { name: 'Greenhouse store staying sealed' }).waitFor();
+  await scoper.getByRole('link', { name: 'Greenhouse store staying sealed' }).first().waitFor();
 
   await scoper.locator('#scoper-focus').selectOption('induced-seismicity');
   await scoper.getByText('1 evidence workstream from 1 reference pattern.', { exact: true }).waitFor();
