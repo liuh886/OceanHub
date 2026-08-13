@@ -1,1048 +1,214 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import SubsurfaceVisualizer from '../components/SubsurfaceVisualizer.astro';
-import DecisionScoper from '../components/DecisionScoper.astro';
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-import bgpLogo from '../assets/bgp-logo.png';
-import penesonLogo from '../assets/peneson-logo.png';
+import { evidenceSources } from '../data/offshoreReferenceCases';
+import { getEvidencePlan } from '../lib/matchEvidencePlan';
 
 const base = import.meta.env.BASE_URL;
 const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
 
-const focusAreas = await getCollection('focus-areas');
-const sortedFocusAreas = focusAreas.sort((a, b) => a.data.order - b.data.order);
-const insights = await getCollection('insights');
-const sortedInsights = insights
-  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf())
-  .slice(0, 3);
+const examplePlan = getEvidencePlan({
+  projectArchetype: 'offshore-ccs',
+  lifecycleStage: 'pre-feed'
+});
+const example = examplePlan[0];
 
-const focusAreaMetadata: Record<string, {
-  icon: string;
-  badge: string;
-  depthHorizon: string;
-  techTags: string[];
-  metrics: string;
-}> = {
-  ccus: {
-    icon: 'fa-cloud-arrow-up',
-    badge: 'CARBON STORAGE & MRV',
-    depthHorizon: '800m – 3,200m Sub-seabed',
-    techTags: ['4D DAS Seismic', 'Plume Imaging', 'Wellbore Integrity'],
-    metrics: 'Continuous Acoustic Strain Telemetry'
+const trustSources = evidenceSources.filter((source) =>
+  ['iso-27914-2026', 'northern-lights-storage-2020', 'equinor-sleipner-monitoring-2009'].includes(source.id)
+);
+
+const proposedJips = [
+  {
+    number: 'JIP-01',
+    status: 'Seeking technical partners',
+    title: 'Offshore CCUS 4D Optical DAS & Microseismic MRV',
+    capability: 'Fiber sensing · passive seismic · reservoir geomechanics · MRV protocols'
   },
-  'marine-ecology': {
-    icon: 'fa-leaf',
-    badge: 'ENVIRONMENTAL INTELLIGENCE',
-    depthHorizon: 'Full Water Column & Benthos',
-    techTags: ['PAM Acoustics', 'eDNA Sequencing', 'Habitat Mapping'],
-    metrics: 'Real-time Marine Mammal Detection'
+  {
+    number: 'JIP-02',
+    status: 'Scope development',
+    title: 'Floating Offshore Wind Foundation & Cyclic Soil Mechanics',
+    capability: 'CPTu · cyclic soil testing · suction anchors · ground-model integration'
   },
-  'offshore-energy': {
-    icon: 'fa-wind',
-    badge: 'SITE CHARACTERISATION',
-    depthHorizon: '0m – 120m Seabed Penetration',
-    techTags: ['Deep CPTu In-Situ', 'UHR 3D Seismic', 'FLS/ULS Ground Model'],
-    metrics: 'Integrated Soil-Structure Interaction'
+  {
+    number: 'JIP-03',
+    status: 'Seeking co-sponsors',
+    title: 'Ultra-Low Impact Marine Acoustics & Bubble Curtain Damping',
+    capability: 'PAM · propagation modelling · noise mitigation · ecological monitoring'
   },
-  'offshore-infrastructure': {
-    icon: 'fa-anchor',
-    badge: 'ASSET & ROUTE INTEGRITY',
-    depthHorizon: 'Seabed Surface & Trench Horizon',
-    techTags: ['Autonomous USV', 'Sub-bottom Profiler', 'Free-span & Scour'],
-    metrics: 'Millimeter-scale Pipeline Deformation'
+  {
+    number: 'JIP-04',
+    status: 'Concept / problem framing',
+    title: 'Subsea Green Energy Corridor & Autonomous USV Inspection',
+    capability: 'USV survey · differential bathymetry · cable integrity · VIV assessment'
   }
-};
+];
 ---
 
 <Layout
-  title="OceanHub | Marine Intelligence for Offshore Decisions"
-  description="OceanHub connects offshore operators, marine geophysics, geotechnical specialists and environmental teams around decision-ready ground evidence."
+  title="OceanHub | Offshore Decision Intelligence"
+  description="OceanHub turns offshore project decisions into traceable evidence plans, capability needs and collaboration paths grounded in real engineering precedents."
 >
-  <!-- Hero Section -->
-  <section class="relative min-h-[92vh] flex items-center overflow-hidden pt-12 pb-24 md:py-32">
-    <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12 relative z-10 w-full">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-        <!-- Hero Left: Mission Statement & Actions -->
-        <div class="lg:col-span-7 reveal">
-          <div class="flex flex-wrap items-center gap-3 mb-8">
-            <div class="hud-badge">
-              <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-              </span>
-              <span>GREEN OFFSHORE TECHNOLOGY ALLIANCE</span>
-            </div>
-            <span class="depth-badge">
-              <i class="fa-solid fa-handshake text-[9px]" aria-hidden="true"></i> COLLABORATIVE INNOVATION NETWORK
-            </span>
-          </div>
-
-          <h1 class="heading-hero mb-8">
-            Next-generation green engineering<br />
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-400 glow-text-cyan">
-              for sustainable ocean development.
-            </span>
-          </h1>
-
-          <p class="text-lg md:text-2xl text-slate-300 mb-10 leading-relaxed font-light max-w-3xl">
-            OceanHub unites offshore developers, geophysical survey fleets, geotechnical specialists, and research institutions to explore next-generation green engineering technologies and launch collaborative Joint Industry Projects (JIPs).
-          </p>
-
-          <div class="flex flex-wrap gap-4 items-center mb-12">
-            <a href={url('jips/')} class="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-600 hover:from-emerald-300 hover:to-blue-500 text-slate-950 font-black uppercase tracking-[0.14em] text-xs transition-all shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:shadow-[0_0_45px_rgba(0,240,255,0.5)] flex items-center gap-3 group active:scale-95">
-              <span class="w-2 h-2 rounded-full bg-slate-950 animate-ping"></span>
-              <span>Explore 4 JIP Initiatives</span>
-              <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1" aria-hidden="true"></i>
-            </a>
-
-            <button
-              type="button"
-              data-open-alliance-modal
-              class="px-8 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 hover:border-cyan-400/50 text-white font-bold uppercase tracking-[0.14em] text-xs transition-all flex items-center gap-2.5 backdrop-blur-md active:scale-95"
-            >
-              <i class="fa-solid fa-user-plus text-xs text-cyan-400" aria-hidden="true"></i>
-              <span>Join Tech Alliance</span>
-            </button>
-
-            <a href={url('#focus-areas')} class="px-5 py-4 rounded-2xl text-slate-400 hover:text-cyan-300 font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-colors">
-              <i class="fa-solid fa-layer-group text-xs text-cyan-400" aria-hidden="true"></i>
-              <span>Focus Areas</span>
-            </a>
-          </div>
-
-          <!-- Quick Telemetry Stats Grid -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 border-t border-white/10">
-            <div>
-              <div class="text-2xl lg:text-3xl font-black text-emerald-400 font-display">4 JIPs</div>
-              <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mt-1">Active Proposals</div>
-            </div>
-            <div>
-              <div class="text-2xl lg:text-3xl font-black text-white font-display">100%</div>
-              <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mt-1">Shared Evidence</div>
-            </div>
-            <div>
-              <div class="text-2xl lg:text-3xl font-black text-white font-display">3D/4D</div>
-              <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mt-1">DAS & Soil Models</div>
-            </div>
-            <div>
-              <div class="text-2xl lg:text-3xl font-black text-cyan-400 font-display">Open</div>
-              <div class="text-[11px] font-mono text-cyan-300/80 uppercase tracking-wider mt-1">Alliance Network</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hero Right: Interactive Marine Telemetry Console HUD -->
-        <div class="lg:col-span-5 reveal" style="transition-delay: 150ms;">
-          <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-cyan-500/25 relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
-            <!-- HUD Header -->
-            <div class="flex items-center justify-between pb-5 border-b border-white/10">
-              <div class="flex items-center gap-2.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                <span class="text-xs font-mono font-bold text-cyan-300 uppercase tracking-[0.2em]">Ocean Telemetry Matrix</span>
-              </div>
-              <span class="text-[10px] font-mono px-2.5 py-1 rounded bg-cyan-950/80 border border-cyan-500/30 text-cyan-300">
-                LIVE DEMO
-              </span>
-            </div>
-
-            <!-- Interactive Channel Selector Tabs -->
-            <div class="flex gap-2 py-4 border-b border-white/10 overflow-x-auto" id="hud-channel-tabs">
-              <button class="hud-tab active px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 transition-all" data-channel="0">
-                CH 01: SEISMIC
-              </button>
-              <button class="hud-tab px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium text-slate-400 hover:text-white border border-transparent hover:border-white/10 transition-all" data-channel="1">
-                CH 02: GEOTECH
-              </button>
-              <button class="hud-tab px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium text-slate-400 hover:text-white border border-transparent hover:border-white/10 transition-all" data-channel="2">
-                CH 03: CCUS 4D
-              </button>
-              <button class="hud-tab px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium text-slate-400 hover:text-white border border-transparent hover:border-white/10 transition-all" data-channel="3">
-                CH 04: ECOLOGY
-              </button>
-            </div>
-
-            <!-- Dynamic Telemetry Screen & Live Canvas Oscilloscope -->
-            <div class="py-6 min-h-[250px]" id="hud-channel-content">
-              <!-- Shared Live Procedural Oscilloscope Canvas -->
-              <div class="relative mb-5">
-                <canvas id="hud-telemetry-canvas" class="w-full h-24 rounded-xl bg-[#02050E] border border-cyan-500/30 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]" role="img" aria-label="Live marine telemetry oscilloscope displaying real-time sensor data streams"></canvas>
-                <div class="absolute top-2 left-3 flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-                  <span class="text-[10px] font-mono font-bold tracking-widest text-cyan-300 uppercase" id="canvas-mode-tag">SEISMIC STREAM 3D</span>
-                </div>
-                <div class="absolute top-2 right-3 text-[10px] font-mono text-emerald-400 font-bold" id="canvas-status-tag">
-                  GEOHAZARD: CLEAR
-                </div>
-                <div class="absolute bottom-1.5 right-3 text-[9px] font-mono text-slate-500" id="canvas-freq-tag">
-                  SAMPLING: 2.0 kHz · TIME-SERIES
-                </div>
-              </div>
-
-              <!-- Channel 0 Content (Default: Seismic) -->
-              <div class="hud-pane" id="pane-0">
-                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
-                  <span class="text-cyan-300 font-bold">Ultra-High-Resolution 3D Seismic Stream</span>
-                  <span>Horizon: 0 – 800m Sub-seabed</span>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-center p-3 rounded-xl bg-slate-950/60 border border-white/5 mb-3">
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">Reflector Z</div>
-                    <div class="text-xs font-mono font-bold text-cyan-300" id="seismic-depth-val">248.5 m</div>
-                  </div>
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">Impedance</div>
-                    <div class="text-xs font-mono font-bold text-sky-400">2.85×10⁶</div>
-                  </div>
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">Gas Pockets</div>
-                    <div class="text-xs font-mono font-bold text-emerald-400">0.0% (None)</div>
-                  </div>
-                </div>
-                <p class="text-xs text-slate-300 leading-relaxed font-light">
-                  Detects shallow gas hazards, paleo-channels, boulder anomalies, and fault displacements prior to foundation installation.
-                </p>
-              </div>
-
-              <!-- Channel 1 Content (Geotech) -->
-              <div class="hud-pane hidden" id="pane-1">
-                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
-                  <span class="text-sky-300 font-bold">Deepwater In-Situ CPTu Telemetry</span>
-                  <span>Penetration: 0 – 120m Seabed</span>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-center p-3 rounded-xl bg-slate-950/60 border border-white/5 mb-3">
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">Tip Res (qc)</div>
-                    <div class="text-xs font-mono font-bold text-sky-400" id="cptu-qc-val">42.8 MPa</div>
-                  </div>
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">Sleeve (fs)</div>
-                    <div class="text-xs font-mono font-bold text-cyan-300">185 kPa</div>
-                  </div>
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">Pore (u2)</div>
-                    <div class="text-xs font-mono font-bold text-emerald-400">3.42 MPa</div>
-                  </div>
-                </div>
-                <p class="text-xs text-slate-300 leading-relaxed font-light">
-                  High-precision seabed soil strength characterisation directly informing wind monopile and suction anchor cyclic fatigue limits.
-                </p>
-              </div>
-
-              <!-- Channel 2 Content (CCUS) -->
-              <div class="hud-pane hidden" id="pane-2">
-                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
-                  <span class="text-cyan-300 font-bold">4D DAS Fiber Optic Plume Monitoring</span>
-                  <span>Depth: 1,800m Saline Reservoir</span>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-center p-3 rounded-xl bg-slate-950/60 border border-white/5 mb-3">
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">DAS Strain</div>
-                    <div class="text-xs font-mono font-bold text-cyan-300" id="ccus-strain-val">±0.012 με</div>
-                  </div>
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">Caprock Margin</div>
-                    <div class="text-xs font-mono font-bold text-emerald-400">+5.1 MPa</div>
-                  </div>
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">Plume Status</div>
-                    <div class="text-xs font-mono font-bold text-emerald-400">100% Contained</div>
-                  </div>
-                </div>
-                <p class="text-xs text-slate-300 leading-relaxed font-light">
-                  Continuous acoustic strain telemetry along subsea fibers verifying zero caprock leakage and stable CO₂ storage migration.
-                </p>
-              </div>
-
-              <!-- Channel 3 Content (Ecology) -->
-              <div class="hud-pane hidden" id="pane-3">
-                <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
-                  <span class="text-emerald-300 font-bold">Passive Acoustic Monitoring (PAM)</span>
-                  <span>Bandwidth: 10Hz – 160kHz</span>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-center p-3 rounded-xl bg-slate-950/60 border border-white/5 mb-3">
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">Peak Signal</div>
-                    <div class="text-xs font-mono font-bold text-cyan-400" id="pam-peak-val">85.2 kHz</div>
-                  </div>
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">Buffer Zone</div>
-                    <div class="text-xs font-mono font-bold text-emerald-400">5.0 km Clear</div>
-                  </div>
-                  <div>
-                    <div class="text-[10px] font-mono text-slate-500">Ambient SPL</div>
-                    <div class="text-xs font-mono font-bold text-sky-300">92.4 dB</div>
-                  </div>
-                </div>
-                <p class="text-xs text-slate-300 leading-relaxed font-light">
-                  Continuous marine mammal acoustic protection and environmental baseline tracking ensuring full OSPAR/EIA licensing compliance.
-                </p>
-              </div>
-            </div>
-
-            <!-- HUD Bottom Disciplines Badges -->
-            <div class="pt-5 border-t border-white/10 flex flex-wrap gap-2">
-              <span class="evidence-chip">GEOPHYSICS</span>
-              <span class="evidence-chip">GEOTECHNICS</span>
-              <span class="evidence-chip">ENVIRONMENT</span>
-              <span class="evidence-chip">4D MONITORING</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Interactive Decision-to-Evidence Pipeline Flow Section -->
-  <section class="py-24 md:py-32 bg-[#030712]/90 border-y border-cyan-500/15 relative overflow-hidden">
-    <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12 relative z-10">
-      <div class="max-w-3xl mb-16 reveal">
-        <div class="hud-badge mb-4">
-          <i class="fa-solid fa-diagram-project" aria-hidden="true"></i> THE COLLABORATION ARCHITECTURE
-        </div>
-        <h2 class="heading-section">From field observation to engineering decision</h2>
-        <p class="text-lg md:text-xl text-slate-300 font-light leading-relaxed">
-          OceanHub is not a generic service directory. It is an engineering collaboration protocol that synthesizes fragmented observations into high-integrity decisions.
+  <!-- 01 — Product promise -->
+  <section class="relative flex min-h-[78vh] items-center border-b border-white/10 py-20 md:py-28">
+    <div class="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-14 px-6 sm:px-8 lg:grid-cols-12 lg:gap-16">
+      <div class="reveal lg:col-span-7">
+        <p class="mb-5 font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Offshore decision intelligence</p>
+        <h1 class="max-w-5xl font-display text-5xl font-black leading-[1.03] tracking-tight text-white sm:text-6xl lg:text-7xl">
+          Turn offshore uncertainty into an evidence plan.
+        </h1>
+        <p class="mt-7 max-w-3xl text-lg leading-relaxed text-slate-300 sm:text-xl">
+          OceanHub translates a project decision into the uncertainties to resolve, evidence to collect, capabilities to assemble and precedents that support the plan.
         </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="glass-card-interactive p-8 md:p-10 rounded-3xl reveal">
-          <div class="flex items-center justify-between mb-6">
-            <span class="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest">PHASE 01</span>
-            <span class="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-300 font-mono text-xs font-bold">01</span>
-          </div>
-          <h3 class="text-2xl font-bold text-white font-display mb-4">Frame the Decision</h3>
-          <p class="text-sm md:text-base text-slate-300 font-light leading-relaxed mb-6">
-            Define the engineering, environmental, or regulatory hurdle before selecting sensors. Clarify the risk tolerance, required depth horizons, and regulatory milestones.
-          </p>
-          <div class="pt-4 border-t border-white/10 flex flex-wrap gap-2 text-[11px] font-mono text-cyan-300/80">
-            <span>• Site Feasibility</span>
-            <span>• Geohazard Scoping</span>
-            <span>• Regulatory Bounds</span>
-          </div>
-        </div>
-
-        <div class="glass-card-interactive p-8 md:p-10 rounded-3xl reveal" style="transition-delay: 100ms;">
-          <div class="flex items-center justify-between mb-6">
-            <span class="text-xs font-mono font-bold text-sky-400 uppercase tracking-widest">PHASE 02</span>
-            <span class="w-8 h-8 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-300 font-mono text-xs font-bold">02</span>
-          </div>
-          <h3 class="text-2xl font-bold text-white font-display mb-4">Connect Evidence Chain</h3>
-          <p class="text-sm md:text-base text-slate-300 font-light leading-relaxed mb-6">
-            Fuse multi-beam bathymetry, ultra-high-resolution 3D seismic, deep CPTu in-situ tests, and acoustic hydrophone data into a unified, cross-validated ground model.
-          </p>
-          <div class="pt-4 border-t border-white/10 flex flex-wrap gap-2 text-[11px] font-mono text-sky-300/80">
-            <span>• Seismic-to-Well Tie</span>
-            <span>• Soil Stratigraphy</span>
-            <span>• Noise Attenuation</span>
-          </div>
-        </div>
-
-        <div class="glass-card-interactive p-8 md:p-10 rounded-3xl reveal" style="transition-delay: 200ms;">
-          <div class="flex items-center justify-between mb-6">
-            <span class="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest">PHASE 03</span>
-            <span class="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-300 font-mono text-xs font-bold">03</span>
-          </div>
-          <h3 class="text-2xl font-bold text-white font-display mb-4">Deliver Verified Outputs</h3>
-          <p class="text-sm md:text-base text-slate-300 font-light leading-relaxed mb-6">
-            Generate decision-ready evidence packets with full provenance, quantified uncertainty bounds, and audit-ready telemetry for project teams and regulators.
-          </p>
-          <div class="pt-4 border-t border-white/10 flex flex-wrap gap-2 text-[11px] font-mono text-emerald-300/80">
-            <span>• Foundation Design Base</span>
-            <span>• Plume MRV Report</span>
-            <span>• EIA Compliance</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Interactive Subsurface & Full-Depth Cross-Section Component -->
-      <div class="mt-16 reveal">
-        <SubsurfaceVisualizer />
-      </div>
-    </div>
-  </section>
-
-  <!-- Strategic Focus Areas Section -->
-  <section id="focus-areas" class="section-padding relative scroll-mt-20">
-    <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12">
-      <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8 reveal">
-        <div class="max-w-3xl">
-          <div class="hud-badge mb-4">
-            <i class="fa-solid fa-cubes" aria-hidden="true"></i> STRATEGIC DOMAINS
-          </div>
-          <h2 class="heading-section">Four connected offshore problem spaces</h2>
-          <p class="text-lg md:text-xl text-slate-300 font-light leading-relaxed">
-            Each focus area starts with a high-stakes offshore decision, specifies the necessary multidisciplinary observations, and mobilizes specialized capability.
-          </p>
-        </div>
-        <a href={url('focus-areas/')} class="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white/5 hover:bg-cyan-500/15 border border-white/10 hover:border-cyan-400/40 text-xs font-mono font-bold uppercase tracking-wider text-slate-200 hover:text-cyan-300 transition-all shrink-0">
-          <span>Browse All Domains</span>
-          <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
-        </a>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
-        {sortedFocusAreas.map((area, index) => {
-          const meta = focusAreaMetadata[area.id] || {
-            icon: 'fa-anchor',
-            badge: 'OFFSHORE',
-            depthHorizon: 'Sub-surface & Seabed',
-            techTags: ['Marine Survey', 'Data Fusion'],
-            metrics: 'Decision-ready Evidence'
-          };
-          return (
-            <article class="glass-card p-8 h-full flex flex-col justify-between group relative overflow-hidden reveal" style={`transition-delay: ${index * 80}ms`}>
-              <div>
-                <!-- Card Header -->
-                <div class="flex items-center justify-between mb-6">
-                  <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/30 border border-cyan-400/30 flex items-center justify-center text-cyan-300 group-hover:bg-cyan-400 group-hover:text-slate-950 transition-all duration-300 shadow-md">
-                    <i class={`fa-solid ${meta.icon} text-xl`} aria-hidden="true"></i>
-                  </div>
-                  <span class="hud-badge text-[10px]">{meta.badge}</span>
-                </div>
-
-                <!-- Depth Indicator -->
-                <div class="flex items-center gap-2 mb-4 text-[11px] font-mono text-sky-400">
-                  <i class="fa-solid fa-arrows-up-down text-[10px]" aria-hidden="true"></i>
-                  <span>{meta.depthHorizon}</span>
-                </div>
-
-                <h3 class="text-2xl font-black text-white mb-4 tracking-tight group-hover:text-cyan-300 transition-colors font-display">
-                  {area.data.title}
-                </h3>
-                
-                <p class="text-sm text-slate-300 mb-6 font-light leading-relaxed">
-                  {area.data.description}
-                </p>
-
-                <!-- Technical Capabilities Tags -->
-                <div class="flex flex-wrap gap-1.5 mb-8">
-                  {meta.techTags.map((tag) => (
-                    <span class="sensor-chip">{tag}</span>
-                  ))}
-                </div>
-              </div>
-
-              <!-- Card Footer Action -->
-              <div class="pt-5 border-t border-white/10 flex items-center justify-between">
-                <a href={url(`focus-areas/${area.id}/`)} class="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 hover:text-cyan-300 group-hover:translate-x-1 transition-all">
-                  <span>View Problem & Approach</span>
-                  <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
-                </a>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-    </div>
-  </section>
-
-  <!-- Joint Industry Projects (JIPs) Alliance Section -->
-  <section class="section-padding bg-[#020612] relative border-t border-cyan-500/20">
-    <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12">
-      <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8 reveal">
-        <div class="max-w-3xl">
-          <div class="hud-badge mb-4">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>JOINT INDUSTRY PROJECTS (JIPs)</span>
-          </div>
-          <h2 class="heading-section">
-            Co-developing next-generation<br />
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-300">
-              green offshore engineering technologies.
-            </span>
-          </h2>
-          <p class="text-lg md:text-xl text-slate-300 font-light leading-relaxed">
-            We assemble developers, vessel fleets, and laboratories around targeted multi-partner research programs to crack complex subsurface, geomechanical, and environmental hurdles.
-          </p>
-        </div>
-
-        <div class="flex items-center gap-4 shrink-0">
+        <div class="mt-9 flex flex-wrap gap-3">
           <a
-            href={url('jips/')}
-            class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-500 hover:from-emerald-300 hover:to-cyan-400 text-slate-950 font-black font-mono text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)]"
+            href={url('scope/')}
+            class="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-6 py-3.5 text-sm font-black text-slate-950 transition-colors hover:bg-cyan-300"
           >
-            <span>View All JIPs</span>
-            <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
+            Scope a Project
           </a>
-          <button
-            type="button"
-            data-open-alliance-modal
-            class="px-5 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider transition-all"
+          <a
+            href="#alliance"
+            class="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
           >
-            <span>Propose / Join</span>
-          </button>
+            Join as a Partner
+          </a>
         </div>
-      </div>
-
-      <!-- JIP Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="glass-panel p-8 rounded-3xl border border-white/10 hover:border-emerald-400/50 transition-all reveal flex flex-col justify-between group">
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs font-mono font-black text-emerald-400">JIP-01</span>
-              <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Proposal</span>
-            </div>
-            <h3 class="text-xl font-bold text-white font-display mb-3 group-hover:text-emerald-300 transition-colors">
-              Offshore CCUS 4D Optical DAS & MRV
-            </h3>
-            <p class="text-xs text-slate-300 font-light leading-relaxed mb-6">
-              Permanent seafloor fiber optic DAS arrays and continuous microseismic monitoring for CO₂ plume verification.
-            </p>
-          </div>
-          <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
-            <span>4D Fiber / MRV</span>
-            <i class="fa-solid fa-arrow-right text-emerald-400 group-hover:translate-x-1 transition-transform" aria-hidden="true"></i>
-          </div>
-        </div>
-
-        <div class="glass-panel p-8 rounded-3xl border border-white/10 hover:border-cyan-400/50 transition-all reveal flex flex-col justify-between group" style="transition-delay: 80ms;">
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs font-mono font-black text-cyan-400">JIP-02</span>
-              <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">Proposal</span>
-            </div>
-            <h3 class="text-xl font-bold text-white font-display mb-3 group-hover:text-cyan-300 transition-colors">
-              Floating Wind Foundation & Cyclic Soils
-            </h3>
-            <p class="text-xs text-slate-300 font-light leading-relaxed mb-6">
-              Deepwater suction caisson holding capacity and non-linear cyclic p-y soil degradation in variable seabed soils.
-            </p>
-          </div>
-          <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
-            <span>Suction Anchors</span>
-            <i class="fa-solid fa-arrow-right text-cyan-400 group-hover:translate-x-1 transition-transform" aria-hidden="true"></i>
-          </div>
-        </div>
-
-        <div class="glass-panel p-8 rounded-3xl border border-white/10 hover:border-sky-400/50 transition-all reveal flex flex-col justify-between group" style="transition-delay: 160ms;">
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs font-mono font-black text-sky-400">JIP-03</span>
-              <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase bg-sky-500/10 text-sky-300 border border-sky-500/20">Open Track</span>
-            </div>
-            <h3 class="text-xl font-bold text-white font-display mb-3 group-hover:text-sky-300 transition-colors">
-              Low-Impact Acoustics & Bubble Damping
-            </h3>
-            <p class="text-xs text-slate-300 font-light leading-relaxed mb-6">
-              Range-dependent RAM/PE sound field modeling and autonomous PAM buoy arrays for marine fauna safety.
-            </p>
-          </div>
-          <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
-            <span>PAM Acoustics</span>
-            <i class="fa-solid fa-arrow-right text-sky-400 group-hover:translate-x-1 transition-transform" aria-hidden="true"></i>
-          </div>
-        </div>
-
-        <div class="glass-panel p-8 rounded-3xl border border-white/10 hover:border-indigo-400/50 transition-all reveal flex flex-col justify-between group" style="transition-delay: 240ms;">
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <span class="text-xs font-mono font-black text-indigo-400">JIP-04</span>
-              <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Concept</span>
-            </div>
-            <h3 class="text-xl font-bold text-white font-display mb-3 group-hover:text-indigo-300 transition-colors">
-              Subsea Green Energy Corridor Integrity
-            </h3>
-            <p class="text-xs text-slate-300 font-light leading-relaxed mb-6">
-              HVDC export cable scour protection, freespan VIV fatigue, and long-endurance autonomous USV patrols.
-            </p>
-          </div>
-          <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
-            <span>USV Survey</span>
-            <i class="fa-solid fa-arrow-right text-indigo-400 group-hover:translate-x-1 transition-transform" aria-hidden="true"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Interactive Project Navigator & Capability Matrix -->
-  <section class="py-20 md:py-28 bg-[#03060E]/80 border-y border-cyan-500/15 relative">
-    <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12">
-      <div class="text-center max-w-3xl mx-auto mb-14 reveal">
-        <div class="hud-badge mb-4">
-          <i class="fa-solid fa-compass-drafting" aria-hidden="true"></i> CAPABILITY MATRIX
-        </div>
-        <h2 class="heading-section">Tailored to your project lifecycle stage</h2>
-        <p class="text-lg text-slate-300 font-light leading-relaxed">
-          Filter by operational phase to see how OceanHub disciplines assemble around your specific milestone.
+        <p class="mt-5 text-xs leading-relaxed text-slate-500">
+          First evidence-backed vertical slice: offshore CO₂ geological storage. More domains grow from validated engineering cases, not generic templates.
         </p>
       </div>
 
-      <!-- Lifecycle Stage Filter Pills -->
-      <div class="flex flex-wrap justify-center gap-3 mb-12 reveal" id="stage-filter-pills">
-        <button class="stage-pill active px-5 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 transition-all" data-stage="all">
-          All Stages
-        </button>
-        <button class="stage-pill px-5 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider bg-white/5 text-slate-400 hover:text-white border border-white/10 hover:border-cyan-500/30 transition-all" data-stage="feasibility">
-          01. Feasibility & Scoping
-        </button>
-        <button class="stage-pill px-5 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider bg-white/5 text-slate-400 hover:text-white border border-white/10 hover:border-cyan-500/30 transition-all" data-stage="prefeed">
-          02. Pre-FEED & Characterisation
-        </button>
-        <button class="stage-pill px-5 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider bg-white/5 text-slate-400 hover:text-white border border-white/10 hover:border-cyan-500/30 transition-all" data-stage="installation">
-          03. Installation & Construction
-        </button>
-        <button class="stage-pill px-5 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider bg-white/5 text-slate-400 hover:text-white border border-white/10 hover:border-cyan-500/30 transition-all" data-stage="monitoring">
-          04. Operations & 4D Monitoring
-        </button>
-      </div>
-
-      <!-- Matrix Cards Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="stage-cards-grid">
-        <div class="glass-card p-6 stage-card" data-stages="all feasibility prefeed">
-          <div class="text-[11px] font-mono text-cyan-400 font-bold mb-2">GEOPHYSICAL RECON</div>
-          <h4 class="text-lg font-bold text-white font-display mb-2">Multi-beam Bathymetry & 2D/3D Seismic</h4>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Identifies seabed morphological constraints, fault escarpments, shallow gas hazards, and optimal corridor routing.
-          </p>
+      <div class="reveal lg:col-span-5" style="transition-delay: 100ms;">
+        <div class="border-l border-cyan-400/30 pl-6 sm:pl-8">
+          <p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-300">Example · Offshore CCS · Pre-FEED</p>
+          <p class="mt-4 text-xl font-bold leading-snug text-white">{example?.decision}</p>
+          <div class="mt-7 space-y-5">
+            <div>
+              <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Uncertainty</p>
+              <p class="mt-1.5 text-sm leading-relaxed text-slate-300">{example?.requirement.uncertainty}</p>
+            </div>
+            <div>
+              <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Evidence</p>
+              <p class="mt-1.5 text-sm leading-relaxed text-slate-300">{example?.requirement.evidenceNeeded}</p>
+            </div>
+            <div>
+              <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Capability</p>
+              <p class="mt-1.5 text-sm leading-relaxed text-slate-300">{example?.requirement.capabilities.slice(0, 3).join(' · ')}</p>
+            </div>
+          </div>
+          <a href={url('scope/')} class="mt-7 inline-flex text-sm font-bold text-cyan-300 hover:text-cyan-200">Open the full evidence plan →</a>
         </div>
-
-        <div class="glass-card p-6 stage-card" data-stages="all prefeed installation">
-          <div class="text-[11px] font-mono text-sky-400 font-bold mb-2">GEOTECHNICAL GROUND TRUTH</div>
-          <h4 class="text-lg font-bold text-white font-display mb-2">Deep In-Situ CPTu & Soil Sampling</h4>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Direct measurements of soil strength parameters, friction angles, and cyclic degradation for foundation design.
-          </p>
-        </div>
-
-        <div class="glass-card p-6 stage-card" data-stages="all feasibility monitoring">
-          <div class="text-[11px] font-mono text-emerald-400 font-bold mb-2">ENVIRONMENTAL BASELINE</div>
-          <h4 class="text-lg font-bold text-white font-display mb-2">Acoustic & Ecological Baseline (PAM)</h4>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Continuous passive listening and water sampling to establish noise criteria and satisfy consenting authorities.
-          </p>
-        </div>
-
-        <div class="glass-card p-6 stage-card" data-stages="all monitoring">
-          <div class="text-[11px] font-mono text-indigo-400 font-bold mb-2">LONG-TERM MRV</div>
-          <h4 class="text-lg font-bold text-white font-display mb-2">4D Fiber DAS & Autonomous USVs</h4>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Real-time subsurface deformation tracking and autonomous surface vessel patrols for permanent asset integrity.
-          </p>
-        </div>
-      </div>
-
-      <!-- Interactive Decision Scoping Engine Component -->
-      <div class="mt-16 reveal">
-        <DecisionScoper />
       </div>
     </div>
   </section>
 
-  <!-- Marine Intelligence (Insights) Section -->
-  {sortedInsights.length > 0 && (
-    <section id="insights" class="section-padding relative scroll-mt-20">
-      <div class="max-w-[1760px] mx-auto px-6 sm:px-8 md:px-12">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8 reveal">
-          <div class="max-w-3xl">
-            <div class="hud-badge mb-4">
-              <i class="fa-solid fa-book-open" aria-hidden="true"></i> MARINE INTELLIGENCE
-            </div>
-            <h2 class="heading-section">Technical context for better offshore choices</h2>
-            <p class="text-lg md:text-xl text-slate-300 font-light leading-relaxed">
-              In-depth research notes on monitoring regimes, site characterisation breakthroughs, and multidisciplinary evidence assembly.
-            </p>
-          </div>
-          <a href={url('insights/')} class="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white/5 hover:bg-cyan-500/15 border border-white/10 hover:border-cyan-400/40 text-xs font-mono font-bold uppercase tracking-wider text-slate-200 hover:text-cyan-300 transition-all shrink-0">
-            <span>Browse All Intelligence</span>
-            <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
-          </a>
+  <!-- 02 — How it works -->
+  <section class="border-b border-white/10 py-20 md:py-28">
+    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+      <div class="reveal max-w-3xl">
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">How OceanHub works</p>
+        <h2 class="mt-4 font-display text-3xl font-black tracking-tight text-white sm:text-5xl">Start from the decision. Trace the evidence chain.</h2>
+        <p class="mt-5 text-base leading-relaxed text-slate-400 sm:text-lg">
+          Instead of starting with a vendor catalogue, OceanHub asks what must be decided and what evidence would materially reduce the uncertainty.
+        </p>
+      </div>
+
+      <ol class="reveal mt-12 divide-y divide-white/10 border-y border-white/10" style="transition-delay: 80ms;">
+        {[
+          ['01', 'Decision', example?.decision ?? 'Define the engineering decision.'],
+          ['02', 'Uncertainty', example?.requirement.uncertainty ?? 'Identify the uncertainty that can change the decision.'],
+          ['03', 'Evidence', example?.requirement.evidenceNeeded ?? 'Specify the evidence required.'],
+          ['04', 'Capability', example?.requirement.capabilities.join(' · ') ?? 'Map methods and delivery capabilities.'],
+          ['05', 'Provenance', example?.sources.map((source) => source.publisher).join(' · ') ?? 'Trace the recommendation to precedents and standards.']
+        ].map(([number, label, detail]) => (
+          <li class="grid grid-cols-[3rem_1fr] gap-4 py-5 sm:grid-cols-[4rem_10rem_1fr] sm:items-start sm:gap-6 sm:py-6">
+            <span class="font-mono text-xs text-cyan-400">{number}</span>
+            <strong class="text-sm text-white">{label}</strong>
+            <span class="col-start-2 text-sm leading-relaxed text-slate-400 sm:col-start-3">{detail}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- 03 — Trust -->
+  <section class="border-b border-white/10 py-20 md:py-28">
+    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+      <div class="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
+        <div class="reveal lg:col-span-5">
+          <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Why trust the output</p>
+          <h2 class="mt-4 font-display text-3xl font-black tracking-tight text-white sm:text-5xl">Traceable by design.</h2>
+          <p class="mt-5 text-base leading-relaxed text-slate-400">
+            OceanHub does not manufacture a confidence percentage. Each recommendation is tied to an engineering rationale and a source; when the encoded evidence is insufficient, the product says so explicitly.
+          </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-          {sortedInsights.map((insight, index) => (
-            <article class="glass-card p-8 h-full flex flex-col justify-between group reveal" style={`transition-delay: ${index * 100}ms`}>
-              <div>
-                <div class="flex flex-wrap items-center gap-3 mb-5">
-                  <time datetime={insight.data.publishDate.toISOString()} class="text-xs font-mono text-cyan-400">
-                    {insight.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-                  </time>
-                  {insight.data.tags.slice(0, 2).map((tag) => <span class="evidence-chip">{tag}</span>)}
+        <div class="reveal lg:col-span-7" style="transition-delay: 80ms;">
+          <div class="divide-y divide-white/10 border-y border-white/10">
+            {trustSources.map((source) => (
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="grid gap-2 py-5 transition-colors hover:text-cyan-200 sm:grid-cols-[9rem_1fr_auto] sm:items-center sm:gap-5"
+              >
+                <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">{source.sourceType} · {source.publishedYear}</span>
+                <span class="text-sm font-bold text-slate-200">{source.title}</span>
+                <span class="text-xs text-slate-500">{source.publisher} ↗</span>
+              </a>
+            ))}
+          </div>
+          <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
+            <div>
+              <p class="text-sm font-bold text-white">Case-grounded</p>
+              <p class="mt-2 text-xs leading-relaxed text-slate-500">Recommendations grow from structured offshore precedents.</p>
+            </div>
+            <div>
+              <p class="text-sm font-bold text-white">Stage-aware</p>
+              <p class="mt-2 text-xs leading-relaxed text-slate-500">Evidence needs change across feasibility, FEED, operations and monitoring.</p>
+            </div>
+            <div>
+              <p class="text-sm font-bold text-white">Honest gaps</p>
+              <p class="mt-2 text-xs leading-relaxed text-slate-500">No precedent means an evidence gap, not a fabricated answer.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 — Alliance / JIPs -->
+  <section id="alliance" class="scroll-mt-24 py-20 md:py-28">
+    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+      <div class="reveal grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-5">
+          <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">Green Offshore Technology Alliance</p>
+          <h2 class="mt-4 font-display text-3xl font-black tracking-tight text-white sm:text-5xl">Build the capability network around real offshore problems.</h2>
+          <p class="mt-5 text-base leading-relaxed text-slate-400">
+            OceanHub is building an open collaboration network for operators, engineering specialists, technology providers and research teams. Proposed JIPs turn shared capability gaps into concrete workstreams and partner calls.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href={url('jips/')} class="inline-flex rounded-xl bg-emerald-400 px-5 py-3 text-sm font-black text-slate-950 hover:bg-emerald-300">Explore proposed JIPs</a>
+            <button type="button" data-open-alliance-modal class="inline-flex rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">Join the network</button>
+          </div>
+          <p class="mt-4 text-xs leading-relaxed text-slate-500">The alliance and JIPs are forming initiatives. Capability needs are proposed unless a partner commitment is explicitly stated.</p>
+        </div>
+
+        <div class="lg:col-span-7">
+          <div class="divide-y divide-white/10 border-y border-white/10">
+            {proposedJips.map((jip) => (
+              <a href={url(`jips/#${jip.number.toLowerCase()}`)} class="block py-5 group">
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <span class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-300">{jip.number}</span>
+                  <span class="text-[10px] uppercase tracking-[0.12em] text-slate-500">{jip.status}</span>
                 </div>
-                
-                <h3 class="text-2xl font-black leading-tight text-white group-hover:text-cyan-300 transition-colors mb-4 font-display">
-                  <a href={url(`insights/${insight.id}/`)}>{insight.data.title}</a>
-                </h3>
-                
-                <p class="text-slate-300 text-sm leading-relaxed mb-8 font-light">
-                  {insight.data.description}
-                </p>
-              </div>
-
-              <div class="flex items-center justify-between pt-5 border-t border-white/10">
-                <span class="text-xs font-mono text-slate-400">{insight.data.author}</span>
-                <a href={url(`insights/${insight.id}/`)} class="text-xs font-mono font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                  <span>Read Brief</span>
-                  <i class="fa-solid fa-chevron-right text-[10px]" aria-hidden="true"></i>
-                </a>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
-
-  <!-- Founding Network & Ecosystem Collaboration Center -->
-  <section class="section-padding bg-[#03060E]/90 border-y border-cyan-500/15 relative">
-    <div class="max-w-[1560px] mx-auto px-6 sm:px-8 md:px-12">
-      <div class="text-center max-w-3xl mx-auto mb-16 reveal">
-        <div class="hud-badge mb-4">
-          <i class="fa-solid fa-handshake" aria-hidden="true"></i> FOUNDING NETWORK
-        </div>
-        <h2 class="heading-section">Complementary capability, open ecosystem</h2>
-        <p class="text-lg text-slate-300 font-light leading-relaxed">
-          The founding network brings together large-scale marine geophysical delivery with specialist offshore geotechnical capability, remaining open to operators, researchers, and technology providers worldwide.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 reveal">
-        <!-- BGP Card -->
-        <div class="glass-card p-8 md:p-10 text-center flex flex-col items-center justify-between group">
-          <div class="w-full flex justify-center py-6">
-            <Image src={bgpLogo} alt="BGP Offshore" width={240} class="brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity w-52" />
+                <h3 class="mt-2 text-base font-bold text-white transition-colors group-hover:text-emerald-200">{jip.title}</h3>
+                <p class="mt-2 text-xs leading-relaxed text-slate-500">Capabilities: {jip.capability}</p>
+              </a>
+            ))}
           </div>
-          <div class="w-full pt-5 border-t border-white/10 space-y-2">
-            <div class="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest">Marine Geophysics</div>
-            <p class="text-xs text-slate-400">Global fleet with high-end 3D/4D seismic and high-resolution imaging capability.</p>
-          </div>
-        </div>
-
-        <!-- Peneson Card -->
-        <div class="glass-card p-8 md:p-10 text-center flex flex-col items-center justify-between group">
-          <div class="w-full flex justify-center py-6">
-            <Image src={penesonLogo} alt="Guangzhou Peneson" width={240} class="brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity w-52" />
-          </div>
-          <div class="w-full pt-5 border-t border-white/10 space-y-2">
-            <div class="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest">Marine Geotechnics</div>
-            <p class="text-xs text-slate-400">Specialist deepwater seabed CPTu in-situ testing, seabed sampling, and laboratory analysis.</p>
-          </div>
-        </div>
-
-        <!-- Join Network Card -->
-        <div class="glass-card p-8 md:p-10 text-center flex flex-col items-center justify-center border-dashed border-cyan-500/40 bg-gradient-to-b from-cyan-950/20 to-transparent">
-          <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300 mb-5">
-            <i class="fa-solid fa-plus text-xl" aria-hidden="true"></i>
-          </div>
-          <h3 class="text-2xl font-bold text-white font-display mb-2">Join the Network</h3>
-          <p class="text-xs sm:text-sm text-slate-300 mb-6 font-light leading-relaxed">
-            Bring a novel sensor technology, field dataset, or offshore use case to the collaborative platform.
-          </p>
-          <button type="button" data-open-alliance-modal class="px-6 py-3 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-xs font-mono font-bold text-cyan-200 hover:text-white uppercase tracking-wider transition-all cursor-pointer">
-            Propose a Collaboration →
-          </button>
         </div>
       </div>
     </div>
   </section>
-
-  <!-- Final Call to Action Hero -->
-  <section class="section-padding relative overflow-hidden">
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-cyan-500/15 via-blue-600/10 to-transparent rounded-full blur-[160px] pointer-events-none"></div>
-    
-    <div class="max-w-4xl mx-auto px-6 text-center relative z-10 reveal">
-      <div class="hud-badge mb-6">
-        <i class="fa-solid fa-compass" aria-hidden="true"></i> START WITH THE DECISION
-      </div>
-      <h2 class="text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tight mb-8 font-display">
-        Bring us the offshore question.
-      </h2>
-      <p class="text-lg md:text-2xl text-slate-300 mb-10 font-light leading-relaxed max-w-2xl mx-auto">
-        OceanHub will help frame the evidence need, assemble specialized multidisciplinary capability, and de-risk your offshore decision.
-      </p>
-      
-      <div class="flex flex-wrap justify-center gap-4">
-        <button type="button" data-open-alliance-modal class="px-9 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black uppercase tracking-wider text-xs transition-all shadow-[0_0_35px_rgba(0,240,255,0.35)] hover:scale-105 active:scale-95 cursor-pointer">
-          Propose a Collaboration
-        </button>
-        <a href={url('about/')} class="px-9 py-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 hover:border-cyan-400/40 text-white font-bold uppercase tracking-wider text-xs transition-all backdrop-blur-md">
-          How OceanHub Works
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Client-side Interactive HUD & Matrix Controller -->
-  <script>
-    // 1. Interactive HUD Channel Switcher & Live Canvas Engine
-    const tabs = document.querySelectorAll('.hud-tab');
-    const panes = document.querySelectorAll('.hud-pane');
-    const modeTag = document.getElementById('canvas-mode-tag');
-    const statusTag = document.getElementById('canvas-status-tag');
-    const freqTag = document.getElementById('canvas-freq-tag');
-    const canvas = document.getElementById('hud-telemetry-canvas') as HTMLCanvasElement | null;
-
-    let activeChannel = 0;
-    const modeMeta = [
-      { mode: 'SEISMIC STREAM 3D', status: 'GEOHAZARD: CLEAR', statusColor: '#10B981', freq: 'SAMPLING: 2.0 kHz · TIME-SERIES' },
-      { mode: 'CPTu IN-SITU PROFILE', status: 'THRUST: NORMAL', statusColor: '#38BDF8', freq: 'SAMPLING: 10 Hz · DEPTH-SERIES' },
-      { mode: '4D DAS FIBER OPTIC', status: 'CAPROCK: SEALED', statusColor: '#10B981', freq: 'SAMPLING: 5.0 kHz · ACOUSTIC INTERFEROMETRY' },
-      { mode: 'PAM HYDROPHONE FFT', status: 'ZONE: MONITORED', statusColor: '#10B981', freq: 'SAMPLING: 192 kHz · FULL-SPECTRUM' }
-    ];
-
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const channel = Number(tab.getAttribute('data-channel') || '0');
-        activeChannel = channel;
-        tabs.forEach((t) => {
-          t.classList.remove('active', 'bg-cyan-500/20', 'text-cyan-300', 'border-cyan-400/40');
-          t.classList.add('text-slate-400', 'border-transparent');
-        });
-        tab.classList.add('active', 'bg-cyan-500/20', 'text-cyan-300', 'border-cyan-400/40');
-        tab.classList.remove('text-slate-400', 'border-transparent');
-
-        panes.forEach((pane) => {
-          pane.classList.add('hidden');
-        });
-        const activePane = document.getElementById(`pane-${channel}`);
-        activePane?.classList.remove('hidden');
-
-        if (modeMeta[channel]) {
-          if (modeTag) modeTag.textContent = modeMeta[channel].mode;
-          if (statusTag) {
-            statusTag.textContent = modeMeta[channel].status;
-            statusTag.style.color = modeMeta[channel].statusColor;
-          }
-          if (freqTag) freqTag.textContent = modeMeta[channel].freq;
-        }
-      });
-    });
-
-    // 2. High-Performance Procedural Telemetry Canvas Simulation
-    if (canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const ctx = canvas.getContext('2d');
-      let animId = 0;
-      let tick = 0;
-      let running = true;
-
-      function resize() {
-        if (!canvas) return;
-        const rect = canvas.getBoundingClientRect();
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        canvas.width = Math.round(rect.width * dpr);
-        canvas.height = Math.round(rect.height * dpr);
-        ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
-
-      function draw() {
-        if (!ctx || !canvas || !running) return;
-        const w = canvas.getBoundingClientRect().width;
-        const h = canvas.getBoundingClientRect().height;
-        ctx.clearRect(0, 0, w, h);
-        tick += 0.03;
-
-        // Draw background grid lines
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.07)';
-        ctx.lineWidth = 1;
-        for (let x = 0; x < w; x += 30) {
-          ctx.beginPath();
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, h);
-          ctx.stroke();
-        }
-        for (let y = 0; y < h; y += 20) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(w, y);
-          ctx.stroke();
-        }
-
-        if (activeChannel === 0) {
-          // Channel 0: 3D Seismic Wiggle Waveform Stream
-          const numTraces = 5;
-          for (let t = 0; t < numTraces; t++) {
-            const baseY = 20 + t * 14;
-            ctx.beginPath();
-            for (let x = 0; x < w; x += 2) {
-              const freq = 0.045 + t * 0.008;
-              const amp = Math.sin(x * freq + tick * 1.8 + t) * Math.cos(x * 0.015 - tick * 0.8) * 8;
-              const y = baseY + amp;
-              if (x === 0) ctx.moveTo(x, y);
-              else ctx.lineTo(x, y);
-            }
-            ctx.strokeStyle = t === 2 ? 'rgba(0, 240, 255, 0.9)' : 'rgba(14, 165, 233, 0.4)';
-            ctx.lineWidth = t === 2 ? 1.8 : 1.0;
-            ctx.stroke();
-          }
-
-          // Sweeping radar scan line
-          const scanX = ((tick * 40) % (w + 40)) - 20;
-          const grad = ctx.createLinearGradient(scanX - 25, 0, scanX, 0);
-          grad.addColorStop(0, 'rgba(0, 240, 255, 0)');
-          grad.addColorStop(1, 'rgba(0, 240, 255, 0.35)');
-          ctx.fillStyle = grad;
-          ctx.fillRect(scanX - 25, 0, 25, h);
-
-        } else if (activeChannel === 1) {
-          // Channel 1: CPTu In-Situ Stratigraphy & Cone Resistance Profile
-          ctx.beginPath();
-          const midY = h * 0.5;
-          for (let x = 0; x < w; x += 3) {
-            // Simulated stratified soil layer resistance with localized spikes (boulders/hard layers)
-            const noise = Math.sin(x * 0.08 + tick * 0.5) * 4 + Math.sin(x * 0.25) * 8;
-            const spike = (x > w * 0.35 && x < w * 0.42) ? 18 : 0;
-            const y = midY - (noise + spike);
-            if (x === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          }
-          ctx.strokeStyle = 'rgba(56, 189, 248, 0.9)';
-          ctx.lineWidth = 2;
-          ctx.stroke();
-
-          // Bottom fill for soil resistance area
-          ctx.lineTo(w, h);
-          ctx.lineTo(0, h);
-          ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
-          ctx.fill();
-
-          // Pore pressure curve (u2)
-          ctx.beginPath();
-          for (let x = 0; x < w; x += 4) {
-            const u2 = midY + 12 + Math.sin(x * 0.05 + tick) * 6;
-            if (x === 0) ctx.moveTo(x, u2);
-            else ctx.lineTo(x, u2);
-          }
-          ctx.strokeStyle = 'rgba(16, 185, 129, 0.7)';
-          ctx.lineWidth = 1.2;
-          ctx.setLineDash([3, 3]);
-          ctx.stroke();
-          ctx.setLineDash([]);
-
-        } else if (activeChannel === 2) {
-          // Channel 2: 4D DAS Optical Fiber Strain Pulse Packet
-          const midY = h * 0.5;
-          ctx.beginPath();
-          for (let x = 0; x < w; x += 2) {
-            // Gaussian modulated packet traveling along fiber
-            const packetCenter = ((tick * 50) % (w + 80)) - 40;
-            const dist = x - packetCenter;
-            const envelope = Math.exp(-(dist * dist) / 450);
-            const carrier = Math.sin(x * 0.3);
-            const strainAmp = envelope * carrier * 28;
-            const y = midY + strainAmp + Math.sin(x * 0.03 + tick) * 2;
-            if (x === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          }
-          ctx.strokeStyle = 'rgba(0, 240, 255, 0.95)';
-          ctx.lineWidth = 2;
-          ctx.stroke();
-
-          // Upper and lower caprock seal safety envelope limits
-          ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
-          ctx.lineWidth = 1;
-          ctx.setLineDash([4, 4]);
-          ctx.beginPath();
-          ctx.moveTo(0, midY - 30); ctx.lineTo(w, midY - 30);
-          ctx.moveTo(0, midY + 30); ctx.lineTo(w, midY + 30);
-          ctx.stroke();
-          ctx.setLineDash([]);
-
-        } else if (activeChannel === 3) {
-          // Channel 3: PAM Hydrophone 32-band FFT Spectrum Analyzer
-          const numBars = 36;
-          const barWidth = (w - (numBars * 3)) / numBars;
-          for (let i = 0; i < numBars; i++) {
-            const freqNorm = i / numBars;
-            // Simulated bio-acoustic peaks (low whale whistles on left, click spikes on right)
-            let baseH = Math.sin(freqNorm * Math.PI + tick * 2 + i * 0.3) * 16 + 18;
-            if (i > 24 && i < 28) {
-              // Cetacean 85kHz peak spike
-              baseH += Math.abs(Math.sin(tick * 5)) * 32;
-            }
-            const barH = Math.max(4, Math.min(h - 10, baseH));
-            const x = i * (barWidth + 3);
-            const y = h - barH - 4;
-
-            const barGrad = ctx.createLinearGradient(x, y, x, h);
-            if (i > 24 && i < 28) {
-              barGrad.addColorStop(0, 'rgba(0, 240, 255, 0.95)');
-              barGrad.addColorStop(1, 'rgba(16, 185, 129, 0.4)');
-            } else {
-              barGrad.addColorStop(0, 'rgba(16, 185, 129, 0.8)');
-              barGrad.addColorStop(1, 'rgba(14, 165, 233, 0.2)');
-            }
-            ctx.fillStyle = barGrad;
-            ctx.fillRect(x, y, barWidth, barH);
-          }
-        }
-
-        animId = requestAnimationFrame(draw);
-      }
-
-      resize();
-      window.addEventListener('resize', resize, { passive: true });
-      animId = requestAnimationFrame(draw);
-
-      document.addEventListener('visibilitychange', () => {
-        running = !document.hidden;
-        if (running && !animId) animId = requestAnimationFrame(draw);
-      });
-
-      // Pause canvas when scrolled out of viewport
-      if ('IntersectionObserver' in window) {
-        const hudObserver = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              if (!running) { running = true; animId = requestAnimationFrame(draw); }
-            } else {
-              if (running) { running = false; cancelAnimationFrame(animId); animId = 0; }
-            }
-          });
-        }, { threshold: 0 });
-        hudObserver.observe(canvas);
-      }
-    }
-
-    // 3. Subtle Live Telemetry Value Flickers
-    setInterval(() => {
-      const zEl = document.getElementById('seismic-depth-val');
-      if (zEl && activeChannel === 0) {
-        const val = (248.5 + (Math.random() - 0.5) * 0.4).toFixed(1);
-        zEl.textContent = `${val} m`;
-      }
-      const qcEl = document.getElementById('cptu-qc-val');
-      if (qcEl && activeChannel === 1) {
-        const val = (42.8 + (Math.random() - 0.5) * 0.3).toFixed(1);
-        qcEl.textContent = `${val} MPa`;
-      }
-      const strainEl = document.getElementById('ccus-strain-val');
-      if (strainEl && activeChannel === 2) {
-        const val = (0.012 + (Math.random() - 0.5) * 0.002).toFixed(3);
-        strainEl.textContent = `±${val} με`;
-      }
-      const pamEl = document.getElementById('pam-peak-val');
-      if (pamEl && activeChannel === 3) {
-        const val = (85.2 + (Math.random() - 0.5) * 0.2).toFixed(1);
-        pamEl.textContent = `${val} kHz`;
-      }
-    }, 1800);
-
-    // 4. Interactive Stage Filter Pills
-    const stagePills = document.querySelectorAll('.stage-pill');
-    const stageCards = document.querySelectorAll('.stage-card');
-
-    stagePills.forEach((pill) => {
-      pill.addEventListener('click', () => {
-        const stage = pill.getAttribute('data-stage');
-        stagePills.forEach((p) => {
-          p.classList.remove('active', 'bg-cyan-500/20', 'text-cyan-300', 'border-cyan-400/40');
-          p.classList.add('text-slate-400', 'border-white/10', 'bg-white/5');
-        });
-        pill.classList.add('active', 'bg-cyan-500/20', 'text-cyan-300', 'border-cyan-400/40');
-        pill.classList.remove('text-slate-400', 'border-white/10', 'bg-white/5');
-
-        stageCards.forEach((card) => {
-          const cardStages = card.getAttribute('data-stages') || '';
-          if (stage === 'all' || cardStages.includes(stage || '')) {
-            card.classList.remove('hidden', 'opacity-30');
-            card.classList.add('opacity-100');
-          } else {
-            card.classList.add('hidden');
-          }
-        });
-      });
-    });
-  </script>
 </Layout>
