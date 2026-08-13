@@ -1,187 +1,97 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { evidenceSources } from '../data/offshoreReferenceCases';
 import { proposedJips } from '../data/proposedJips';
 import { getEvidencePlan } from '../lib/matchEvidencePlan';
 
 const base = import.meta.env.BASE_URL;
 const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
-
-const examplePlan = getEvidencePlan({
-  projectArchetype: 'offshore-ccs',
-  lifecycleStage: 'pre-feed'
-});
-const example = examplePlan[0];
-
-const trustSources = evidenceSources.filter((source) =>
-  ['iso-27914-2026', 'northern-lights-storage-2020', 'equinor-sleipner-monitoring-2009'].includes(source.id)
-);
+const example = getEvidencePlan({ projectArchetype: 'offshore-ccs', lifecycleStage: 'pre-feed' })[0];
 ---
 
-<Layout
-  title="OceanHub | Offshore Decision Intelligence"
-  description="OceanHub turns offshore project decisions into traceable evidence plans, capability needs and collaboration paths grounded in real engineering precedents."
->
-  <!-- 01 — Product promise -->
-  <section class="relative flex min-h-[78vh] items-center border-b border-white/10 py-20 md:py-28">
+<Layout title="OceanHub | Offshore Decision Intelligence" description="OceanHub turns offshore project decisions into traceable evidence plans, capability needs and collaboration paths grounded in real engineering precedents.">
+  <section class="flex min-h-[78vh] items-center border-b border-white/10 py-20 md:py-28">
     <div class="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-14 px-6 sm:px-8 lg:grid-cols-12 lg:gap-16">
       <div class="reveal lg:col-span-7">
-        <p class="mb-5 font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Offshore decision intelligence</p>
-        <h1 class="max-w-5xl font-display text-5xl font-black leading-[1.03] tracking-tight text-white sm:text-6xl lg:text-7xl">
-          Turn offshore uncertainty into an evidence plan.
-        </h1>
-        <p class="mt-7 max-w-3xl text-lg leading-relaxed text-slate-300 sm:text-xl">
-          OceanHub translates a project decision into the uncertainties to resolve, evidence to collect, capabilities to assemble and precedents that support the plan.
-        </p>
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Offshore decision intelligence</p>
+        <h1 class="mt-5 max-w-5xl font-display text-5xl font-black leading-[1.03] tracking-tight text-white sm:text-6xl lg:text-7xl">Turn offshore uncertainty into an evidence plan.</h1>
+        <p class="mt-7 max-w-3xl text-lg leading-relaxed text-slate-300 sm:text-xl">OceanHub translates a project decision into the uncertainties to resolve, evidence to collect, capabilities to assemble, engineering references to apply and precedents that support the plan.</p>
         <div class="mt-9 flex flex-wrap gap-3">
-          <a
-            href={url('scope/')}
-            class="inline-flex items-center justify-center rounded-xl bg-cyan-400 px-6 py-3.5 text-sm font-black text-slate-950 transition-colors hover:bg-cyan-300"
-          >
-            Scope a Project
-          </a>
-          <button
-            type="button"
-            data-open-collaboration="partner"
-            class="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
-          >
-            Join as a Partner
-          </button>
+          <a href={url('scope/')} class="rounded-xl bg-cyan-400 px-6 py-3.5 text-sm font-black text-slate-950 hover:bg-cyan-300">Scope a Project</a>
+          <button type="button" data-open-collaboration="partner" class="rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10">Join as a Partner</button>
         </div>
-        <p class="mt-5 text-xs leading-relaxed text-slate-500">
-          First evidence-backed vertical slice: offshore CO₂ geological storage. More domains grow from validated engineering cases, not generic templates.
-        </p>
+        <p class="mt-5 max-w-3xl text-xs leading-relaxed text-slate-500">The knowledge layer now covers offshore CCS, wind, marine site investigation, subsea infrastructure, integrity and decommissioning. The interactive Scoper currently exposes the offshore CCS slice while broader decision flows remain evidence-gated.</p>
       </div>
 
       <div class="reveal lg:col-span-5" style="transition-delay: 100ms;">
         <div class="border-l border-cyan-400/30 pl-6 sm:pl-8">
           <p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-300">Example · Offshore CCS · Pre-FEED</p>
           <p class="mt-4 text-xl font-bold leading-snug text-white">{example?.decision}</p>
-          <div class="mt-7 space-y-5">
-            <div>
-              <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Uncertainty</p>
-              <p class="mt-1.5 text-sm leading-relaxed text-slate-300">{example?.requirement.uncertainty}</p>
-            </div>
-            <div>
-              <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Evidence</p>
-              <p class="mt-1.5 text-sm leading-relaxed text-slate-300">{example?.requirement.evidenceNeeded}</p>
-            </div>
-            <div>
-              <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Capability</p>
-              <p class="mt-1.5 text-sm leading-relaxed text-slate-300">{example?.requirement.capabilities.slice(0, 3).join(' · ')}</p>
-            </div>
-          </div>
-          <a href={url('scope/')} class="mt-7 inline-flex text-sm font-bold text-cyan-300 hover:text-cyan-200">Open the full evidence plan →</a>
+          <dl class="mt-7 space-y-5">
+            <div><dt class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Uncertainty</dt><dd class="mt-1.5 text-sm leading-relaxed text-slate-300">{example?.requirement.uncertainty}</dd></div>
+            <div><dt class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Evidence</dt><dd class="mt-1.5 text-sm leading-relaxed text-slate-300">{example?.requirement.evidenceNeeded}</dd></div>
+            <div><dt class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Capability</dt><dd class="mt-1.5 text-sm leading-relaxed text-slate-300">{example?.requirement.capabilities.slice(0, 3).join(' · ')}</dd></div>
+          </dl>
+          <a href={url('scope/')} class="mt-7 inline-flex text-sm font-bold text-cyan-300 hover:text-cyan-200">Open the evidence plan →</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 02 — How it works -->
   <section class="border-b border-white/10 py-20 md:py-28">
     <div class="mx-auto max-w-7xl px-6 sm:px-8">
       <div class="reveal max-w-3xl">
-        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">How OceanHub works</p>
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">How it works</p>
         <h2 class="mt-4 font-display text-3xl font-black tracking-tight text-white sm:text-5xl">Start from the decision. Trace the evidence chain.</h2>
-        <p class="mt-5 text-base leading-relaxed text-slate-400 sm:text-lg">
-          Instead of starting with a vendor catalogue, OceanHub asks what must be decided and what evidence would materially reduce the uncertainty.
-        </p>
       </div>
-
-      <ol class="reveal mt-12 divide-y divide-white/10 border-y border-white/10" style="transition-delay: 80ms;">
+      <ol class="reveal mt-12 divide-y divide-white/10 border-y border-white/10">
         {[
-          ['01', 'Decision', example?.decision ?? 'Define the engineering decision.'],
-          ['02', 'Uncertainty', example?.requirement.uncertainty ?? 'Identify the uncertainty that can change the decision.'],
-          ['03', 'Evidence', example?.requirement.evidenceNeeded ?? 'Specify the evidence required.'],
-          ['04', 'Capability', example?.requirement.capabilities.join(' · ') ?? 'Map methods and delivery capabilities.'],
-          ['05', 'Provenance', example?.sources.map((source) => source.publisher).join(' · ') ?? 'Trace the recommendation to precedents and standards.']
+          ['01', 'Decision', example?.decision],
+          ['02', 'Uncertainty', example?.requirement.uncertainty],
+          ['03', 'Evidence', example?.requirement.evidenceNeeded],
+          ['04', 'Capability', example?.requirement.capabilities.join(' · ')],
+          ['05', 'References', example?.references.map((reference) => reference.code).join(' · ')],
+          ['06', 'Precedent', example?.sources.map((source) => source.publisher).join(' · ')]
         ].map(([number, label, detail]) => (
-          <li class="grid grid-cols-[3rem_1fr] gap-4 py-5 sm:grid-cols-[4rem_10rem_1fr] sm:items-start sm:gap-6 sm:py-6">
-            <span class="font-mono text-xs text-cyan-400">{number}</span>
-            <strong class="text-sm text-white">{label}</strong>
-            <span class="col-start-2 text-sm leading-relaxed text-slate-400 sm:col-start-3">{detail}</span>
-          </li>
+          <li class="grid grid-cols-[3rem_1fr] gap-4 py-5 sm:grid-cols-[4rem_10rem_1fr] sm:gap-6 sm:py-6"><span class="font-mono text-xs text-cyan-400">{number}</span><strong class="text-sm text-white">{label}</strong><span class="col-start-2 text-sm leading-relaxed text-slate-400 sm:col-start-3">{detail}</span></li>
         ))}
       </ol>
     </div>
   </section>
 
-  <!-- 03 — Trust -->
   <section class="border-b border-white/10 py-20 md:py-28">
-    <div class="mx-auto max-w-7xl px-6 sm:px-8">
-      <div class="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
-        <div class="reveal lg:col-span-5">
-          <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Why trust the output</p>
-          <h2 class="mt-4 font-display text-3xl font-black tracking-tight text-white sm:text-5xl">Traceable by design.</h2>
-          <p class="mt-5 text-base leading-relaxed text-slate-400">
-            OceanHub does not manufacture a confidence percentage. Each recommendation is tied to an engineering rationale and a source; when the encoded evidence is insufficient, the product says so explicitly.
-          </p>
-        </div>
-
-        <div class="reveal lg:col-span-7" style="transition-delay: 80ms;">
-          <div class="divide-y divide-white/10 border-y border-white/10">
-            {trustSources.map((source) => (
-              <a
-                href={source.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="grid gap-2 py-5 transition-colors hover:text-cyan-200 sm:grid-cols-[9rem_1fr_auto] sm:items-center sm:gap-5"
-              >
-                <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">{source.sourceType} · {source.publishedYear}</span>
-                <span class="text-sm font-bold text-slate-200">{source.title}</span>
-                <span class="text-xs text-slate-500">{source.publisher} ↗</span>
-              </a>
-            ))}
-          </div>
-          <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <div>
-              <p class="text-sm font-bold text-white">Case-grounded</p>
-              <p class="mt-2 text-xs leading-relaxed text-slate-500">Recommendations grow from structured offshore precedents.</p>
-            </div>
-            <div>
-              <p class="text-sm font-bold text-white">Stage-aware</p>
-              <p class="mt-2 text-xs leading-relaxed text-slate-500">Evidence needs change across feasibility, FEED, operations and monitoring.</p>
-            </div>
-            <div>
-              <p class="text-sm font-bold text-white">Honest gaps</p>
-              <p class="mt-2 text-xs leading-relaxed text-slate-500">No precedent means an evidence gap, not a fabricated answer.</p>
-            </div>
-          </div>
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 sm:px-8 lg:grid-cols-12 lg:gap-16">
+      <div class="reveal lg:col-span-5">
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Traceable by design</p>
+        <h2 class="mt-4 font-display text-3xl font-black text-white sm:text-5xl">No confidence theatre.</h2>
+        <p class="mt-5 text-base leading-relaxed text-slate-400">Every encoded recommendation links engineering rationale, canonical references and project or regulator provenance. Unknown evidence remains an explicit gap.</p>
+        <a href={url('references/')} class="mt-6 inline-flex text-sm font-bold text-cyan-300 hover:text-cyan-200">Browse engineering references →</a>
+      </div>
+      <div class="reveal lg:col-span-7">
+        <div class="divide-y divide-white/10 border-y border-white/10">
+          {example?.sources.map((source) => (
+            <a href={source.url} target="_blank" rel="noopener noreferrer" class="grid gap-2 py-5 sm:grid-cols-[9rem_1fr_auto] sm:items-center sm:gap-5">
+              <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">{source.sourceType} · {source.publishedYear}</span><span class="text-sm font-bold text-slate-200">{source.title}</span><span class="text-xs text-slate-500">{source.publisher} ↗</span>
+            </a>
+          ))}
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 04 — Alliance / JIPs -->
   <section id="alliance" class="scroll-mt-24 py-20 md:py-28">
-    <div class="mx-auto max-w-7xl px-6 sm:px-8">
-      <div class="reveal grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
-        <div class="lg:col-span-5">
-          <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">Green Offshore Technology Alliance</p>
-          <h2 class="mt-4 font-display text-3xl font-black tracking-tight text-white sm:text-5xl">Build the capability network around real offshore problems.</h2>
-          <p class="mt-5 text-base leading-relaxed text-slate-400">
-            OceanHub is building an open collaboration network for operators, engineering specialists, technology providers and research teams. Proposed JIPs turn shared capability gaps into concrete workstreams and partner calls.
-          </p>
-          <div class="mt-8 flex flex-wrap gap-3">
-            <a href={url('jips/')} class="inline-flex rounded-xl bg-emerald-400 px-5 py-3 text-sm font-black text-slate-950 hover:bg-emerald-300">Explore proposed JIPs</a>
-            <button type="button" data-open-collaboration="partner" class="inline-flex rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">Join the network</button>
-          </div>
-          <p class="mt-4 text-xs leading-relaxed text-slate-500">The alliance and JIPs are forming initiatives. Capability needs are proposed unless a partner commitment is explicitly stated.</p>
-        </div>
-
-        <div class="lg:col-span-7">
-          <div class="divide-y divide-white/10 border-y border-white/10">
-            {proposedJips.map((jip) => (
-              <a href={url(`jips/#${jip.id}`)} class="block py-5 group">
-                <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
-                  <span class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-300">{jip.number}</span>
-                  <span class="text-[10px] uppercase tracking-[0.12em] text-slate-500">{jip.status}</span>
-                </div>
-                <h3 class="mt-2 text-base font-bold text-white transition-colors group-hover:text-emerald-200">{jip.title}</h3>
-                <p class="mt-2 text-xs leading-relaxed text-slate-500">Capabilities: {jip.capabilities.slice(0, 4).join(' · ')}</p>
-              </a>
-            ))}
-          </div>
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 sm:px-8 lg:grid-cols-12 lg:gap-16">
+      <div class="reveal lg:col-span-5">
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">Green Offshore Technology Alliance</p>
+        <h2 class="mt-4 font-display text-3xl font-black text-white sm:text-5xl">Build the capability network around real offshore problems.</h2>
+        <p class="mt-5 text-base leading-relaxed text-slate-400">Proposed JIPs turn shared evidence and capability gaps into concrete workstreams and partner calls.</p>
+        <div class="mt-8 flex flex-wrap gap-3"><a href={url('jips/')} class="rounded-xl bg-emerald-400 px-5 py-3 text-sm font-black text-slate-950 hover:bg-emerald-300">Explore proposed JIPs</a><button type="button" data-open-collaboration="partner" class="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white">Join the network</button></div>
+        <p class="mt-4 text-xs leading-relaxed text-slate-500">Alliance and JIP scopes are forming initiatives unless a partner commitment is explicitly stated.</p>
+      </div>
+      <div class="lg:col-span-7">
+        <div class="divide-y divide-white/10 border-y border-white/10">
+          {proposedJips.map((jip) => (
+            <a href={url(`jips/#${jip.id}`)} class="block py-5"><span class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-300">{jip.number} · {jip.status}</span><h3 class="mt-2 text-base font-bold text-white">{jip.title}</h3><p class="mt-2 text-xs leading-relaxed text-slate-500">Capabilities: {jip.capabilities.slice(0, 4).join(' · ')}</p></a>
+          ))}
         </div>
       </div>
     </div>
