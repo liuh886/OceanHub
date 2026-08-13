@@ -33,6 +33,7 @@ export function getEvidencePlan(query: EvidencePlanQuery) {
       caseId: referenceCase.id,
       caseTitle: referenceCase.title,
       decision: referenceCase.decision,
+      outcome: referenceCase.outcome,
       projectContext: referenceCase.projectContext,
       requirement,
       sources: resolveEvidenceSources(requirement)
