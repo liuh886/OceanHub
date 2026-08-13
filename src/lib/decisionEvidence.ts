@@ -2,7 +2,10 @@ export type ProjectArchetype =
   | 'offshore-ccs'
   | 'fixed-offshore-wind'
   | 'floating-offshore-wind'
-  | 'subsea-corridor';
+  | 'subsea-corridor'
+  | 'offshore-field-development'
+  | 'marine-infrastructure'
+  | 'decommissioning';
 
 export type LifecycleStage =
   | 'screening'
@@ -15,10 +18,21 @@ export type LifecycleStage =
   | 'closure';
 
 export type EvidenceDiscipline =
+  | 'hydrography'
   | 'geophysics'
   | 'geology'
+  | 'geotechnics'
   | 'geomechanics'
   | 'wells'
+  | 'metocean'
+  | 'uxo-archaeology'
+  | 'marine-ecology'
+  | 'acoustics'
+  | 'structures'
+  | 'electrical'
+  | 'subsea-engineering'
+  | 'marine-operations'
+  | 'inspection-integrity'
   | 'environment'
   | 'monitoring'
   | 'data-integration';
@@ -29,7 +43,7 @@ export interface EvidenceSource {
   publisher: string;
   url: string;
   publishedYear: number;
-  sourceType: 'operator' | 'project' | 'standard';
+  sourceType: 'operator' | 'project' | 'regulator' | 'government' | 'technical-body';
   note?: string;
 }
 
@@ -44,9 +58,10 @@ export interface EvidenceRequirement {
   referenceIds: string[];
   rationale: string;
   sourceIds: string[];
+  tags?: string[];
 }
 
-export interface OffshoreReferenceCase {
+export interface ReferenceCase {
   id: string;
   title: string;
   projectArchetype: ProjectArchetype;
@@ -65,6 +80,6 @@ export interface EvidencePlanQuery {
 }
 
 export interface MatchedEvidenceCase {
-  case: OffshoreReferenceCase;
+  case: ReferenceCase;
   matchingEvidence: EvidenceRequirement[];
 }

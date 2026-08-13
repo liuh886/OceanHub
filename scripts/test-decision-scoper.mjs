@@ -9,9 +9,7 @@ function normalizeBaseUrl(value) {
 }
 
 const origin = process.env.OCEANHUB_TEST_ORIGIN ?? 'http://127.0.0.1:4321';
-const base = normalizeBaseUrl(
-  process.env.OCEANHUB_TEST_BASE_URL ?? `${origin.replace(/\/+$/, '')}/OceanHub/`
-);
+const base = normalizeBaseUrl(process.env.OCEANHUB_TEST_BASE_URL ?? `${origin.replace(/\/+$/, '')}/OceanHub/`);
 const scopeUrl = new URL('scope/', base).href;
 
 function assert(condition, message) {
@@ -23,7 +21,6 @@ const page = await browser.newPage();
 
 try {
   await page.goto(scopeUrl, { waitUntil: 'networkidle' });
-
   const scoper = page.locator('#decision-scoper-root');
   await scoper.getByRole('heading', { name: 'Build a traceable offshore CCS evidence plan' }).waitFor();
 
@@ -34,19 +31,20 @@ try {
 
   await scoper.locator('#scoper-stage').selectOption('pre-feed');
   await scoper.locator('#scoper-focus').selectOption('all');
-  await scoper.getByText('2 evidence workstreams from 1 reference pattern.', { exact: true }).waitFor();
-  await scoper.getByRole('heading', { name: 'Northern Lights Aurora — characterize reservoir and seal before injection' }).waitFor();
-  assert((await scoper.locator('[data-scoper-requirement]').count()) === 2, 'Pre-FEED plan did not render the expected evidence workstreams.');
+  await scoper.getByText('1 evidence workstream from 1 reference pattern.', { exact: true }).waitFor();
+  await scoper.getByRole('heading', { name: 'Northern Lights Aurora — reservoir and seal characterization' }).waitFor();
+  assert((await scoper.locator('[data-scoper-requirement]').count()) === 1, 'Pre-FEED plan did not render the expected evidence workstream.');
 
   await scoper.locator('#scoper-stage').selectOption('monitoring');
   await scoper.locator('#scoper-focus').selectOption('containment');
-  await scoper.getByText('2 evidence workstreams from 1 reference pattern.', { exact: true }).waitFor();
-  await scoper.getByRole('heading', { name: 'Sleipner — repeat seismic for plume migration and containment' }).waitFor();
+  await scoper.getByText('1 evidence workstream from 1 reference pattern.', { exact: true }).waitFor();
+  await scoper.getByRole('heading', { name: 'Sleipner — plume migration and containment monitoring' }).waitFor();
   await scoper.getByRole('link', { name: 'Greenhouse store staying sealed' }).first().waitFor();
 
   await scoper.locator('#scoper-focus').selectOption('induced-seismicity');
   await scoper.getByText('1 evidence workstream from 1 reference pattern.', { exact: true }).waitFor();
-  await scoper.getByRole('heading', { name: 'Northern Lights Aurora — continuous seismicity surveillance during injection' }).waitFor();
+  await scoper.getByRole('heading', { name: 'Northern Lights Aurora — injection readiness, seismicity surveillance and MRV' }).waitFor();
+  assert((await scoper.locator('[data-scoper-requirement]').count()) === 1, 'Evidence-level focus filtering returned unrelated Aurora workstreams.');
 
   await scoper.locator('#scoper-stage').selectOption('pre-feed');
   await scoper.getByText('No direct public reference pattern is encoded for this combination yet.', { exact: true }).waitFor();
