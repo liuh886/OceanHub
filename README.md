@@ -1,27 +1,45 @@
 # OceanHub
 
-OceanHub is an offshore decision-intelligence product. It turns an engineering decision into a traceable evidence plan and connects that plan to required capabilities and collaboration paths.
+OceanHub is an offshore technical-sourcing product. It turns an engineering decision into a traceable evidence plan, derives the capabilities required to resolve that decision, generates a supplier EOI, and carries supplier capability evidence through review.
 
 ## Product
 
-- **Knowledge:** real cases encoded as project → stage → decision → uncertainty → evidence → method → capability → deliverable → standard → source.
+- **Knowledge:** real cases encoded as project → stage → decision → uncertainty → evidence → method → capability → deliverable → engineering reference → source.
 - **Decision:** Decision Scoper builds source-backed evidence plans and shows evidence gaps explicitly.
-- **Network:** proposed JIPs connect recurring capability gaps to potential collaborators.
+- **Sourcing:** canonical capability requirements become a supplier EOI and an explainable provider shortlist based on exact capability overlap.
+- **Qualification:** selected suppliers return capability-specific evidence; reviewers record `supported`, `partially-supported`, or `insufficient` per assertion. No supplier score or star rating is produced.
+- **Collaboration:** proposed JIPs connect recurring capability gaps to potential collaborators.
 
-The current evidence-backed Scoper slice is offshore CO2 geological storage. Other domains are added only when validated reference cases exist.
+The interactive evidence-backed Scoper slice remains offshore CO2 geological storage. The knowledge layer is broader, but new interactive project archetypes are exposed only when their reference evidence is deep enough.
 
-Green Offshore Technology Alliance is a forming collaboration concept, not a constituted institution. The four JIPs are proposals unless a commitment is explicitly confirmed.
+Public-source provider mapping is a discovery signal, supplier-submitted evidence is a separate assertion, and only an explicit OceanHub review produces a reviewed outcome.
 
-## Technology
+Green Offshore Technology Alliance is a forming collaboration concept, not a constituted institution. The JIPs remain proposals unless a commitment is explicitly confirmed.
 
-- Astro 7
-- Tailwind CSS 4
-- TypeScript
-- Astro content collections
-- Playwright product-contract tests
-- GitHub Actions and GitHub Pages
+## Architecture
 
-PWA/offline infrastructure remains in the repository but is not a current product priority.
+- Astro 7 + Tailwind CSS 4 + TypeScript
+- Static public product on GitHub Pages
+- Canonical case, engineering-reference and capability registries in the repository
+- Supabase persistence for tracked EOIs, supplier responses and capability assertions
+- Public buyer/supplier writes through a validated Edge Function; review actions through an authenticated admin-only Edge Function
+- Existing Supabase Auth + `membership_admins` reused for reviewer authorization
+- OceanHub review tables deny direct `anon` and `authenticated` access
+- Playwright product-contract tests and GitHub Actions deployment gates
+
+No service-role or secret API key is shipped to the browser. The public Supabase publishable key is used only for reviewer authentication; privileged database work remains inside Edge Functions.
+
+## Main workflow
+
+`Decision Scoper → Evidence Plan → Canonical Capabilities → Supplier EOI → Provider Shortlist → Tracked Provider Requests → Supplier Evidence → Capability Review → Buyer Status`
+
+Review states are explicit:
+
+`evidence-submitted → under-review → reviewed`
+
+Reviewed outcomes are capability-specific:
+
+`supported | partially-supported | insufficient`
 
 ## Development
 
@@ -31,8 +49,4 @@ npm run dev
 npm run ci
 ```
 
-Browser contracts are defined in `package.json` for the Scoper, JIPs, conversion paths, deployed shell and retained Briefcase behavior.
-
-## Next milestone
-
-Deepen the offshore CCS case corpus and add material project constraints to the Decision Scoper. After that, introduce a canonical capability registry linking evidence requirements to JIPs and later to evidence-backed provider profiles.
+Browser contracts cover the Scoper, supplier EOI and tracked response flow, reviewer queue, JIPs, references, capability library, conversion paths, deployed shell and retained Briefcase behavior.
