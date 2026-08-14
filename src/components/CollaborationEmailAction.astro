@@ -26,6 +26,9 @@ const intakeEmail = 'liuzhihao109@foxmail.com';
     const selectedJips = () => Array.from(document.querySelectorAll('.jip-interest:checked'))
       .map((checkbox) => `${checkbox.value} — ${checkbox.dataset.jipTitle || checkbox.value}`);
 
+    const selectedCapabilities = () => Array.from(document.querySelectorAll('.capability-interest:checked'))
+      .map((checkbox) => `${checkbox.value} — ${checkbox.dataset.capabilityLabel || checkbox.value}`);
+
     const isPartnerIntent = () => !partnerPanel.classList.contains('hidden');
 
     const buildDraft = () => {
@@ -34,6 +37,7 @@ const intakeEmail = 'liuzhihao109@foxmail.com';
 
       if (isPartnerIntent()) {
         const jips = selectedJips();
+        const capabilityClaims = selectedCapabilities();
         return [
           'OceanHub — Partner / JIP Expression of Interest',
           '',
@@ -41,10 +45,14 @@ const intakeEmail = 'liuzhihao109@foxmail.com';
           `Contact email: ${contact}`,
           `Capability owner type: ${value('partner-type') || '[not provided]'}`,
           `Operating regions: ${value('partner-regions') || '[not provided]'}`,
+          `Canonical capabilities: ${capabilityClaims.length ? capabilityClaims.join('; ') : '[not selected]'}`,
           `JIP interest: ${jips.length ? jips.join('; ') : 'General capability network'}`,
           '',
-          'Capability evidence:',
-          value('partner-capabilities') || '[not provided]'
+          'Reference projects / field assets / datasets:',
+          value('partner-reference-projects') || '[not provided]',
+          '',
+          'Supporting capability evidence:',
+          value('partner-evidence') || '[not provided]'
         ].join('\n');
       }
 

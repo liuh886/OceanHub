@@ -41,11 +41,16 @@ try {
   assert(await page.locator('#partner-intake').isVisible(), 'Partner intake did not open from the homepage.');
   assert(!(await page.locator('#project-intake').isVisible()), 'Project intake remained visible in partner mode.');
   await page.locator('#collaboration-org').fill('Example Capability Partner');
-  await page.locator('#partner-capabilities').fill('Marine geophysical acquisition and processing capability.');
+  await page.locator('[data-capability-family="marine-survey"] summary').click();
+  await page.locator('.capability-interest[value="marine-geophysics"]').check();
+  await page.locator('#partner-reference-projects').fill('North Sea route survey — survey and interpretation lead.');
+  await page.locator('#partner-evidence').fill('Delivered MBES, SSS and sub-bottom interpretation with project QA records.');
   const partnerMailto = decodeMailto(await page.locator('#collaboration-email-draft').getAttribute('href'));
   assert(partnerMailto.address === intakeEmail, 'Partner EOI email draft is not routed to the confirmed intake address.');
   assert(partnerMailto.subject.includes('Partner / JIP Interest'), 'Partner EOI email subject does not preserve partner intent.');
-  assert(partnerMailto.body.includes('Marine geophysical acquisition and processing capability.'), 'Partner EOI email body did not include capability evidence.');
+  assert(partnerMailto.body.includes('marine-geophysics — Marine geophysics'), 'Partner EOI did not include canonical capability ID and label.');
+  assert(partnerMailto.body.includes('North Sea route survey'), 'Partner EOI did not include reference-project evidence.');
+  assert(partnerMailto.body.includes('Delivered MBES, SSS and sub-bottom interpretation'), 'Partner EOI did not include supporting capability evidence.');
   await page.getByRole('button', { name: 'Close collaboration form' }).click();
 
   await page.goto(route('scope/'), { waitUntil: 'networkidle' });
@@ -66,10 +71,23 @@ try {
   await page.getByRole('heading', { name: 'Present a capability' }).waitFor();
   const selectedJip = page.locator('.jip-interest[value="ccus-4d-mrv"]');
   assert(await selectedJip.isChecked(), 'JIP-specific partner CTA did not preselect the relevant proposed JIP.');
+  assert(await page.locator('.capability-interest[value="distributed-fiber-sensing"]').isChecked(), 'JIP-specific partner CTA did not preselect the JIP capability set.');
   await page.waitForTimeout(25);
   const jipMailto = decodeMailto(await page.locator('#collaboration-email-draft').getAttribute('href'));
   assert(jipMailto.address === intakeEmail, 'JIP interest email draft is not routed to the confirmed intake address.');
   assert(jipMailto.body.includes('ccus-4d-mrv'), 'JIP-specific email draft did not carry the preselected JIP context.');
+  assert(jipMailto.body.includes('distributed-fiber-sensing — Distributed fiber-optic sensing'), 'JIP-specific email draft did not carry canonical capability context.');
+  await page.getByRole('button', { name: 'Close collaboration form' }).click();
+
+  await page.goto(route('capabilities/#underwater-acoustics'), { waitUntil: 'networkidle' });
+  await page.locator('#underwater-acoustics').getByRole('button', { name: 'Present this capability' }).click();
+  await page.getByRole('heading', { name: 'Present a capability' }).waitFor();
+  const acousticCapability = page.locator('.capability-interest[value="underwater-acoustics"]');
+  assert(await acousticCapability.isChecked(), 'Capability-specific CTA did not preselect the canonical capability.');
+  assert((await page.locator('.jip-interest:checked').count()) === 0, 'Capability-specific CTA incorrectly carried stale JIP context.');
+  await page.waitForTimeout(25);
+  const capabilityMailto = decodeMailto(await page.locator('#collaboration-email-draft').getAttribute('href'));
+  assert(capabilityMailto.body.includes('underwater-acoustics — Underwater acoustics'), 'Capability-specific email draft did not carry canonical capability context.');
   await page.getByRole('button', { name: 'Close collaboration form' }).click();
 
   await page.goto(route('about/'), { waitUntil: 'networkidle' });
