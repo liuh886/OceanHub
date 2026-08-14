@@ -1,0 +1,158 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { capabilities } from '../data/capabilities';
+import { oceanhubBackend } from '../lib/oceanhubBackend';
+
+const payload = {
+  intakeUrl: oceanhubBackend.intakeUrl,
+  capabilities: Object.fromEntries(capabilities.map(({ id, label }) => [id, label]))
+};
+---
+
+<Layout
+  title="EOI Status | OceanHub"
+  description="Track supplier responses and capability review outcomes for a private OceanHub EOI request."
+>
+  <section class="mx-auto max-w-6xl px-6 pb-20 pt-16 sm:px-8 md:pt-24">
+    <div class="max-w-3xl">
+      <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Buyer tracking</p>
+      <h1 class="mt-4 font-display text-4xl font-black tracking-tight text-white sm:text-6xl">Track evidence and review, not a supplier score.</h1>
+      <p class="mt-6 text-lg leading-relaxed text-slate-300">This private link shows which suppliers responded, which capabilities they claimed, and the review outcome of each assertion. Supplier evidence detail and contact information are never exposed here.</p>
+    </div>
+
+    <div id="status-loading" class="mt-10 rounded-2xl border border-white/10 bg-white/[0.02] p-6 text-sm text-slate-400">Loading tracked EOI…</div>
+    <div id="status-error" class="mt-10 hidden rounded-2xl border border-amber-400/20 bg-amber-500/5 p-6 text-sm leading-relaxed text-slate-300"></div>
+    <div id="status-app" class="mt-10 hidden">
+      <div class="rounded-2xl border border-white/10 bg-white/[0.025] p-6 sm:p-8">
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Request ID</p><p id="status-request-id" class="mt-2 break-all text-xs text-slate-200"></p></div>
+          <div><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Lifecycle</p><p id="status-stage" class="mt-2 text-sm font-bold text-white"></p></div>
+          <div><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Decision focus</p><p id="status-focus" class="mt-2 text-sm font-bold text-white"></p></div>
+          <div><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Created</p><p id="status-created" class="mt-2 text-sm text-slate-300"></p></div>
+        </div>
+        <div class="mt-6 border-t border-white/10 pt-6"><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Project / region</p><p id="status-project" class="mt-2 text-sm leading-relaxed text-slate-300"></p></div>
+      </div>
+
+      <div class="mt-8">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-emerald-300">Reviewed shortlist</p><h2 class="mt-2 text-2xl font-black text-white">Supplier response and capability states</h2></div>
+          <button id="refresh-status" type="button" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/10">Refresh</button>
+        </div>
+        <div id="status-providers" class="mt-6 space-y-5"></div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script id="buyer-status-data" type="application/json" set:html={JSON.stringify(payload)}></script>
+
+<script>
+  interface AssertionSummary {
+    capability_id: string;
+    capability_label: string;
+    review_state: 'evidence-submitted' | 'under-review' | 'reviewed';
+    review_outcome: 'supported' | 'partially-supported' | 'insufficient' | null;
+    reviewed_at: string | null;
+  }
+  interface ProviderStatus {
+    providerId: string;
+    providerName: string;
+    requestedCapabilityIds: string[];
+    responseState: 'awaiting-response' | 'evidence-submitted';
+    submittedAt: string | null;
+    notClaimedCapabilityIds: string[];
+    assertions: AssertionSummary[];
+  }
+  interface StatusResult {
+    requestId?: string;
+    projectContext?: string;
+    lifecycleStage?: string;
+    decisionFocus?: string;
+    createdAt?: string;
+    providers?: ProviderStatus[];
+    error?: string;
+  }
+  interface Payload { intakeUrl: string; capabilities: Record<string, string> }
+
+  const data = JSON.parse(document.getElementById('buyer-status-data')?.textContent ?? '{}') as Payload;
+  const params = new URLSearchParams(window.location.search);
+  const requestId = params.get('request')?.trim() || '';
+  const buyerToken = params.get('token')?.trim() || '';
+  const loading = document.getElementById('status-loading');
+  const errorBox = document.getElementById('status-error');
+  const app = document.getElementById('status-app');
+  const providersNode = document.getElementById('status-providers');
+  const refresh = document.getElementById('refresh-status') as HTMLButtonElement | null;
+  const esc = (value: string) => value.replace(/[&<>'\"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '\"': '&quot;' })[character] ?? character);
+  const setText = (id: string, text: string) => { const node = document.getElementById(id); if (node) node.textContent = text; };
+  const fmt = (value: string | null | undefined) => value ? new Date(value).toLocaleString() : '—';
+
+  function capabilityState(capabilityId: string, provider: ProviderStatus) {
+    if (provider.responseState === 'awaiting-response') return { label: 'Awaiting supplier response', tone: 'text-slate-500' };
+    if (provider.notClaimedCapabilityIds.includes(capabilityId)) return { label: 'Not claimed by supplier', tone: 'text-slate-500' };
+    const assertion = provider.assertions.find((item) => item.capability_id === capabilityId);
+    if (!assertion) return { label: 'Response incomplete', tone: 'text-amber-300' };
+    if (assertion.review_state === 'evidence-submitted') return { label: 'Evidence submitted · review pending', tone: 'text-cyan-300' };
+    if (assertion.review_state === 'under-review') return { label: 'Under review', tone: 'text-amber-300' };
+    if (assertion.review_outcome === 'supported') return { label: 'Supported', tone: 'text-emerald-300' };
+    if (assertion.review_outcome === 'partially-supported') return { label: 'Partially supported', tone: 'text-amber-300' };
+    return { label: 'Insufficient evidence', tone: 'text-rose-300' };
+  }
+
+  function providerState(provider: ProviderStatus) {
+    if (provider.responseState === 'awaiting-response') return 'Awaiting response';
+    const claimed = provider.assertions;
+    if (claimed.some((item) => item.review_state === 'under-review')) return 'Under review';
+    if (claimed.length && claimed.every((item) => item.review_state === 'reviewed')) return 'Review complete';
+    return 'Evidence received · review pending';
+  }
+
+  async function loadStatus() {
+    if (!requestId || !buyerToken || !data.intakeUrl) {
+      loading?.classList.add('hidden');
+      if (errorBox) { errorBox.textContent = 'This tracking link is incomplete. Use the private buyer status link generated with the EOI.'; errorBox.classList.remove('hidden'); }
+      return;
+    }
+    refresh && (refresh.disabled = true);
+    try {
+      const response = await fetch(data.intakeUrl, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'request_status', requestId, buyerToken })
+      });
+      const result = await response.json() as StatusResult;
+      if (!response.ok || !result.requestId || !result.providers) throw new Error(result.error || 'Could not load tracked EOI.');
+
+      loading?.classList.add('hidden');
+      errorBox?.classList.add('hidden');
+      app?.classList.remove('hidden');
+      setText('status-request-id', result.requestId);
+      setText('status-stage', result.lifecycleStage || '—');
+      setText('status-focus', result.decisionFocus || '—');
+      setText('status-created', fmt(result.createdAt));
+      setText('status-project', result.projectContext || '—');
+
+      if (providersNode) providersNode.innerHTML = result.providers.map((provider) => `
+        <article class="rounded-2xl border border-white/10 bg-white/[0.02] p-6" data-status-provider="${esc(provider.providerId)}">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div><h3 class="text-lg font-bold text-white">${esc(provider.providerName)}</h3><p class="mt-1 font-mono text-[10px] text-slate-500">${esc(provider.providerId)}</p></div>
+            <div class="text-left sm:text-right"><p class="text-xs font-bold text-cyan-200">${esc(providerState(provider))}</p><p class="mt-1 text-[11px] text-slate-600">${provider.submittedAt ? `Submitted ${esc(fmt(provider.submittedAt))}` : 'No response received'}</p></div>
+          </div>
+          <div class="mt-5 divide-y divide-white/10 border-y border-white/10">
+            ${provider.requestedCapabilityIds.map((capabilityId) => {
+              const state = capabilityState(capabilityId, provider);
+              return `<div class="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between"><span class="text-xs text-slate-300">${esc(data.capabilities[capabilityId] || capabilityId)} <span class="font-mono text-[10px] text-slate-600">${esc(capabilityId)}</span></span><span class="text-[11px] font-bold ${state.tone}">${esc(state.label)}</span></div>`;
+            }).join('')}
+          </div>
+        </article>`).join('');
+    } catch (error) {
+      loading?.classList.add('hidden');
+      app?.classList.add('hidden');
+      if (errorBox) { errorBox.textContent = error instanceof Error ? error.message : 'Could not load tracked EOI.'; errorBox.classList.remove('hidden'); }
+    } finally {
+      refresh && (refresh.disabled = false);
+    }
+  }
+
+  refresh?.addEventListener('click', loadStatus);
+  loadStatus();
+</script>
