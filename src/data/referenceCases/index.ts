@@ -1,3 +1,4 @@
+import { capabilityById } from '../capabilities';
 import { engineeringReferenceById } from '../engineeringReferences';
 import { ccsInfrastructureCases } from './ccs-infrastructure';
 import { ccsStorageCases } from './ccs-storage';
@@ -53,8 +54,12 @@ for (const referenceCase of referenceCases) {
   for (const requirement of referenceCase.evidence) {
     if (evidenceIds.has(requirement.id)) throw new Error(`Duplicate evidence requirement ID: ${requirement.id}`);
     evidenceIds.add(requirement.id);
+    if (!requirement.capabilityIds.length) throw new Error(`Evidence requirement has no capability references: ${requirement.id}`);
     if (!requirement.sourceIds.length) throw new Error(`Evidence requirement has no project/source provenance: ${requirement.id}`);
     if (!requirement.referenceIds.length) throw new Error(`Evidence requirement has no engineering references: ${requirement.id}`);
+    for (const capabilityId of requirement.capabilityIds) {
+      if (!capabilityById.has(capabilityId)) throw new Error(`Unknown capability ID ${capabilityId} in ${requirement.id}`);
+    }
     for (const sourceId of requirement.sourceIds) {
       if (!evidenceSourceById.has(sourceId)) throw new Error(`Unknown evidence source ID ${sourceId} in ${requirement.id}`);
     }
