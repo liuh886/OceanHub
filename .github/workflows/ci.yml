@@ -42,7 +42,7 @@ jobs:
 
           git diff --name-only "$BASE_SHA" "$GITHUB_SHA" > changed-files.txt
           cat changed-files.txt
-          if grep -Eq '^(src/|public/|scripts/test-(briefcase|deployed-pwa|decision-scoper|jip-capabilities|engineering-references|capability-library|conversion-paths)\.mjs$|astro\.config\.mjs$|package(-lock)?\.json$|tsconfig\.json$|\.github/workflows/(ci|deploy)\.yml$)' changed-files.txt; then
+          if grep -Eq '^(src/|public/|scripts/test-(briefcase|deployed-pwa|decision-scoper|jip-capabilities|engineering-references|capability-library|conversion-paths|review-queue)\.mjs$|astro\.config\.mjs$|package(-lock)?\.json$|tsconfig\.json$|\.github/workflows/(ci|deploy)\.yml$)' changed-files.txt; then
             echo "browser=true" >> "$GITHUB_OUTPUT"
           else
             echo "browser=false" >> "$GITHUB_OUTPUT"
@@ -82,6 +82,10 @@ jobs:
             echo "Free-text capability fields remain in canonical knowledge data."
             exit 1
           fi
+          if grep -RniE 'Email response to OceanHub|mailto:.*Supplier Response' src/pages/respond.astro; then
+            echo "Deprecated mailto supplier review handoff remains in production source."
+            exit 1
+          fi
 
       - name: Install Chromium
         if: needs.scope.outputs.browser == 'true'
@@ -112,6 +116,7 @@ jobs:
           npm run test:references
           npm run test:capabilities
           npm run test:conversion
+          npm run test:review
           npm run test:briefcase
 
       - name: Retain validated Pages build
