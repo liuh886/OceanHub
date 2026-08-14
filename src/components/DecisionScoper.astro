@@ -95,6 +95,7 @@ const lookup = Object.fromEntries(
         <p class="max-w-xl text-xs leading-relaxed text-slate-500">OceanHub structures evidence for project discussion; it does not replace project-specific engineering judgement, consenting review or specialist design.</p>
         <div class="flex flex-wrap gap-3">
           <a href={url('jips/')} class="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-xs font-bold text-white hover:bg-white/10">Explore proposed JIPs</a>
+          <a href={url('capabilities/')} class="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-xs font-bold text-white hover:bg-white/10">Capability library</a>
           <a href={url('references/')} class="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-xs font-bold text-white hover:bg-white/10">Engineering references</a>
           <button type="button" data-open-collaboration="project" class="rounded-xl bg-cyan-400 px-5 py-3 text-xs font-black text-slate-950 hover:bg-cyan-300">Discuss capability needs</button>
         </div>
@@ -123,13 +124,18 @@ const lookup = Object.fromEntries(
     status: string;
   }
 
+  interface Capability {
+    id: string;
+    label: string;
+    summary: string;
+  }
+
   interface Requirement {
     id: string;
     discipline: string;
     uncertainty: string;
     evidenceNeeded: string;
     methods: string[];
-    capabilities: string[];
     deliverables: string[];
     rationale: string;
   }
@@ -141,6 +147,7 @@ const lookup = Object.fromEntries(
     outcome: string;
     projectContext: string;
     requirement: Requirement;
+    capabilities: Capability[];
     references: Reference[];
     sources: Source[];
   }
@@ -174,7 +181,7 @@ const lookup = Object.fromEntries(
         <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Key uncertainty</p><p class="mt-2 text-sm leading-relaxed text-slate-300">${escapeHtml(requirement.uncertainty)}</p></div>
         <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Evidence required</p><p class="mt-2 text-sm leading-relaxed text-slate-300">${escapeHtml(requirement.evidenceNeeded)}</p></div>
         <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Recommended methods</p>${bullets(requirement.methods)}</div>
-        <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Capability modules</p>${bullets(requirement.capabilities)}</div>
+        <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Capability modules</p>${bullets(item.capabilities.map((capability) => capability.label))}</div>
         <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Expected deliverables</p>${bullets(requirement.deliverables)}</div>
         <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Engineering references</p>${referenceMarkup(item.references)}</div>
       </div>
