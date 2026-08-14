@@ -130,6 +130,7 @@ try {
   await reservoir.locator('.review-outcome').selectOption('partially-supported');
   await reservoir.locator('.review-note').fill('Strong storage characterization evidence; geographic scope needs clarification.');
   await reservoir.getByRole('button', { name: 'Complete review' }).click();
+  await reservoir.getByRole('button', { name: 'Update review' }).waitFor();
   assert((await reservoir.locator('p').filter({ hasText: /^Partially supported$/ }).count()) === 1, 'Completed assertion did not render the partially-supported state precisely once.');
 
   assert(reviewed, 'Reviewer did not persist the final reviewed state.');
