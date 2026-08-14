@@ -1,0 +1,211 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { oceanhubBackend } from '../lib/oceanhubBackend';
+
+const payload = {
+  supabaseUrl: oceanhubBackend.supabaseUrl,
+  publishableKey: oceanhubBackend.publishableKey,
+  reviewUrl: `${oceanhubBackend.supabaseUrl}/functions/v1/oceanhub-review`
+};
+---
+
+<Layout
+  title="Capability Review Queue | OceanHub"
+  description="Internal OceanHub reviewer queue for supplier capability evidence assertions."
+>
+  <section class="mx-auto max-w-7xl px-6 pb-20 pt-16 sm:px-8 md:pt-24">
+    <div class="max-w-3xl">
+      <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-amber-300">Internal review</p>
+      <h1 class="mt-4 font-display text-4xl font-black tracking-tight text-white sm:text-6xl">Review capability evidence, assertion by assertion.</h1>
+      <p class="mt-6 text-lg leading-relaxed text-slate-300">The queue never produces a supplier score. Each capability claim is reviewed independently against the evidence submitted for that EOI response.</p>
+    </div>
+
+    <div id="review-login" class="mt-10 max-w-xl rounded-2xl border border-white/10 bg-white/[0.025] p-6 sm:p-8">
+      <h2 class="text-xl font-black text-white">Reviewer sign in</h2>
+      <p class="mt-2 text-xs leading-relaxed text-slate-500">Use an existing Supabase account with an active <code>membership_admins</code> role.</p>
+      <div class="mt-6 space-y-4">
+        <div><label for="review-email" class="mb-2 block text-xs font-bold text-slate-200">Email</label><input id="review-email" type="email" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-amber-300 focus:outline-none" /></div>
+        <div><label for="review-password" class="mb-2 block text-xs font-bold text-slate-200">Password</label><input id="review-password" type="password" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-amber-300 focus:outline-none" /></div>
+        <button id="review-sign-in" type="button" class="rounded-xl bg-amber-300 px-5 py-3 text-xs font-black text-slate-950 disabled:opacity-50">Sign in</button>
+        <p id="review-login-status" class="text-xs text-slate-500" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <div id="review-app" class="mt-10 hidden">
+      <div class="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.025] p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Authenticated reviewer</p><p id="reviewer-identity" class="mt-1 text-sm font-bold text-white"></p></div>
+        <div class="flex gap-2"><button id="review-refresh" type="button" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-bold text-white">Refresh</button><button id="review-sign-out" type="button" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-bold text-slate-300">Sign out</button></div>
+      </div>
+      <p id="review-queue-status" class="mt-4 text-xs text-slate-500" aria-live="polite"></p>
+      <div id="review-queue" class="mt-6 space-y-6"></div>
+    </div>
+  </section>
+</Layout>
+
+<script id="review-config" type="application/json" set:html={JSON.stringify(payload)}></script>
+
+<script>
+  interface Assertion {
+    id: string;
+    capability_id: string;
+    capability_label: string;
+    evidence_type: string;
+    evidence_detail: string;
+    review_state: 'evidence-submitted' | 'under-review' | 'reviewed';
+    review_outcome: 'supported' | 'partially-supported' | 'insufficient' | null;
+    reviewer_notes: string | null;
+    reviewed_at: string | null;
+    submitted_at: string;
+  }
+  interface Eoi { project_context: string; lifecycle_stage: string; decision_focus: string; created_at: string }
+  interface SupplierResponse {
+    id: string;
+    eoi_request_id: string;
+    provider_id: string;
+    organization: string;
+    contact_email: string;
+    operating_region: string;
+    not_claimed_capability_ids: string[];
+    submitted_at: string;
+    oceanhub_eoi_requests: Eoi | null;
+    oceanhub_capability_assertions: Assertion[];
+  }
+  interface QueueResult { reviewer?: { email?: string; role?: string }; responses?: SupplierResponse[]; error?: string }
+  interface AuthResult { access_token?: string; user?: { id: string; email?: string }; error_description?: string; msg?: string }
+  interface Config { supabaseUrl: string; publishableKey: string; reviewUrl: string }
+
+  const config = JSON.parse(document.getElementById('review-config')?.textContent ?? '{}') as Config;
+  const login = document.getElementById('review-login');
+  const app = document.getElementById('review-app');
+  const loginStatus = document.getElementById('review-login-status');
+  const queueStatus = document.getElementById('review-queue-status');
+  const queue = document.getElementById('review-queue');
+  const identity = document.getElementById('reviewer-identity');
+  const signIn = document.getElementById('review-sign-in') as HTMLButtonElement | null;
+  const refresh = document.getElementById('review-refresh') as HTMLButtonElement | null;
+  const signOut = document.getElementById('review-sign-out') as HTMLButtonElement | null;
+  const email = document.getElementById('review-email') as HTMLInputElement | null;
+  const password = document.getElementById('review-password') as HTMLInputElement | null;
+  const tokenKey = 'oceanhub-review-access-token';
+  const esc = (value: string) => value.replace(/[&<>'\"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '\"': '&quot;' })[character] ?? character);
+  const fmt = (value: string | null | undefined) => value ? new Date(value).toLocaleString() : '—';
+
+  function token() { return sessionStorage.getItem(tokenKey) || ''; }
+
+  async function reviewApi(body: Record<string, unknown>) {
+    const accessToken = token();
+    if (!accessToken) throw new Error('Reviewer session is missing.');
+    const response = await fetch(config.reviewUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+        'apikey': config.publishableKey
+      },
+      body: JSON.stringify(body)
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Review API request failed.');
+    return result;
+  }
+
+  function stateLabel(assertion: Assertion) {
+    if (assertion.review_state === 'evidence-submitted') return 'Evidence submitted';
+    if (assertion.review_state === 'under-review') return 'Under review';
+    if (assertion.review_outcome === 'supported') return 'Supported';
+    if (assertion.review_outcome === 'partially-supported') return 'Partially supported';
+    return 'Insufficient evidence';
+  }
+
+  function renderQueue(responses: SupplierResponse[]) {
+    if (!queue) return;
+    const sorted = [...responses].sort((a, b) => {
+      const pendingA = a.oceanhub_capability_assertions.some((item) => item.review_state !== 'reviewed') ? 0 : 1;
+      const pendingB = b.oceanhub_capability_assertions.some((item) => item.review_state !== 'reviewed') ? 0 : 1;
+      return pendingA - pendingB || a.submitted_at.localeCompare(b.submitted_at);
+    });
+    queue.innerHTML = sorted.length ? sorted.map((response) => {
+      const eoi = response.oceanhub_eoi_requests;
+      const assertions = [...response.oceanhub_capability_assertions].sort((a, b) => a.capability_label.localeCompare(b.capability_label));
+      return `<article class="rounded-2xl border border-white/10 bg-white/[0.02] p-6" data-review-response="${esc(response.id)}">
+        <div class="grid gap-5 lg:grid-cols-12">
+          <div class="lg:col-span-4"><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-300">${esc(response.provider_id)}</p><h2 class="mt-2 text-xl font-black text-white">${esc(response.organization)}</h2><p class="mt-2 text-xs text-slate-500">${esc(response.contact_email)} · ${esc(response.operating_region)}</p><p class="mt-4 text-xs leading-relaxed text-slate-400">${esc(eoi?.project_context || 'Project context unavailable')}</p><p class="mt-2 text-[11px] text-slate-600">${esc(eoi?.lifecycle_stage || '—')} · ${esc(eoi?.decision_focus || '—')} · submitted ${esc(fmt(response.submitted_at))}</p>${response.not_claimed_capability_ids.length ? `<div class="mt-5"><p class="font-mono text-[10px] uppercase text-slate-600">Not claimed</p><p class="mt-2 text-xs leading-relaxed text-slate-500">${response.not_claimed_capability_ids.map(esc).join(' · ')}</p></div>` : ''}</div>
+          <div class="lg:col-span-8"><div class="space-y-4">${assertions.length ? assertions.map((assertion) => `<section class="rounded-xl border border-white/10 bg-slate-950/40 p-5" data-review-assertion="${esc(assertion.id)}">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between"><div><h3 class="text-sm font-bold text-white">${esc(assertion.capability_label)}</h3><p class="mt-1 font-mono text-[10px] text-slate-600">${esc(assertion.capability_id)}</p></div><p class="text-[11px] font-bold text-amber-200">${esc(stateLabel(assertion))}</p></div>
+            <div class="mt-4 rounded-xl border border-white/10 bg-white/[0.02] p-4"><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-600">${esc(assertion.evidence_type)}</p><p class="mt-2 whitespace-pre-wrap text-xs leading-relaxed text-slate-300">${esc(assertion.evidence_detail)}</p></div>
+            ${assertion.review_state === 'evidence-submitted' ? `<button type="button" class="start-review mt-4 rounded-lg border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-[11px] font-bold text-amber-100">Start review</button>` : `<div class="mt-4 grid gap-3 sm:grid-cols-3"><select class="review-outcome rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-xs text-white"><option value="supported" ${assertion.review_outcome === 'supported' ? 'selected' : ''}>Supported</option><option value="partially-supported" ${assertion.review_outcome === 'partially-supported' ? 'selected' : ''}>Partially supported</option><option value="insufficient" ${assertion.review_outcome === 'insufficient' ? 'selected' : ''}>Insufficient evidence</option></select><textarea class="review-note sm:col-span-2 min-h-20 rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-xs text-white placeholder:text-slate-600" placeholder="Review rationale / scope limitation">${esc(assertion.reviewer_notes || '')}</textarea></div><button type="button" class="complete-review mt-3 rounded-lg bg-amber-300 px-3 py-2 text-[11px] font-black text-slate-950">${assertion.review_state === 'reviewed' ? 'Update review' : 'Complete review'}</button>${assertion.reviewed_at ? `<p class="mt-2 text-[10px] text-slate-600">Last reviewed ${esc(fmt(assertion.reviewed_at))}</p>` : ''}`}
+          </section>`).join('') : '<p class="text-xs text-slate-500">No capability assertions were claimed in this response.</p>'}</div></div>
+        </div>
+      </article>`;
+    }).join('') : '<div class="rounded-2xl border border-white/10 bg-white/[0.02] p-6 text-sm text-slate-500">No supplier evidence responses have been submitted yet.</div>';
+
+    queue.querySelectorAll<HTMLButtonElement>('.start-review').forEach((button) => button.addEventListener('click', async () => {
+      const assertionId = button.closest<HTMLElement>('[data-review-assertion]')?.dataset.reviewAssertion || '';
+      button.disabled = true;
+      try { await reviewApi({ action: 'start_review', assertionId }); await loadQueue(); }
+      catch (error) { if (queueStatus) queueStatus.textContent = error instanceof Error ? error.message : 'Could not start review.'; button.disabled = false; }
+    }));
+    queue.querySelectorAll<HTMLButtonElement>('.complete-review').forEach((button) => button.addEventListener('click', async () => {
+      const section = button.closest<HTMLElement>('[data-review-assertion]');
+      const assertionId = section?.dataset.reviewAssertion || '';
+      const outcome = section?.querySelector<HTMLSelectElement>('.review-outcome')?.value || '';
+      const note = section?.querySelector<HTMLTextAreaElement>('.review-note')?.value.trim() || '';
+      button.disabled = true;
+      try { await reviewApi({ action: 'complete_review', assertionId, outcome, note }); await loadQueue(); }
+      catch (error) { if (queueStatus) queueStatus.textContent = error instanceof Error ? error.message : 'Could not complete review.'; button.disabled = false; }
+    }));
+  }
+
+  async function loadQueue() {
+    if (queueStatus) queueStatus.textContent = 'Loading capability assertions…';
+    try {
+      const result = await reviewApi({ action: 'queue' }) as QueueResult;
+      if (identity) identity.textContent = `${result.reviewer?.email || 'Reviewer'} · ${result.reviewer?.role || 'admin'}`;
+      renderQueue(result.responses || []);
+      if (queueStatus) queueStatus.textContent = `${result.responses?.length || 0} supplier response packet(s) in the review workspace.`;
+      login?.classList.add('hidden');
+      app?.classList.remove('hidden');
+    } catch (error) {
+      sessionStorage.removeItem(tokenKey);
+      app?.classList.add('hidden');
+      login?.classList.remove('hidden');
+      if (loginStatus) loginStatus.textContent = error instanceof Error ? error.message : 'Reviewer session is not authorized.';
+    }
+  }
+
+  signIn?.addEventListener('click', async () => {
+    const reviewerEmail = email?.value.trim() || '';
+    const reviewerPassword = password?.value || '';
+    if (!reviewerEmail || !reviewerPassword) { if (loginStatus) loginStatus.textContent = 'Email and password are required.'; return; }
+    signIn.disabled = true;
+    if (loginStatus) loginStatus.textContent = 'Signing in…';
+    try {
+      const response = await fetch(`${config.supabaseUrl}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': config.publishableKey },
+        body: JSON.stringify({ email: reviewerEmail, password: reviewerPassword })
+      });
+      const result = await response.json() as AuthResult;
+      if (!response.ok || !result.access_token) throw new Error(result.error_description || result.msg || 'Sign-in failed.');
+      sessionStorage.setItem(tokenKey, result.access_token);
+      if (password) password.value = '';
+      await loadQueue();
+    } catch (error) {
+      if (loginStatus) loginStatus.textContent = error instanceof Error ? error.message : 'Sign-in failed.';
+    } finally { signIn.disabled = false; }
+  });
+
+  refresh?.addEventListener('click', loadQueue);
+  signOut?.addEventListener('click', async () => {
+    const accessToken = token();
+    if (accessToken) {
+      await fetch(`${config.supabaseUrl}/auth/v1/logout`, { method: 'POST', headers: { 'apikey': config.publishableKey, 'Authorization': `Bearer ${accessToken}` } }).catch(() => undefined);
+    }
+    sessionStorage.removeItem(tokenKey);
+    app?.classList.add('hidden');
+    login?.classList.remove('hidden');
+    if (loginStatus) loginStatus.textContent = 'Signed out.';
+  });
+
+  if (token()) loadQueue();
+</script>
