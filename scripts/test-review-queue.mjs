@@ -116,7 +116,8 @@ try {
 
   await page.getByText('liuh886@gmail.com · owner', { exact: true }).waitFor();
   await page.getByText('Reference project A — integrated storage characterization', { exact: true }).waitFor();
-  await page.getByText('Supported', { exact: true }).waitFor();
+  const instrumentation = page.locator('[data-review-assertion$=":slb:instrumentation-control"]');
+  assert((await instrumentation.locator('p').filter({ hasText: /^Supported$/ }).count()) === 1, 'Existing reviewed assertion did not render its supported state precisely once.');
   const appText = await page.locator('#review-app').textContent();
   assert(!/\bstar rating\b/i.test(appText ?? ''), 'Supplier score language leaked into the reviewer workspace.');
   assert(!/\boverall score\b/i.test(appText ?? ''), 'Aggregate quality scoring leaked into the reviewer workspace.');
@@ -129,7 +130,7 @@ try {
   await reservoir.locator('.review-outcome').selectOption('partially-supported');
   await reservoir.locator('.review-note').fill('Strong storage characterization evidence; geographic scope needs clarification.');
   await reservoir.getByRole('button', { name: 'Complete review' }).click();
-  await page.getByText('Partially supported', { exact: true }).waitFor();
+  assert((await reservoir.locator('p').filter({ hasText: /^Partially supported$/ }).count()) === 1, 'Completed assertion did not render the partially-supported state precisely once.');
 
   assert(reviewed, 'Reviewer did not persist the final reviewed state.');
   assert(completedPayload?.outcome === 'partially-supported', 'Reviewer outcome was not serialized correctly.');
