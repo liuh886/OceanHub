@@ -1,0 +1,211 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { capabilities } from '../data/capabilities';
+import { marketProviders } from '../data/marketProviders';
+import { partnerEvidenceTypeLabels } from '../lib/partnerCapability';
+
+const intakeEmail = 'liuzhihao109@foxmail.com';
+const payload = {
+  providers: marketProviders.map(({ id, name }) => ({ id, name })),
+  capabilities: capabilities.map(({ id, label, summary }) => ({ id, label, summary })),
+  evidenceTypes: partnerEvidenceTypeLabels,
+  intakeEmail
+};
+---
+
+<Layout
+  title="Respond to a Supplier EOI | OceanHub"
+  description="Return capability-specific evidence against an OceanHub supplier EOI request."
+>
+  <section class="mx-auto max-w-6xl px-6 pb-20 pt-16 sm:px-8 md:pt-24">
+    <div class="max-w-3xl">
+      <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Supplier response</p>
+      <h1 class="mt-4 font-display text-4xl font-black tracking-tight text-white sm:text-6xl">Respond with evidence, capability by capability.</h1>
+      <p class="mt-6 text-lg leading-relaxed text-slate-300">Confirm what your organization can directly deliver and attach one strong evidence item to each claimed canonical capability. Submission creates an evidence packet for review; it does not automatically make the capability OceanHub-supported.</p>
+    </div>
+
+    <div id="supplier-response-invalid" class="mt-10 hidden rounded-2xl border border-amber-400/20 bg-amber-500/5 p-6 text-sm leading-relaxed text-slate-300">
+      This response link is incomplete or contains unknown provider/capability identifiers. Ask the buyer to regenerate the supplier response packet from OceanHub.
+    </div>
+
+    <div id="supplier-response-app" class="mt-10 hidden">
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        <aside class="lg:col-span-4">
+          <div class="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">EOI request</p>
+            <dl class="mt-4 space-y-4 text-sm">
+              <div><dt class="text-xs text-slate-500">Request ID</dt><dd id="supplier-request-id" class="mt-1 font-mono text-slate-200"></dd></div>
+              <div><dt class="text-xs text-slate-500">Mapped provider</dt><dd id="supplier-provider-name" class="mt-1 font-bold text-white"></dd></div>
+              <div><dt class="text-xs text-slate-500">Project / region</dt><dd id="supplier-project-context" class="mt-1 text-slate-300"></dd></div>
+              <div><dt class="text-xs text-slate-500">Lifecycle / focus</dt><dd id="supplier-stage-focus" class="mt-1 text-slate-300"></dd></div>
+            </dl>
+            <p class="mt-5 border-t border-white/10 pt-5 text-xs leading-relaxed text-slate-500">Public-source mapping is only a discovery signal. Your response below is a separate supplier-submitted evidence record.</p>
+          </div>
+        </aside>
+
+        <div class="lg:col-span-8">
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div>
+              <label for="supplier-org" class="mb-2 block text-xs font-bold text-slate-200">Organization</label>
+              <input id="supplier-org" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none" />
+            </div>
+            <div>
+              <label for="supplier-contact" class="mb-2 block text-xs font-bold text-slate-200">Response contact email</label>
+              <input id="supplier-contact" type="email" placeholder="name@company.com" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-cyan-400 focus:outline-none" />
+            </div>
+            <div class="sm:col-span-2">
+              <label for="supplier-regions" class="mb-2 block text-xs font-bold text-slate-200">Operating regions / mobilization basis</label>
+              <input id="supplier-regions" placeholder="e.g. North Sea; APAC; global vessel fleet" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-cyan-400 focus:outline-none" />
+            </div>
+          </div>
+
+          <div class="mt-8 border-t border-white/10 pt-8">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-300">Requested capabilities</p>
+                <h2 class="mt-2 text-2xl font-black text-white">Claim only what you can support with evidence.</h2>
+              </div>
+              <p class="text-xs text-slate-500">Unchecked capabilities are returned as not claimed.</p>
+            </div>
+            <div id="supplier-capability-list" class="mt-6 space-y-4"></div>
+          </div>
+
+          <div class="mt-8 flex flex-wrap gap-3 border-t border-white/10 pt-8">
+            <button id="build-supplier-response" type="button" class="rounded-xl bg-cyan-400 px-5 py-3 text-xs font-black text-slate-950 hover:bg-cyan-300">Build evidence response</button>
+            <button id="copy-supplier-response" type="button" class="hidden rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-xs font-bold text-white hover:bg-white/10">Copy response</button>
+            <a id="email-supplier-response" class="hidden rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-5 py-3 text-xs font-bold text-emerald-100 hover:bg-emerald-500/15">Email response to OceanHub</a>
+          </div>
+          <p id="supplier-response-status" class="mt-3 text-xs text-slate-500" aria-live="polite"></p>
+          <pre id="supplier-response-output" class="mt-6 hidden max-h-[40rem] overflow-auto whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-5 text-xs leading-6 text-slate-300"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script id="supplier-response-data" type="application/json" set:html={JSON.stringify(payload)}></script>
+
+<script>
+  interface Capability { id: string; label: string; summary: string }
+  interface Provider { id: string; name: string }
+  interface Payload { providers: Provider[]; capabilities: Capability[]; evidenceTypes: Record<string, string>; intakeEmail: string }
+
+  const data = JSON.parse(document.getElementById('supplier-response-data')?.textContent ?? '{}') as Payload;
+  const params = new URLSearchParams(window.location.search);
+  const requestId = params.get('request')?.trim() || '';
+  const providerId = params.get('provider')?.trim() || '';
+  const requestedIds = (params.get('caps') || '').split(',').map((value) => value.trim()).filter(Boolean);
+  const mappedIds = new Set((params.get('mapped') || '').split(',').map((value) => value.trim()).filter(Boolean));
+  const provider = data.providers.find((item) => item.id === providerId);
+  const requestedCapabilities = requestedIds.map((id) => data.capabilities.find((item) => item.id === id)).filter(Boolean) as Capability[];
+  const valid = Boolean(requestId && provider && requestedCapabilities.length && requestedCapabilities.length === requestedIds.length);
+
+  const app = document.getElementById('supplier-response-app');
+  const invalid = document.getElementById('supplier-response-invalid');
+  if (!valid) invalid?.classList.remove('hidden');
+  else app?.classList.remove('hidden');
+
+  const esc = (value: string) => value.replace(/[&<>'\"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '\"': '&quot;' })[character] ?? character);
+  const value = (id: string) => {
+    const field = document.getElementById(id) as HTMLInputElement | null;
+    return field?.value.trim() || '';
+  };
+
+  if (valid && provider) {
+    const org = document.getElementById('supplier-org') as HTMLInputElement | null;
+    if (org) org.value = provider.name;
+    const setText = (id: string, text: string) => { const node = document.getElementById(id); if (node) node.textContent = text; };
+    setText('supplier-request-id', requestId);
+    setText('supplier-provider-name', provider.name);
+    setText('supplier-project-context', params.get('project') || '[not supplied]');
+    setText('supplier-stage-focus', `${params.get('stage') || '[stage not supplied]'} · ${params.get('focus') || '[focus not supplied]'}`);
+
+    const evidenceOptions = Object.entries(data.evidenceTypes).map(([key, label]) => `<option value="${esc(key)}">${esc(label)}</option>`).join('');
+    const list = document.getElementById('supplier-capability-list');
+    if (list) list.innerHTML = requestedCapabilities.map((capability) => `
+      <section class="rounded-2xl border border-white/10 bg-white/[0.02] p-5" data-supplier-assertion="${esc(capability.id)}">
+        <label class="flex cursor-pointer items-start gap-3">
+          <input type="checkbox" class="supplier-claim mt-1 h-4 w-4 rounded border-white/20 bg-slate-950" value="${esc(capability.id)}" />
+          <span><span class="block text-sm font-bold text-white">${esc(capability.label)}</span><span class="mt-1 block font-mono text-[10px] text-slate-500">${esc(capability.id)}${mappedIds.has(capability.id) ? ' · public mapping match' : ' · not in current public mapping'}</span><span class="mt-2 block text-xs leading-relaxed text-slate-400">${esc(capability.summary)}</span></span>
+        </label>
+        <div class="supplier-evidence-fields mt-5 hidden grid-cols-1 gap-4 sm:grid-cols-2">
+          <div><label class="mb-2 block text-[11px] font-bold text-slate-300">Primary evidence type</label><select class="supplier-evidence-type w-full rounded-xl border border-white/10 bg-slate-950/70 px-3 py-2.5 text-xs text-white">${evidenceOptions}</select></div>
+          <div class="sm:col-span-2"><label class="mb-2 block text-[11px] font-bold text-slate-300">Evidence detail</label><textarea class="supplier-evidence-detail min-h-24 w-full rounded-xl border border-white/10 bg-slate-950/70 px-3 py-2.5 text-xs leading-relaxed text-white placeholder:text-slate-600" placeholder="Reference project, asset, dataset, procedure, credential or assessment. Include client/project/date/URL where appropriate."></textarea></div>
+        </div>
+      </section>`).join('');
+
+    document.querySelectorAll<HTMLInputElement>('.supplier-claim').forEach((checkbox) => {
+      checkbox.addEventListener('change', () => {
+        const fields = checkbox.closest('[data-supplier-assertion]')?.querySelector('.supplier-evidence-fields');
+        fields?.classList.toggle('hidden', !checkbox.checked);
+        fields?.classList.toggle('grid', checkbox.checked);
+      });
+    });
+  }
+
+  const output = document.getElementById('supplier-response-output');
+  const copyButton = document.getElementById('copy-supplier-response') as HTMLButtonElement | null;
+  const emailLink = document.getElementById('email-supplier-response') as HTMLAnchorElement | null;
+  const status = document.getElementById('supplier-response-status');
+
+  function buildPacket() {
+    if (!valid || !provider) return '';
+    const claimed = Array.from(document.querySelectorAll<HTMLElement>('[data-supplier-assertion]')).flatMap((section) => {
+      const checkbox = section.querySelector<HTMLInputElement>('.supplier-claim');
+      if (!checkbox?.checked) return [];
+      const capabilityId = section.dataset.supplierAssertion || '';
+      const capability = data.capabilities.find((item) => item.id === capabilityId);
+      const type = section.querySelector<HTMLSelectElement>('.supplier-evidence-type')?.value || 'reference-project';
+      const detail = section.querySelector<HTMLTextAreaElement>('.supplier-evidence-detail')?.value.trim() || '[not provided]';
+      return [{ capabilityId, label: capability?.label || capabilityId, type, detail }];
+    });
+    const unclaimed = requestedCapabilities.filter((capability) => !claimed.some((item) => item.capabilityId === capability.id));
+    const lines = claimed.flatMap((item, index) => [
+      `${index + 1}. Assertion ID: ${requestId}:${provider.id}:${item.capabilityId}`,
+      `   Capability: ${item.capabilityId} — ${item.label}`,
+      `   Evidence type: ${item.type}`,
+      `   Evidence detail: ${item.detail}`,
+      '   Review state: evidence-submitted (not yet reviewed)'
+    ]);
+    return [
+      'OceanHub — Supplier Capability Evidence Response',
+      '',
+      `Request ID: ${requestId}`,
+      `Mapped provider ID: ${provider.id}`,
+      `Organization: ${value('supplier-org') || provider.name}`,
+      `Contact email: ${value('supplier-contact') || '[not provided]'}`,
+      `Operating regions / mobilization: ${value('supplier-regions') || '[not provided]'}`,
+      `Project / region: ${params.get('project') || '[not supplied]'}`,
+      `Lifecycle / focus: ${params.get('stage') || '[not supplied]'} · ${params.get('focus') || '[not supplied]'}`,
+      'Packet review state: evidence-submitted (not yet reviewed)',
+      '',
+      'Capability assertions:',
+      ...(lines.length ? lines : ['[no capabilities claimed]']),
+      '',
+      'Requested capabilities not claimed:',
+      ...(unclaimed.length ? unclaimed.map((capability) => `- ${capability.id} — ${capability.label}`) : ['- None']),
+      '',
+      'Review note: submission does not imply OceanHub support. Each assertion remains pending review against capability-specific evidence criteria.'
+    ].join('\n');
+  }
+
+  document.getElementById('build-supplier-response')?.addEventListener('click', () => {
+    const packet = buildPacket();
+    if (!packet || !output || !copyButton || !emailLink) return;
+    output.textContent = packet;
+    output.classList.remove('hidden');
+    copyButton.classList.remove('hidden');
+    emailLink.classList.remove('hidden');
+    const org = value('supplier-org') || provider?.name || providerId;
+    emailLink.href = `mailto:${data.intakeEmail}?subject=${encodeURIComponent(`[OceanHub Supplier Response] ${requestId} — ${org}`)}&body=${encodeURIComponent(packet)}`;
+    if (status) status.textContent = 'Evidence packet built. It is ready to copy or return to OceanHub for review.';
+  });
+
+  copyButton?.addEventListener('click', async () => {
+    if (!output?.textContent) return;
+    await navigator.clipboard.writeText(output.textContent);
+    const original = copyButton.textContent || 'Copy response';
+    copyButton.textContent = 'Copied';
+    window.setTimeout(() => { copyButton.textContent = original; }, 1500);
+  });
+</script>
