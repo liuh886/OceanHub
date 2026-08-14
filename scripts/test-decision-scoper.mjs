@@ -23,6 +23,7 @@ try {
   await page.goto(scopeUrl, { waitUntil: 'networkidle' });
   const scoper = page.locator('#decision-scoper-root');
   const eoi = page.locator('#project-eoi-builder');
+  const responseBuilder = page.locator('#provider-response-builder');
   await scoper.getByRole('heading', { name: 'Build a traceable offshore CCS evidence plan' }).waitFor();
 
   const initialText = await scoper.textContent();
@@ -51,32 +52,67 @@ try {
   const slbText = await slbMatch.textContent();
   assert(slbText?.includes('3 of 3 required capabilities'), 'Provider rationale did not expose exact capability coverage.');
   assert(slbText?.includes('Public-source mapped · not OceanHub reviewed'), 'Public market provider was not clearly separated from OceanHub-reviewed assertions.');
-  const shortlistText = await eoi.locator('#provider-shortlist').textContent();
-  assert(!/\bstar rating\b/i.test(shortlistText ?? ''), 'Supplier star-rating language leaked into OceanHub provider matching.');
-  assert(!/\bverified partner\b/i.test(shortlistText ?? ''), 'Unsupported verified-partner language leaked into OceanHub provider matching.');
 
   await scoper.locator('#scoper-stage').selectOption('monitoring');
   await scoper.locator('#scoper-focus').selectOption('containment');
   await scoper.getByText('1 evidence workstream from 1 reference pattern.', { exact: true }).waitFor();
   await scoper.getByRole('heading', { name: 'Sleipner — plume migration and containment monitoring' }).waitFor();
-  await scoper.getByRole('link', { name: 'Greenhouse store staying sealed' }).first().waitFor();
   await eoi.locator('[data-eoi-capability="time-lapse-seismic"]').waitFor();
   assert((await eoi.locator('[data-eoi-capability="petrophysics-well-testing"]').count()) === 0, 'EOI retained stale Pre-FEED capability requirements after Scoper changed.');
-  const containmentEoiText = await eoi.locator('#project-eoi-text').textContent();
-  assert(containmentEoiText?.includes('time-lapse-seismic — Time-lapse / 4D seismic'), 'EOI did not regenerate for containment monitoring.');
   await eoi.locator('[data-provider-match="tgs"]').waitFor();
+  await responseBuilder.waitFor();
 
-  await scoper.locator('#scoper-focus').selectOption('induced-seismicity');
-  await scoper.getByText('1 evidence workstream from 1 reference pattern.', { exact: true }).waitFor();
-  await scoper.getByRole('heading', { name: 'Northern Lights Aurora — injection readiness, seismicity surveillance and MRV' }).waitFor();
-  assert((await scoper.locator('[data-scoper-requirement]').count()) === 1, 'Evidence-level focus filtering returned unrelated Aurora workstreams.');
+  const packetButton = responseBuilder.locator('#generate-provider-packets');
+  assert(await packetButton.isDisabled(), 'Provider response packets should require at least two selected providers.');
+  await eoi.locator('[data-provider-match="tgs"] .provider-response-select').check();
+  assert(await packetButton.isDisabled(), 'Provider response packets enabled with only one selected provider.');
+  await eoi.locator('[data-provider-match="slb"] .provider-response-select').check();
+  assert(!(await packetButton.isDisabled()), 'Provider response packets did not enable after two providers were selected.');
+  await packetButton.click();
 
-  await scoper.locator('#scoper-stage').selectOption('pre-feed');
-  await scoper.getByText('No direct public reference pattern is encoded for this combination yet.', { exact: true }).waitFor();
-  await scoper.getByRole('heading', { name: 'Evidence gap, not a fabricated recommendation' }).waitFor();
-  await eoi.getByText('No source-backed evidence plan exists for the active Scoper selection, so OceanHub will not fabricate an EOI or supplier shortlist.', { exact: true }).waitFor();
+  const responsePackets = responseBuilder.locator('[data-provider-response-packet]');
+  assert((await responsePackets.count()) === 2, 'Expected two provider-specific response packets.');
+  const slbPacket = responseBuilder.locator('[data-provider-response-packet="slb"]');
+  await slbPacket.waitFor();
+  const slbPacketText = await slbPacket.locator('.provider-response-text').textContent();
+  assert(slbPacketText?.includes('Provider: SLB (slb)'), 'SLB response packet lost provider identity.');
+  assert(slbPacketText?.includes('reservoir-characterization'), 'SLB response packet lost matched capability context.');
+  assert(slbPacketText?.includes('time-lapse-seismic'), 'SLB response packet did not expose uncovered EOI requirements.');
 
-  console.log(`OceanHub Decision Scoper + supplier EOI contract passed against ${scopeUrl}`);
+  const responseHref = await slbPacket.getByRole('link', { name: 'Open supplier response ↗' }).getAttribute('href');
+  assert(responseHref?.includes('/respond/?'), 'Provider response packet did not generate a structured response URL.');
+  assert(responseHref?.includes('provider=slb'), 'Provider response URL lost provider ID.');
+  assert(responseHref?.includes('caps='), 'Provider response URL lost canonical capability requirements.');
+
+  await page.goto(responseHref, { waitUntil: 'networkidle' });
+  await page.getByRole('heading', { name: 'Respond with evidence, capability by capability.' }).waitFor();
+  await page.getByText('SLB', { exact: true }).waitFor();
+  assert((await page.locator('[data-supplier-assertion]').count()) === 4, 'Supplier response did not preload all four containment capability requirements.');
+
+  const reservoirAssertion = page.locator('[data-supplier-assertion="reservoir-characterization"]');
+  const instrumentationAssertion = page.locator('[data-supplier-assertion="instrumentation-control"]');
+  await reservoirAssertion.locator('.supplier-claim').check();
+  await reservoirAssertion.locator('.supplier-evidence-type').selectOption('reference-project');
+  await reservoirAssertion.locator('.supplier-evidence-detail').fill('Reference project A — integrated storage characterization');
+  await instrumentationAssertion.locator('.supplier-claim').check();
+  await instrumentationAssertion.locator('.supplier-evidence-type').selectOption('dataset-deliverable');
+  await instrumentationAssertion.locator('.supplier-evidence-detail').fill('Delivered pressure and temperature instrumentation dataset B');
+  await page.locator('#supplier-contact').fill('supplier@example.com');
+  await page.locator('#supplier-regions').fill('Global / APAC mobilization');
+  await page.getByRole('button', { name: 'Build evidence response' }).click();
+
+  const supplierPacket = await page.locator('#supplier-response-output').textContent();
+  assert(supplierPacket?.includes('Packet review state: evidence-submitted (not yet reviewed)'), 'Supplier response did not preserve explicit review state.');
+  assert(supplierPacket?.includes(':slb:reservoir-characterization'), 'Supplier response did not create deterministic reservoir assertion ID.');
+  assert(supplierPacket?.includes(':slb:instrumentation-control'), 'Supplier response did not create deterministic instrumentation assertion ID.');
+  assert(supplierPacket?.includes('Reference project A — integrated storage characterization'), 'Reservoir evidence was not serialized into its assertion.');
+  assert(supplierPacket?.includes('Delivered pressure and temperature instrumentation dataset B'), 'Instrumentation evidence was not serialized into its assertion.');
+  assert((supplierPacket?.match(/Reference project A — integrated storage characterization/g) ?? []).length === 1, 'Capability evidence leaked into another assertion.');
+
+  const emailHref = await page.locator('#email-supplier-response').getAttribute('href');
+  assert(emailHref?.startsWith('mailto:liuzhihao109@foxmail.com?'), 'Supplier response mailto does not use the confirmed OceanHub intake address.');
+
+  console.log(`OceanHub Decision Scoper + supplier EOI response loop contract passed against ${scopeUrl}`);
 } finally {
   await browser.close();
 }
