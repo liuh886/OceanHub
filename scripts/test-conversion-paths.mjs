@@ -41,6 +41,7 @@ try {
   assert(await page.locator('#partner-intake').isVisible(), 'Partner intake did not open from the homepage.');
   assert(!(await page.locator('#project-intake').isVisible()), 'Project intake remained visible in partner mode.');
   await page.locator('#collaboration-org').fill('Example Capability Partner');
+  await page.locator('[data-capability-family="marine-survey"] summary').click();
   await page.locator('.capability-interest[value="marine-geophysics"]').check();
   await page.locator('#partner-reference-projects').fill('North Sea route survey — survey and interpretation lead.');
   await page.locator('#partner-evidence').fill('Delivered MBES, SSS and sub-bottom interpretation with project QA records.');
