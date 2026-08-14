@@ -2,11 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 import DecisionScoper from '../components/DecisionScoper.astro';
 import ProjectEOI from '../components/ProjectEOI.astro';
+import ProviderResponsePackets from '../components/ProviderResponsePackets.astro';
 ---
 
 <Layout
   title="Scope an Offshore Project | OceanHub"
-  description="Turn an offshore project decision into a traceable evidence plan, supplier EOI and transparent capability-based provider shortlist."
+  description="Turn an offshore project decision into a traceable evidence plan, supplier EOI, provider shortlist and capability-evidence response loop."
 >
   <section class="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:px-8 md:pb-12 md:pt-24">
     <div class="max-w-4xl">
@@ -15,7 +16,7 @@ import ProjectEOI from '../components/ProjectEOI.astro';
         Start with the decision, then turn evidence into an EOI.
       </h1>
       <p class="mt-6 max-w-3xl text-lg leading-relaxed text-slate-300">
-        Define the lifecycle stage and decision focus. OceanHub traces the evidence and canonical capability needs, then converts them into a supplier EOI and an explainable market shortlist without hidden supplier scores.
+        Define the lifecycle stage and decision focus. OceanHub traces the evidence and canonical capability needs, converts them into a supplier EOI, builds an explainable shortlist, then gives selected providers a structured capability-evidence response path.
       </p>
     </div>
   </section>
@@ -23,5 +24,6 @@ import ProjectEOI from '../components/ProjectEOI.astro';
   <section class="mx-auto max-w-7xl px-6 pb-20 sm:px-8 md:pb-28">
     <DecisionScoper />
     <ProjectEOI />
+    <ProviderResponsePackets />
   </section>
 </Layout>
