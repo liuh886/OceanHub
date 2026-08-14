@@ -2,6 +2,7 @@
 import { capabilities } from '../data/capabilities';
 import { proposedJips } from '../data/proposedJips';
 import type { CapabilityFamily } from '../lib/capability';
+import { partnerEvidenceTypeLabels } from '../lib/partnerCapability';
 
 const familyLabels: Record<CapabilityFamily, string> = {
   'ccs-subsurface': 'CCS & subsurface',
@@ -20,6 +21,8 @@ const capabilityGroups = (Object.keys(familyLabels) as CapabilityFamily[]).map((
   label: familyLabels[family],
   capabilities: capabilities.filter((capability) => capability.family === family)
 }));
+
+const evidenceTypeOptions = Object.entries(partnerEvidenceTypeLabels).map(([value, label]) => ({ value, label }));
 ---
 
 <div
@@ -130,7 +133,7 @@ const capabilityGroups = (Object.keys(familyLabels) as CapabilityFamily[]).map((
           <div class="flex items-end justify-between gap-4">
             <div>
               <h3 id="partner-capability-heading" class="text-xs font-semibold text-slate-300">Canonical capabilities *</h3>
-              <p class="mt-1 text-[11px] leading-relaxed text-slate-500">Select what your organization can actually deliver. Methods and project evidence are captured separately below.</p>
+              <p class="mt-1 text-[11px] leading-relaxed text-slate-500">Select what your organization can actually deliver. Each selected capability gets its own evidence assertion below.</p>
             </div>
             <span id="partner-capability-count" class="shrink-0 font-mono text-[10px] text-emerald-300">0 selected</span>
           </div>
@@ -169,15 +172,13 @@ const capabilityGroups = (Object.keys(familyLabels) as CapabilityFamily[]).map((
           </div>
         </section>
 
-        <div>
-          <label for="partner-reference-projects" class="mb-1.5 block text-xs font-semibold text-slate-300">Reference projects / field assets / datasets</label>
-          <textarea id="partner-reference-projects" rows="3" placeholder="Name relevant delivered projects, field assets, benchmark datasets or operational deployments and your role." class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"></textarea>
-        </div>
-
-        <div>
-          <label for="partner-evidence" class="mb-1.5 block text-xs font-semibold text-slate-300">Supporting capability evidence *</label>
-          <textarea id="partner-evidence" rows="4" placeholder="Describe methods, equipment, standards experience, results, publications or other evidence supporting the selected capability claims." class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"></textarea>
-        </div>
+        <section aria-labelledby="partner-assertion-evidence-heading">
+          <h3 id="partner-assertion-evidence-heading" class="text-xs font-semibold text-slate-300">Capability evidence packets *</h3>
+          <p class="mt-1 text-[11px] leading-relaxed text-slate-500">For this intake, attach the strongest primary evidence item to each capability. Additional artifacts can follow during review.</p>
+          <div id="partner-assertion-evidence" class="mt-3 space-y-3">
+            <p class="rounded-xl border border-dashed border-white/10 px-4 py-5 text-xs leading-relaxed text-slate-600">Select at least one canonical capability to create an evidence assertion.</p>
+          </div>
+        </section>
       </div>
     </div>
 
@@ -187,6 +188,10 @@ const capabilityGroups = (Object.keys(familyLabels) as CapabilityFamily[]).map((
     </footer>
   </div>
 </div>
+
+<template id="partner-evidence-type-options">
+  {evidenceTypeOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+</template>
 
 <script>
   const modal = document.getElementById('collaboration-modal');
@@ -202,6 +207,9 @@ const capabilityGroups = (Object.keys(familyLabels) as CapabilityFamily[]).map((
   const orgInput = document.getElementById('collaboration-org') as HTMLInputElement | null;
   const emailInput = document.getElementById('collaboration-email') as HTMLInputElement | null;
   const capabilityCount = document.getElementById('partner-capability-count');
+  const assertionEvidenceRoot = document.getElementById('partner-assertion-evidence');
+  const evidenceTypeTemplate = document.getElementById('partner-evidence-type-options') as HTMLTemplateElement | null;
+  const assertionEvidence = new Map<string, { type: string; detail: string }>();
 
   let intent: 'project' | 'partner' = 'project';
 
@@ -210,24 +218,26 @@ const capabilityGroups = (Object.keys(familyLabels) as CapabilityFamily[]).map((
     return element?.value.trim() || '';
   }
 
+  const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' })[character] ?? character);
+
   function setIntent(nextIntent: 'project' | 'partner') {
     intent = nextIntent;
     const isProject = intent === 'project';
     projectPanel?.classList.toggle('hidden', !isProject);
     partnerPanel?.classList.toggle('hidden', isProject);
 
-    if (title) title.textContent = isProject ? 'Discuss a project decision' : 'Present a capability';
-    if (kicker) kicker.textContent = isProject ? 'Project inquiry' : 'Partner / JIP interest';
+    if (title) title.textContent = isProject ? 'Discuss a project decision' : 'Present capability evidence';
+    if (kicker) kicker.textContent = isProject ? 'Project inquiry' : 'Partner capability evidence';
     if (description) {
       description.textContent = isProject
         ? 'Share the project decision and material uncertainty so the next conversation starts from the evidence need rather than a generic service request.'
-        : 'Select canonical capabilities, then attach the project and technical evidence that supports those claims.';
+        : 'Create one traceable assertion per canonical capability, then attach the strongest evidence supporting each claim.';
     }
-    if (copyButton) copyButton.textContent = isProject ? 'Copy project inquiry' : 'Copy partner EOI';
+    if (copyButton) copyButton.textContent = isProject ? 'Copy project inquiry' : 'Copy evidence packet';
     if (footnote) {
       footnote.textContent = isProject
         ? 'Non-binding project inquiry. No commercial engagement is created by preparing this draft.'
-        : 'Non-binding expression of interest. Selected capabilities are assertions, not verified OceanHub endorsements, until supporting evidence is reviewed.';
+        : 'Submission state: evidence submitted. Capability assertions are not OceanHub-endorsed until an explicit review is completed.';
     }
 
     intentButtons.forEach((button) => {
@@ -253,15 +263,72 @@ const capabilityGroups = (Object.keys(familyLabels) as CapabilityFamily[]).map((
     }));
   }
 
+  function captureAssertionEvidence() {
+    assertionEvidenceRoot?.querySelectorAll<HTMLElement>('[data-capability-assertion]').forEach((section) => {
+      const capabilityId = section.dataset.capabilityAssertion;
+      if (!capabilityId) return;
+      const type = (section.querySelector('.capability-evidence-type') as HTMLSelectElement | null)?.value || 'reference-project';
+      const detail = (section.querySelector('.capability-evidence-detail') as HTMLTextAreaElement | null)?.value.trim() || '';
+      assertionEvidence.set(capabilityId, { type, detail });
+    });
+  }
+
+  function renderAssertionEvidence() {
+    if (!assertionEvidenceRoot) return;
+    captureAssertionEvidence();
+    const claims = selectedCapabilities();
+    const optionMarkup = evidenceTypeTemplate?.innerHTML || '';
+
+    if (!claims.length) {
+      assertionEvidenceRoot.innerHTML = '<p class="rounded-xl border border-dashed border-white/10 px-4 py-5 text-xs leading-relaxed text-slate-600">Select at least one canonical capability to create an evidence assertion.</p>';
+      return;
+    }
+
+    assertionEvidenceRoot.innerHTML = claims.map((capability, index) => {
+      const stored = assertionEvidence.get(capability.id) ?? { type: 'reference-project', detail: '' };
+      return `<section class="rounded-xl border border-emerald-400/15 bg-emerald-500/[0.035] p-4" data-capability-assertion="${escapeHtml(capability.id)}" data-capability-label="${escapeHtml(capability.label)}">
+        <div class="flex items-start gap-3"><span class="font-mono text-[10px] text-emerald-300">${String(index + 1).padStart(2, '0')}</span><div><h4 class="text-xs font-bold text-white">${escapeHtml(capability.label)}</h4><p class="mt-1 font-mono text-[10px] text-slate-600">${escapeHtml(capability.id)}</p></div></div>
+        <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[13rem_1fr]">
+          <div><label class="mb-1.5 block text-[11px] font-semibold text-slate-400">Primary evidence type</label><select class="capability-evidence-type w-full rounded-lg border border-white/10 bg-slate-950/70 px-3 py-2.5 text-xs text-white focus:border-emerald-400 focus:outline-none">${optionMarkup}</select></div>
+          <div><label class="mb-1.5 block text-[11px] font-semibold text-slate-400">Evidence / reference detail</label><textarea rows="3" class="capability-evidence-detail w-full rounded-lg border border-white/10 bg-slate-950/70 px-3 py-2.5 text-xs text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none" placeholder="Project, client case, asset, delivered dataset, procedure, credential, publication or audit evidence.">${escapeHtml(stored.detail)}</textarea></div>
+        </div>
+      </section>`;
+    }).join('');
+
+    assertionEvidenceRoot.querySelectorAll<HTMLElement>('[data-capability-assertion]').forEach((section) => {
+      const capabilityId = section.dataset.capabilityAssertion;
+      if (!capabilityId) return;
+      const stored = assertionEvidence.get(capabilityId) ?? { type: 'reference-project', detail: '' };
+      const select = section.querySelector('.capability-evidence-type') as HTMLSelectElement | null;
+      if (select) select.value = stored.type;
+    });
+  }
+
+  function selectedAssertionEvidence() {
+    captureAssertionEvidence();
+    return selectedCapabilities().map((capability) => {
+      const section = assertionEvidenceRoot?.querySelector<HTMLElement>(`[data-capability-assertion="${CSS.escape(capability.id)}"]`);
+      const select = section?.querySelector('.capability-evidence-type') as HTMLSelectElement | null;
+      const stored = assertionEvidence.get(capability.id) ?? { type: 'reference-project', detail: '' };
+      return {
+        ...capability,
+        evidenceType: select?.selectedOptions[0]?.textContent?.trim() || stored.type,
+        evidenceDetail: stored.detail || '[not provided]'
+      };
+    });
+  }
+
   function updateCapabilityCount() {
     const count = selectedCapabilities().length;
     if (capabilityCount) capabilityCount.textContent = `${count} selected`;
+    renderAssertionEvidence();
   }
 
   function resetPartnerContext() {
     document.querySelectorAll<HTMLInputElement>('.jip-interest, .capability-interest').forEach((checkbox) => {
       checkbox.checked = false;
     });
+    assertionEvidence.clear();
     updateCapabilityCount();
   }
 
@@ -303,22 +370,27 @@ const capabilityGroups = (Object.keys(familyLabels) as CapabilityFamily[]).map((
 
   function partnerDraft() {
     const jips = selectedJips();
-    const capabilityClaims = selectedCapabilities();
+    const assertions = selectedAssertionEvidence();
+    const assertionLines = assertions.length
+      ? assertions.flatMap((assertion, index) => [
+          `${index + 1}. ${assertion.id} — ${assertion.label}`,
+          `   Evidence type: ${assertion.evidenceType}`,
+          `   Primary evidence: ${assertion.evidenceDetail}`
+        ])
+      : ['[no capability assertions selected]'];
+
     return [
-      'OceanHub — Partner / JIP Expression of Interest',
+      'OceanHub — Partner Capability Evidence Packet',
       '',
       `Organization: ${orgInput?.value.trim() || '[not provided]'}`,
       `Contact email: ${emailInput?.value.trim() || '[not provided]'}`,
       `Capability owner type: ${inputValue('partner-type') || '[not provided]'}`,
       `Operating regions: ${inputValue('partner-regions') || '[not provided]'}`,
-      `Canonical capabilities: ${capabilityClaims.length ? capabilityClaims.map((capability) => `${capability.id} — ${capability.label}`).join('; ') : '[not selected]'}`,
       `JIP interest: ${jips.length ? jips.map((jip) => `${jip.id} — ${jip.title}`).join('; ') : 'General capability network'}`,
+      'Review state: evidence-submitted (not yet reviewed)',
       '',
-      'Reference projects / field assets / datasets:',
-      inputValue('partner-reference-projects') || '[not provided]',
-      '',
-      'Supporting capability evidence:',
-      inputValue('partner-evidence') || '[not provided]'
+      'Capability assertions:',
+      ...assertionLines
     ].join('\n');
   }
 

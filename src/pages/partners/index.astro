@@ -1,0 +1,112 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import {
+  partnerEvidenceTypeLabels,
+  partnerReviewOutcomeLabels,
+  partnerReviewStateLabels,
+  type PartnerCapabilityReviewOutcome,
+  type PartnerCapabilityReviewState
+} from '../../lib/partnerCapability';
+
+const base = import.meta.env.BASE_URL;
+const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
+
+const stateDescriptions: Record<PartnerCapabilityReviewState, string> = {
+  'self-declared': 'The organization has selected a canonical capability, but no supporting evidence packet has been submitted.',
+  'evidence-submitted': 'Capability-specific evidence has been submitted and is waiting for review.',
+  'under-review': 'The assertion and submitted evidence are being checked against the defined capability scope.',
+  reviewed: 'A review has been completed and carries an explicit outcome, reviewer provenance and review date.'
+};
+
+const outcomeDescriptions: Record<PartnerCapabilityReviewOutcome, string> = {
+  supported: 'Submitted evidence materially supports the defined capability assertion under the recorded review scope.',
+  'partially-supported': 'Evidence supports part of the claimed scope, but important limits or gaps remain.',
+  insufficient: 'The submitted material does not yet support the capability assertion to the required review standard.'
+};
+---
+
+<Layout title="Partner Capability Evidence | OceanHub" description="How OceanHub structures partner capability assertions, evidence packets and explicit review outcomes without supplier ranking or blanket endorsement.">
+  <section class="border-b border-white/10 py-20 md:py-28">
+    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+      <div class="max-w-4xl">
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">Partner capability evidence</p>
+        <h1 class="mt-5 font-display text-4xl font-black leading-tight text-white sm:text-6xl">Capability claims should be reviewable, not promotional.</h1>
+        <p class="mt-6 max-w-3xl text-lg leading-relaxed text-slate-300">OceanHub treats every partner capability as a discrete assertion: one canonical capability, the evidence offered to support it, and an explicit review state. The system does not turn organization-level marketing claims into scores or blanket endorsements.</p>
+        <div class="mt-9 flex flex-wrap gap-3">
+          <button type="button" data-open-collaboration="partner" class="rounded-xl bg-emerald-400 px-5 py-3 text-sm font-black text-slate-950 hover:bg-emerald-300">Present capability evidence</button>
+          <a href={url('capabilities/')} class="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">Browse Capability Registry</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-b border-white/10 py-16 md:py-20">
+    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+      <div class="max-w-3xl">
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Review workflow</p>
+        <h2 class="mt-4 font-display text-3xl font-black text-white sm:text-4xl">Separate what is claimed from what has been reviewed.</h2>
+      </div>
+      <ol class="mt-10 grid grid-cols-1 gap-4 lg:grid-cols-4">
+        {(Object.entries(partnerReviewStateLabels) as Array<[PartnerCapabilityReviewState, string]>).map(([state, label], index) => (
+          <li data-review-state={state} class="border border-white/10 bg-[#060D1E]/55 p-5">
+            <span class="font-mono text-[10px] text-cyan-400">0{index + 1}</span>
+            <h3 class="mt-3 text-sm font-bold text-white">{label}</h3>
+            <p class="mt-3 text-xs leading-relaxed text-slate-500">{stateDescriptions[state]}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="border-b border-white/10 py-16 md:py-20">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 sm:px-8 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">Review outcome</p>
+        <h2 class="mt-4 font-display text-3xl font-black text-white sm:text-4xl">An outcome applies to one capability assertion.</h2>
+        <p class="mt-5 text-sm leading-relaxed text-slate-400">A reviewed outcome does not imply that every service offered by the organization has been assessed. Scope, reviewer and review date remain part of the record.</p>
+      </div>
+      <div class="space-y-3 lg:col-span-7">
+        {(Object.entries(partnerReviewOutcomeLabels) as Array<[PartnerCapabilityReviewOutcome, string]>).map(([outcome, label]) => (
+          <article data-review-outcome={outcome} class="border-l-2 border-emerald-400/30 bg-white/[0.02] p-5">
+            <h3 class="text-sm font-bold text-white">{label}</h3>
+            <p class="mt-2 text-xs leading-relaxed text-slate-500">{outcomeDescriptions[outcome]}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="border-b border-white/10 py-16 md:py-20">
+    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+      <div class="max-w-3xl">
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Evidence packet</p>
+        <h2 class="mt-4 font-display text-3xl font-black text-white sm:text-4xl">Use the strongest artifact for the capability being claimed.</h2>
+        <p class="mt-4 text-sm leading-relaxed text-slate-400">The first intake asks for one primary evidence item per capability. Additional material can be requested during review.</p>
+      </div>
+      <div class="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {Object.entries(partnerEvidenceTypeLabels).map(([type, label]) => (
+          <div data-evidence-type={type} class="border border-white/10 bg-[#060D1E]/45 p-4">
+            <p class="font-mono text-[10px] uppercase tracking-[0.13em] text-slate-600">{type}</p>
+            <p class="mt-2 text-sm font-semibold text-slate-200">{label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-20">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 sm:px-8 lg:grid-cols-12 lg:gap-16">
+      <div class="lg:col-span-5">
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Profile boundary</p>
+        <h2 class="mt-4 font-display text-3xl font-black text-white sm:text-4xl">No public supplier directory before reviewed evidence exists.</h2>
+      </div>
+      <div class="lg:col-span-7">
+        <p class="text-sm leading-relaxed text-slate-400">A future partner profile can expose organization identity, canonical capability assertions, operating regions, evidence freshness and review provenance. OceanHub will not create public capability profiles from registration alone.</p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <button type="button" data-open-collaboration="partner" class="rounded-xl bg-emerald-400 px-5 py-3 text-sm font-black text-slate-950 hover:bg-emerald-300">Prepare an evidence packet</button>
+          <a href={url('jips/')} class="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">See proposed JIPs</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
