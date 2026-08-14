@@ -35,22 +35,28 @@ const page = await browser.newPage();
 try {
   await page.goto(base, { waitUntil: 'networkidle' });
   assert((await page.locator('[data-open-alliance-modal]').count()) === 0, 'Superseded generic alliance trigger remains on the homepage.');
+  const partnersHref = await page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Partners' }).getAttribute('href');
+  assert(partnersHref?.endsWith('/partners/'), 'Primary Partners navigation does not route to the capability evidence surface.');
 
   await page.getByRole('button', { name: 'Join as a Partner' }).click();
-  await page.getByRole('heading', { name: 'Present a capability' }).waitFor();
+  await page.getByRole('heading', { name: 'Present capability evidence' }).waitFor();
   assert(await page.locator('#partner-intake').isVisible(), 'Partner intake did not open from the homepage.');
   assert(!(await page.locator('#project-intake').isVisible()), 'Project intake remained visible in partner mode.');
   await page.locator('#collaboration-org').fill('Example Capability Partner');
   await page.locator('[data-capability-family="marine-survey"] summary').click();
   await page.locator('.capability-interest[value="marine-geophysics"]').check();
-  await page.locator('#partner-reference-projects').fill('North Sea route survey — survey and interpretation lead.');
-  await page.locator('#partner-evidence').fill('Delivered MBES, SSS and sub-bottom interpretation with project QA records.');
+  const marineAssertion = page.locator('[data-capability-assertion="marine-geophysics"]');
+  assert(await marineAssertion.isVisible(), 'Selecting a capability did not create a capability-specific evidence assertion.');
+  assert((await page.locator('[data-capability-assertion="hydrographic-survey"]').count()) === 0, 'Unselected capability unexpectedly received an evidence assertion.');
+  await marineAssertion.locator('.capability-evidence-type').selectOption('reference-project');
+  await marineAssertion.locator('.capability-evidence-detail').fill('North Sea route survey — survey and interpretation lead; delivered MBES, SSS and sub-bottom interpretation with project QA records.');
   const partnerMailto = decodeMailto(await page.locator('#collaboration-email-draft').getAttribute('href'));
-  assert(partnerMailto.address === intakeEmail, 'Partner EOI email draft is not routed to the confirmed intake address.');
-  assert(partnerMailto.subject.includes('Partner / JIP Interest'), 'Partner EOI email subject does not preserve partner intent.');
-  assert(partnerMailto.body.includes('marine-geophysics — Marine geophysics'), 'Partner EOI did not include canonical capability ID and label.');
-  assert(partnerMailto.body.includes('North Sea route survey'), 'Partner EOI did not include reference-project evidence.');
-  assert(partnerMailto.body.includes('Delivered MBES, SSS and sub-bottom interpretation'), 'Partner EOI did not include supporting capability evidence.');
+  assert(partnerMailto.address === intakeEmail, 'Partner evidence packet is not routed to the confirmed intake address.');
+  assert(partnerMailto.subject.includes('Partner Capability Evidence'), 'Partner email subject does not preserve evidence-packet intent.');
+  assert(partnerMailto.body.includes('Review state: evidence-submitted (not yet reviewed)'), 'Partner evidence packet does not preserve explicit review state.');
+  assert(partnerMailto.body.includes('marine-geophysics — Marine geophysics'), 'Partner evidence packet did not include canonical capability ID and label.');
+  assert(partnerMailto.body.includes('Evidence type: Reference project / client case'), 'Partner evidence packet did not include typed capability evidence.');
+  assert(partnerMailto.body.includes('North Sea route survey'), 'Partner evidence packet did not include capability-specific evidence detail.');
   await page.getByRole('button', { name: 'Close collaboration form' }).click();
 
   await page.goto(route('scope/'), { waitUntil: 'networkidle' });
@@ -68,10 +74,11 @@ try {
 
   await page.goto(route('jips/#ccus-4d-mrv'), { waitUntil: 'networkidle' });
   await page.locator('#ccus-4d-mrv').getByRole('button', { name: 'Discuss this capability' }).click();
-  await page.getByRole('heading', { name: 'Present a capability' }).waitFor();
+  await page.getByRole('heading', { name: 'Present capability evidence' }).waitFor();
   const selectedJip = page.locator('.jip-interest[value="ccus-4d-mrv"]');
   assert(await selectedJip.isChecked(), 'JIP-specific partner CTA did not preselect the relevant proposed JIP.');
   assert(await page.locator('.capability-interest[value="distributed-fiber-sensing"]').isChecked(), 'JIP-specific partner CTA did not preselect the JIP capability set.');
+  assert(await page.locator('[data-capability-assertion="distributed-fiber-sensing"]').isVisible(), 'JIP capability need did not create its evidence assertion.');
   await page.waitForTimeout(25);
   const jipMailto = decodeMailto(await page.locator('#collaboration-email-draft').getAttribute('href'));
   assert(jipMailto.address === intakeEmail, 'JIP interest email draft is not routed to the confirmed intake address.');
@@ -81,13 +88,26 @@ try {
 
   await page.goto(route('capabilities/#underwater-acoustics'), { waitUntil: 'networkidle' });
   await page.locator('#underwater-acoustics').getByRole('button', { name: 'Present this capability' }).click();
-  await page.getByRole('heading', { name: 'Present a capability' }).waitFor();
+  await page.getByRole('heading', { name: 'Present capability evidence' }).waitFor();
   const acousticCapability = page.locator('.capability-interest[value="underwater-acoustics"]');
   assert(await acousticCapability.isChecked(), 'Capability-specific CTA did not preselect the canonical capability.');
   assert((await page.locator('.jip-interest:checked').count()) === 0, 'Capability-specific CTA incorrectly carried stale JIP context.');
+  assert(await page.locator('[data-capability-assertion="underwater-acoustics"]').isVisible(), 'Capability-specific CTA did not create a matching evidence assertion.');
   await page.waitForTimeout(25);
   const capabilityMailto = decodeMailto(await page.locator('#collaboration-email-draft').getAttribute('href'));
   assert(capabilityMailto.body.includes('underwater-acoustics — Underwater acoustics'), 'Capability-specific email draft did not carry canonical capability context.');
+  await page.getByRole('button', { name: 'Close collaboration form' }).click();
+
+  await page.goto(route('partners/'), { waitUntil: 'networkidle' });
+  await page.getByRole('heading', { name: 'Capability claims should be reviewable, not promotional.' }).waitFor();
+  assert((await page.locator('[data-review-state]').count()) === 4, 'Partner review surface does not expose the four workflow states.');
+  assert((await page.locator('[data-review-outcome]').count()) === 3, 'Partner review surface does not expose the three explicit review outcomes.');
+  assert((await page.locator('[data-evidence-type]').count()) === 8, 'Partner review surface does not expose the canonical evidence types.');
+  const partnersText = await page.locator('main').textContent();
+  assert(!/\b\d{1,3}%\b/.test(partnersText || ''), 'Partner review surface introduced a numeric supplier score.');
+  assert(!partnersText?.includes('Verified Partner'), 'Partner review surface introduced a blanket verification badge.');
+  await page.getByRole('button', { name: 'Present capability evidence' }).click();
+  await page.getByRole('heading', { name: 'Present capability evidence' }).waitFor();
   await page.getByRole('button', { name: 'Close collaboration form' }).click();
 
   await page.goto(route('about/'), { waitUntil: 'networkidle' });
