@@ -53,7 +53,7 @@ export interface EvidenceRequirement {
   uncertainty: string;
   evidenceNeeded: string;
   methods: string[];
-  capabilities: string[];
+  capabilityIds: string[];
   deliverables: string[];
   referenceIds: string[];
   rationale: string;
