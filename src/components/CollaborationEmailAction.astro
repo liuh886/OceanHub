@@ -26,8 +26,17 @@ const intakeEmail = 'liuzhihao109@foxmail.com';
     const selectedJips = () => Array.from(document.querySelectorAll('.jip-interest:checked'))
       .map((checkbox) => `${checkbox.value} — ${checkbox.dataset.jipTitle || checkbox.value}`);
 
-    const selectedCapabilities = () => Array.from(document.querySelectorAll('.capability-interest:checked'))
-      .map((checkbox) => `${checkbox.value} — ${checkbox.dataset.capabilityLabel || checkbox.value}`);
+    const selectedAssertions = () => Array.from(document.querySelectorAll('[data-capability-assertion]')).map((section) => {
+      const capabilityId = section.dataset.capabilityAssertion || '[unknown capability]';
+      const label = section.dataset.capabilityLabel || capabilityId;
+      const typeField = section.querySelector('.capability-evidence-type');
+      const detailField = section.querySelector('.capability-evidence-detail');
+      const evidenceType = typeField && 'selectedOptions' in typeField
+        ? typeField.selectedOptions[0]?.textContent?.trim() || typeField.value
+        : '[not provided]';
+      const evidenceDetail = detailField && 'value' in detailField ? String(detailField.value).trim() : '';
+      return { capabilityId, label, evidenceType, evidenceDetail: evidenceDetail || '[not provided]' };
+    });
 
     const isPartnerIntent = () => !partnerPanel.classList.contains('hidden');
 
@@ -37,22 +46,27 @@ const intakeEmail = 'liuzhihao109@foxmail.com';
 
       if (isPartnerIntent()) {
         const jips = selectedJips();
-        const capabilityClaims = selectedCapabilities();
+        const assertions = selectedAssertions();
+        const assertionLines = assertions.length
+          ? assertions.flatMap((assertion, index) => [
+              `${index + 1}. ${assertion.capabilityId} — ${assertion.label}`,
+              `   Evidence type: ${assertion.evidenceType}`,
+              `   Primary evidence: ${assertion.evidenceDetail}`
+            ])
+          : ['[no capability assertions selected]'];
+
         return [
-          'OceanHub — Partner / JIP Expression of Interest',
+          'OceanHub — Partner Capability Evidence Packet',
           '',
           `Organization: ${org}`,
           `Contact email: ${contact}`,
           `Capability owner type: ${value('partner-type') || '[not provided]'}`,
           `Operating regions: ${value('partner-regions') || '[not provided]'}`,
-          `Canonical capabilities: ${capabilityClaims.length ? capabilityClaims.join('; ') : '[not selected]'}`,
           `JIP interest: ${jips.length ? jips.join('; ') : 'General capability network'}`,
+          'Review state: evidence-submitted (not yet reviewed)',
           '',
-          'Reference projects / field assets / datasets:',
-          value('partner-reference-projects') || '[not provided]',
-          '',
-          'Supporting capability evidence:',
-          value('partner-evidence') || '[not provided]'
+          'Capability assertions:',
+          ...assertionLines
         ].join('\n');
       }
 
@@ -77,16 +91,14 @@ const intakeEmail = 'liuzhihao109@foxmail.com';
       const partner = isPartnerIntent();
       const org = value('collaboration-org');
       const subject = partner
-        ? `OceanHub Partner / JIP Interest${org ? ` — ${org}` : ''}`
+        ? `OceanHub Partner Capability Evidence${org ? ` — ${org}` : ''}`
         : `OceanHub Project Inquiry${org ? ` — ${org}` : ''}`;
-      emailLink.textContent = partner ? 'Email partner EOI' : 'Email project inquiry';
+      emailLink.textContent = partner ? 'Email evidence packet' : 'Email project inquiry';
       emailLink.href = `mailto:${intakeEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(buildDraft())}`;
     };
 
-    modal.querySelectorAll('input, select, textarea').forEach((field) => {
-      field.addEventListener('input', updateEmailLink);
-      field.addEventListener('change', updateEmailLink);
-    });
+    modal.addEventListener('input', updateEmailLink);
+    modal.addEventListener('change', () => window.setTimeout(updateEmailLink, 0));
 
     document.querySelectorAll('[data-intent-switch], [data-open-collaboration]').forEach((trigger) => {
       trigger.addEventListener('click', () => window.setTimeout(updateEmailLink, 0));
