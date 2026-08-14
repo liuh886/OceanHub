@@ -16,7 +16,7 @@ export interface ProposedJip {
   whyCollaborate: string;
   targetOutcome: string;
   workstreams: string[];
-  capabilities: string[];
+  capabilityIds: string[];
   referenceIds: string[];
   regulatoryNotes?: string[];
   deliverables: string[];
@@ -42,14 +42,7 @@ export const proposedJips: ProposedJip[] = [
       'Integration with repeat seismic, injection data and reservoir / geomechanical models',
       'MRV evidence packaging, provenance and escalation criteria'
     ],
-    capabilities: [
-      'DAS / distributed fiber-optic sensing',
-      'Passive seismic and microseismic monitoring',
-      'Marine seismic acquisition and 4D processing',
-      'Subsea cable deployment and protection',
-      'Reservoir geomechanics and storage modelling',
-      'CCS monitoring, verification and regulatory evidence design'
-    ],
+    capabilityIds: ['distributed-fiber-sensing','passive-seismic-monitoring','marine-seismic-acquisition','time-lapse-seismic','subsea-cable-installation','reservoir-geomechanics','reservoir-characterization','ccs-mrv-data-assurance'],
     referenceIds: ['iso-27914-2026', 'dnv-rp-j203', 'imo-london-protocol-ccs'],
     deliverables: [
       'Proposed permanent-sensing reference architecture and field-test protocol',
@@ -77,14 +70,7 @@ export const proposedJips: ProposedJip[] = [
       'Suction-caisson / anchor response modelling and sensitivity analysis',
       'Field-to-model traceability and design-parameter handoff'
     ],
-    capabilities: [
-      'Marine geophysics and integrated ground modelling',
-      'Deepwater CPTu and seabed sampling',
-      'Advanced cyclic soil laboratory testing',
-      'Foundation / anchor engineering',
-      'Finite-element and soil-structure interaction modelling',
-      'Mooring-system engineering'
-    ],
+    capabilityIds: ['marine-geophysics','ground-modeling','marine-geotechnics','geotechnical-laboratory-testing','foundation-anchor-engineering','mooring-engineering'],
     referenceIds: ['dnv-st-0119', 'iso-19901-4-2025', 'iso-19901-8-2023', 'dnv-rp-e303'],
     regulatoryNotes: ['Contracted projects may additionally specify API or national foundation standards; verify the required edition in the project design basis.'],
     deliverables: [
@@ -113,14 +99,7 @@ export const proposedJips: ProposedJip[] = [
       'PAM detection, review and operational trigger workflow',
       'Consenting-ready acoustic evidence and provenance package'
     ],
-    capabilities: [
-      'Underwater acoustic propagation modelling',
-      'Hydrophone and PAM system deployment',
-      'Marine mammal bioacoustics',
-      'Noise-mitigation engineering and bubble-curtain systems',
-      'Offshore construction / survey operations',
-      'Environmental impact and consenting support'
-    ],
+    capabilityIds: ['underwater-acoustics','pam-bioacoustics','marine-ecology','noise-mitigation','marine-operations-planning','marine-environmental-assessment'],
     referenceIds: ['iso-18405-2017'],
     regulatoryNotes: ['Underwater-noise thresholds, protected-species procedures and mitigation requirements are jurisdiction- and consent-specific and must be resolved from the applicable regulator and project consent.'],
     deliverables: [
@@ -149,14 +128,7 @@ export const proposedJips: ProposedJip[] = [
       'Free-span, scour, burial and route-risk screening',
       'Engineering escalation thresholds and evidence handoff'
     ],
-    capabilities: [
-      'USV / autonomous marine survey',
-      'Multibeam bathymetry and sub-bottom profiling',
-      'Repeat-survey positioning and change detection',
-      'Subsea cable / pipeline integrity engineering',
-      'Scour, free-span and VIV assessment',
-      'Geospatial data processing and asset-risk integration'
-    ],
+    capabilityIds: ['autonomous-subsea-survey','hydrographic-survey','marine-geophysics','geospatial-change-detection','subsea-integrity-engineering','subsea-cable-engineering','pipeline-route-engineering','systems-integration'],
     referenceIds: ['iho-s44-6-2-0', 'dnv-rp-f105', 'dnv-rp-f109', 'dnv-rp-f116', 'dnv-rp-0360'],
     regulatoryNotes: ['Survey class, cable-owner criteria and marine-operations requirements remain asset- and project-specific.'],
     deliverables: [

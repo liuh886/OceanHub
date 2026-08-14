@@ -1,3 +1,4 @@
+import { resolveCapabilities } from '../data/capabilities';
 import { resolveEngineeringReferences } from '../data/engineeringReferences';
 import { evidenceSourceById, referenceCases } from '../data/referenceCases';
 import type { EvidencePlanQuery, EvidenceRequirement, EvidenceSource, MatchedEvidenceCase } from './decisionEvidence';
@@ -36,6 +37,7 @@ export function getEvidencePlan(query: EvidencePlanQuery) {
       outcome: referenceCase.outcome,
       projectContext: referenceCase.projectContext,
       requirement,
+      capabilities: resolveCapabilities(requirement.capabilityIds),
       references: resolveEngineeringReferences(requirement.referenceIds),
       sources: resolveEvidenceSources(requirement)
     }))

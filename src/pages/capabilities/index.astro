@@ -1,0 +1,128 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { capabilities } from '../../data/capabilities';
+import { resolveEngineeringReferences } from '../../data/engineeringReferences';
+import { proposedJips } from '../../data/proposedJips';
+import { referenceCases } from '../../data/referenceCases';
+import type { CapabilityFamily } from '../../lib/capability';
+
+const familyLabels: Record<CapabilityFamily, string> = {
+  'ccs-subsurface': 'CCS & subsurface',
+  'marine-survey': 'Marine survey',
+  'geotechnics-foundations': 'Geotechnics & foundations',
+  'metocean-environment': 'Metocean & environment',
+  'marine-construction': 'Marine construction',
+  'subsea-electrical': 'Subsea & electrical',
+  'inspection-integrity': 'Inspection & integrity',
+  'digital-integration': 'Digital & systems integration',
+  decommissioning: 'Decommissioning'
+};
+
+const familyOrder = Object.keys(familyLabels) as CapabilityFamily[];
+const usage = new Map(capabilities.map((capability) => [capability.id, {
+  caseIds: new Set<string>(),
+  jipIds: new Set<string>(),
+  evidenceCount: 0,
+  referenceIds: new Set<string>()
+}]));
+
+for (const referenceCase of referenceCases) {
+  for (const requirement of referenceCase.evidence) {
+    for (const capabilityId of requirement.capabilityIds) {
+      const entry = usage.get(capabilityId);
+      if (!entry) throw new Error(`Unknown capability ID ${capabilityId} in ${requirement.id}`);
+      entry.caseIds.add(referenceCase.id);
+      entry.evidenceCount += 1;
+      requirement.referenceIds.forEach((referenceId) => entry.referenceIds.add(referenceId));
+    }
+  }
+}
+
+for (const jip of proposedJips) {
+  for (const capabilityId of jip.capabilityIds) {
+    const entry = usage.get(capabilityId);
+    if (!entry) throw new Error(`Unknown capability ID ${capabilityId} in ${jip.id}`);
+    entry.jipIds.add(jip.id);
+    jip.referenceIds.forEach((referenceId) => entry.referenceIds.add(referenceId));
+  }
+}
+
+const capabilityViews = capabilities.map((capability) => {
+  const entry = usage.get(capability.id)!;
+  return {
+    ...capability,
+    caseCount: entry.caseIds.size,
+    jipCount: entry.jipIds.size,
+    evidenceCount: entry.evidenceCount,
+    references: resolveEngineeringReferences([...entry.referenceIds])
+  };
+});
+---
+
+<Layout title="Capability Library | OceanHub" description="Canonical offshore delivery capabilities linked to evidence requirements, engineering references, project precedents and proposed JIPs.">
+  <section class="border-b border-white/10 py-20 md:py-28">
+    <div class="mx-auto max-w-7xl px-6 sm:px-8">
+      <div class="max-w-4xl">
+        <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Capability Registry</p>
+        <h1 class="mt-5 font-display text-4xl font-black leading-tight text-white sm:text-6xl">Delivery capabilities, not vendor labels.</h1>
+        <p class="mt-6 max-w-3xl text-lg leading-relaxed text-slate-300">OceanHub uses one canonical capability vocabulary across evidence plans and proposed JIPs. Methods stay attached to engineering work; capabilities describe reusable delivery competence that a partner can actually provide.</p>
+        <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div class="border-t border-white/10 pt-4"><strong class="font-display text-2xl text-white">{capabilities.length}</strong><span class="mt-1 block text-xs text-slate-500">canonical capabilities</span></div>
+          <div class="border-t border-white/10 pt-4"><strong class="font-display text-2xl text-white">{referenceCases.length}</strong><span class="mt-1 block text-xs text-slate-500">reference cases</span></div>
+          <div class="border-t border-white/10 pt-4"><strong class="font-display text-2xl text-white">{proposedJips.length}</strong><span class="mt-1 block text-xs text-slate-500">proposed JIPs</span></div>
+          <div class="border-t border-white/10 pt-4"><strong class="font-display text-2xl text-white">{familyOrder.length}</strong><span class="mt-1 block text-xs text-slate-500">capability families</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-20">
+    <div class="mx-auto max-w-7xl space-y-16 px-6 sm:px-8">
+      {familyOrder.map((family) => {
+        const items = capabilityViews.filter((capability) => capability.family === family);
+        return (
+          <section aria-labelledby={`family-${family}`}>
+            <header class="mb-7 border-b border-white/10 pb-5">
+              <p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Capability family</p>
+              <h2 id={`family-${family}`} class="mt-2 font-display text-2xl font-black text-white sm:text-3xl">{familyLabels[family]}</h2>
+            </header>
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              {items.map((capability) => (
+                <article id={capability.id} data-capability={capability.id} data-case-count={capability.caseCount} data-jip-count={capability.jipCount} class="scroll-mt-28 border border-white/10 bg-[#060D1E]/55 p-5 sm:p-7">
+                  <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-400">{capability.id}</p>
+                      <h3 class="mt-2 text-lg font-bold text-white">{capability.label}</h3>
+                    </div>
+                    <div class="flex gap-2 text-[10px] text-slate-500">
+                      <span class="rounded-full border border-white/10 px-2.5 py-1">{capability.caseCount} cases</span>
+                      <span class="rounded-full border border-white/10 px-2.5 py-1">{capability.jipCount} JIPs</span>
+                    </div>
+                  </div>
+                  <p class="mt-4 text-sm leading-relaxed text-slate-400">{capability.summary}</p>
+
+                  <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div>
+                      <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-600">Method examples</p>
+                      <ul class="mt-2 space-y-1 text-xs leading-relaxed text-slate-400">{capability.methodExamples.map((method) => <li>• {method}</li>)}</ul>
+                    </div>
+                    <div>
+                      <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-600">Provider types</p>
+                      <ul class="mt-2 space-y-1 text-xs leading-relaxed text-slate-400">{capability.providerTypes.map((provider) => <li>• {provider}</li>)}</ul>
+                    </div>
+                  </div>
+
+                  <div class="mt-6 border-t border-white/10 pt-5">
+                    <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-600">Evidence footprint</p>
+                    <p class="mt-2 text-xs leading-relaxed text-slate-500">{capability.evidenceCount} evidence workstream{capability.evidenceCount === 1 ? '' : 's'} · lifecycle: {capability.lifecycleStages.join(' · ')}</p>
+                    {capability.references.length > 0 && <p class="mt-2 text-xs leading-relaxed text-slate-500">References: {capability.references.slice(0, 5).map((reference) => reference.code).join(' · ')}{capability.references.length > 5 ? ' · …' : ''}</p>}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  </section>
+</Layout>
