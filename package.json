@@ -12,6 +12,7 @@
     "test:scoper": "node scripts/test-decision-scoper.mjs",
     "test:jips": "node scripts/test-jip-capabilities.mjs",
     "test:references": "node scripts/test-engineering-references.mjs",
+    "test:capabilities": "node scripts/test-capability-library.mjs",
     "test:conversion": "node scripts/test-conversion-paths.mjs",
     "preview": "astro preview",
     "astro": "astro"
