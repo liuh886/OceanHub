@@ -1,5 +1,25 @@
 ---
+import { capabilities } from '../data/capabilities';
 import { proposedJips } from '../data/proposedJips';
+import type { CapabilityFamily } from '../lib/capability';
+
+const familyLabels: Record<CapabilityFamily, string> = {
+  'ccs-subsurface': 'CCS & subsurface',
+  'marine-survey': 'Marine survey',
+  'geotechnics-foundations': 'Geotechnics & foundations',
+  'metocean-environment': 'Metocean & environment',
+  'marine-construction': 'Marine construction',
+  'subsea-electrical': 'Subsea & electrical',
+  'inspection-integrity': 'Inspection & integrity',
+  'digital-integration': 'Digital & systems integration',
+  decommissioning: 'Decommissioning'
+};
+
+const capabilityGroups = (Object.keys(familyLabels) as CapabilityFamily[]).map((family) => ({
+  family,
+  label: familyLabels[family],
+  capabilities: capabilities.filter((capability) => capability.family === family)
+}));
 ---
 
 <div
@@ -29,7 +49,7 @@ import { proposedJips } from '../data/proposedJips';
         </button>
         <button type="button" data-intent-switch="partner" class="collaboration-intent rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3 text-left">
           <span class="block text-xs font-bold text-white">I have a capability</span>
-          <span class="mt-1 block text-[11px] text-slate-400">Join the network or a proposed JIP</span>
+          <span class="mt-1 block text-[11px] text-slate-400">Present evidence or join a proposed JIP</span>
         </button>
       </div>
     </div>
@@ -86,18 +106,18 @@ import { proposedJips } from '../data/proposedJips';
         </div>
       </div>
 
-      <div id="partner-intake" class="mt-6 hidden space-y-5">
+      <div id="partner-intake" class="mt-6 hidden space-y-6">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label for="partner-type" class="mb-1.5 block text-xs font-semibold text-slate-300">Capability owner type</label>
             <select id="partner-type" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-emerald-400 focus:outline-none">
-              <option>Marine geophysical contractor</option>
-              <option>Marine geotechnical contractor / laboratory</option>
+              <option>Marine survey / site investigation contractor</option>
               <option>Engineering / EPCI organization</option>
               <option>Sensor / technology provider</option>
+              <option>Laboratory / specialist testing provider</option>
               <option>Research institute / university</option>
               <option>Operator / developer contributing a use case</option>
-              <option>Other specialist capability</option>
+              <option>Other specialist capability owner</option>
             </select>
           </div>
           <div>
@@ -106,12 +126,40 @@ import { proposedJips } from '../data/proposedJips';
           </div>
         </div>
 
-        <div>
+        <section aria-labelledby="partner-capability-heading">
+          <div class="flex items-end justify-between gap-4">
+            <div>
+              <h3 id="partner-capability-heading" class="text-xs font-semibold text-slate-300">Canonical capabilities *</h3>
+              <p class="mt-1 text-[11px] leading-relaxed text-slate-500">Select what your organization can actually deliver. Methods and project evidence are captured separately below.</p>
+            </div>
+            <span id="partner-capability-count" class="shrink-0 font-mono text-[10px] text-emerald-300">0 selected</span>
+          </div>
+          <div class="mt-3 space-y-2" id="partner-capability-selection">
+            {capabilityGroups.map((group) => (
+              <details class="rounded-xl border border-white/10 bg-white/[0.02]" data-capability-family={group.family}>
+                <summary class="cursor-pointer px-4 py-3 text-xs font-bold text-slate-200">{group.label} <span class="ml-2 font-mono text-[10px] font-normal text-slate-600">{group.capabilities.length}</span></summary>
+                <div class="grid grid-cols-1 gap-2 border-t border-white/10 p-3 sm:grid-cols-2">
+                  {group.capabilities.map((capability) => (
+                    <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-white/5 bg-black/15 p-3 hover:border-emerald-400/25">
+                      <input type="checkbox" class="capability-interest mt-0.5 accent-emerald-400" value={capability.id} data-capability-label={capability.label} />
+                      <span>
+                        <span class="block text-xs font-bold text-slate-200">{capability.label}</span>
+                        <span class="mt-1 block text-[10px] leading-relaxed text-slate-600">{capability.id}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <section>
           <p class="mb-2 text-xs font-semibold text-slate-300">Proposed JIP interest</p>
           <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {proposedJips.map((jip) => (
               <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-white/[0.025] p-3.5 hover:border-emerald-400/30">
-                <input type="checkbox" class="jip-interest mt-0.5 accent-emerald-400" value={jip.id} data-jip-title={jip.title} />
+                <input type="checkbox" class="jip-interest mt-0.5 accent-emerald-400" value={jip.id} data-jip-title={jip.title} data-jip-capability-ids={jip.capabilityIds.join(',')} />
                 <span>
                   <span class="block text-xs font-bold text-white">{jip.number} · {jip.category}</span>
                   <span class="mt-1 block text-[11px] leading-relaxed text-slate-500">{jip.title}</span>
@@ -119,11 +167,16 @@ import { proposedJips } from '../data/proposedJips';
               </label>
             ))}
           </div>
+        </section>
+
+        <div>
+          <label for="partner-reference-projects" class="mb-1.5 block text-xs font-semibold text-slate-300">Reference projects / field assets / datasets</label>
+          <textarea id="partner-reference-projects" rows="3" placeholder="Name relevant delivered projects, field assets, benchmark datasets or operational deployments and your role." class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"></textarea>
         </div>
 
         <div>
-          <label for="partner-capabilities" class="mb-1.5 block text-xs font-semibold text-slate-300">Capability evidence *</label>
-          <textarea id="partner-capabilities" rows="4" placeholder="Describe field assets, methods, datasets, standards experience, reference projects or technical expertise that show where you fit." class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"></textarea>
+          <label for="partner-evidence" class="mb-1.5 block text-xs font-semibold text-slate-300">Supporting capability evidence *</label>
+          <textarea id="partner-evidence" rows="4" placeholder="Describe methods, equipment, standards experience, results, publications or other evidence supporting the selected capability claims." class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-emerald-400 focus:outline-none"></textarea>
         </div>
       </div>
     </div>
@@ -148,6 +201,7 @@ import { proposedJips } from '../data/proposedJips';
   const footnote = document.getElementById('collaboration-footnote');
   const orgInput = document.getElementById('collaboration-org') as HTMLInputElement | null;
   const emailInput = document.getElementById('collaboration-email') as HTMLInputElement | null;
+  const capabilityCount = document.getElementById('partner-capability-count');
 
   let intent: 'project' | 'partner' = 'project';
 
@@ -167,13 +221,13 @@ import { proposedJips } from '../data/proposedJips';
     if (description) {
       description.textContent = isProject
         ? 'Share the project decision and material uncertainty so the next conversation starts from the evidence need rather than a generic service request.'
-        : 'Show where your field asset, method or specialist expertise fits a capability need or proposed JIP workstream.';
+        : 'Select canonical capabilities, then attach the project and technical evidence that supports those claims.';
     }
     if (copyButton) copyButton.textContent = isProject ? 'Copy project inquiry' : 'Copy partner EOI';
     if (footnote) {
       footnote.textContent = isProject
         ? 'Non-binding project inquiry. No commercial engagement is created by preparing this draft.'
-        : 'Non-binding expression of interest. OceanHub does not treat submitted capability claims as verified until supporting evidence is reviewed.';
+        : 'Non-binding expression of interest. Selected capabilities are assertions, not verified OceanHub endorsements, until supporting evidence is reviewed.';
     }
 
     intentButtons.forEach((button) => {
@@ -190,6 +244,43 @@ import { proposedJips } from '../data/proposedJips';
       id: checkbox.value,
       title: checkbox.dataset.jipTitle || checkbox.value
     }));
+  }
+
+  function selectedCapabilities() {
+    return Array.from(document.querySelectorAll<HTMLInputElement>('.capability-interest:checked')).map((checkbox) => ({
+      id: checkbox.value,
+      label: checkbox.dataset.capabilityLabel || checkbox.value
+    }));
+  }
+
+  function updateCapabilityCount() {
+    const count = selectedCapabilities().length;
+    if (capabilityCount) capabilityCount.textContent = `${count} selected`;
+  }
+
+  function resetPartnerContext() {
+    document.querySelectorAll<HTMLInputElement>('.jip-interest, .capability-interest').forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+    updateCapabilityCount();
+  }
+
+  function selectCapabilityIds(ids: string[]) {
+    const idSet = new Set(ids);
+    document.querySelectorAll<HTMLInputElement>('.capability-interest').forEach((checkbox) => {
+      checkbox.checked = idSet.has(checkbox.value);
+      if (checkbox.checked) checkbox.closest('details')?.setAttribute('open', '');
+    });
+    updateCapabilityCount();
+  }
+
+  function selectJip(jipId: string) {
+    let capabilityIds: string[] = [];
+    document.querySelectorAll<HTMLInputElement>('.jip-interest').forEach((checkbox) => {
+      checkbox.checked = checkbox.value === jipId;
+      if (checkbox.checked) capabilityIds = (checkbox.dataset.jipCapabilityIds || '').split(',').filter(Boolean);
+    });
+    selectCapabilityIds(capabilityIds);
   }
 
   function projectDraft() {
@@ -212,6 +303,7 @@ import { proposedJips } from '../data/proposedJips';
 
   function partnerDraft() {
     const jips = selectedJips();
+    const capabilityClaims = selectedCapabilities();
     return [
       'OceanHub — Partner / JIP Expression of Interest',
       '',
@@ -219,10 +311,14 @@ import { proposedJips } from '../data/proposedJips';
       `Contact email: ${emailInput?.value.trim() || '[not provided]'}`,
       `Capability owner type: ${inputValue('partner-type') || '[not provided]'}`,
       `Operating regions: ${inputValue('partner-regions') || '[not provided]'}`,
+      `Canonical capabilities: ${capabilityClaims.length ? capabilityClaims.map((capability) => `${capability.id} — ${capability.label}`).join('; ') : '[not selected]'}`,
       `JIP interest: ${jips.length ? jips.map((jip) => `${jip.id} — ${jip.title}`).join('; ') : 'General capability network'}`,
       '',
-      'Capability evidence:',
-      inputValue('partner-capabilities') || '[not provided]'
+      'Reference projects / field assets / datasets:',
+      inputValue('partner-reference-projects') || '[not provided]',
+      '',
+      'Supporting capability evidence:',
+      inputValue('partner-evidence') || '[not provided]'
     ].join('\n');
   }
 
@@ -237,12 +333,12 @@ import { proposedJips } from '../data/proposedJips';
     }, 1800);
   }
 
-  function openModal(nextIntent: 'project' | 'partner', jipId?: string) {
+  function openModal(nextIntent: 'project' | 'partner', jipId?: string, capabilityId?: string) {
     setIntent(nextIntent);
-    if (jipId && nextIntent === 'partner') {
-      document.querySelectorAll<HTMLInputElement>('.jip-interest').forEach((checkbox) => {
-        checkbox.checked = checkbox.value === jipId;
-      });
+    if (nextIntent === 'partner') {
+      resetPartnerContext();
+      if (jipId) selectJip(jipId);
+      else if (capabilityId) selectCapabilityIds([capabilityId]);
     }
     modal?.classList.remove('hidden');
     modal?.classList.add('flex');
@@ -258,10 +354,18 @@ import { proposedJips } from '../data/proposedJips';
     button.addEventListener('click', () => setIntent(button.dataset.intentSwitch === 'partner' ? 'partner' : 'project'));
   });
 
+  document.querySelectorAll<HTMLInputElement>('.capability-interest').forEach((checkbox) => {
+    checkbox.addEventListener('change', updateCapabilityCount);
+  });
+
   document.querySelectorAll<HTMLElement>('[data-open-collaboration]').forEach((trigger) => {
     trigger.addEventListener('click', (event) => {
       event.preventDefault();
-      openModal(trigger.dataset.openCollaboration === 'partner' ? 'partner' : 'project', trigger.dataset.jipId);
+      openModal(
+        trigger.dataset.openCollaboration === 'partner' ? 'partner' : 'project',
+        trigger.dataset.jipId,
+        trigger.dataset.capabilityId
+      );
     });
   });
 
@@ -275,4 +379,5 @@ import { proposedJips } from '../data/proposedJips';
   });
 
   setIntent('project');
+  updateCapabilityCount();
 </script>
