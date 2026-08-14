@@ -14,6 +14,7 @@
     "test:references": "node scripts/test-engineering-references.mjs",
     "test:capabilities": "node scripts/test-capability-library.mjs",
     "test:conversion": "node scripts/test-conversion-paths.mjs",
+    "test:review": "node scripts/test-review-queue.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

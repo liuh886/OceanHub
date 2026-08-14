@@ -3,25 +3,25 @@ import Layout from '../layouts/Layout.astro';
 import { capabilities } from '../data/capabilities';
 import { marketProviders } from '../data/marketProviders';
 import { partnerEvidenceTypeLabels } from '../lib/partnerCapability';
+import { oceanhubBackend } from '../lib/oceanhubBackend';
 
-const intakeEmail = 'liuzhihao109@foxmail.com';
 const payload = {
   providers: marketProviders.map(({ id, name }) => ({ id, name })),
   capabilities: capabilities.map(({ id, label, summary }) => ({ id, label, summary })),
   evidenceTypes: partnerEvidenceTypeLabels,
-  intakeEmail
+  intakeUrl: oceanhubBackend.intakeUrl
 };
 ---
 
 <Layout
   title="Respond to a Supplier EOI | OceanHub"
-  description="Return capability-specific evidence against an OceanHub supplier EOI request."
+  description="Submit capability-specific supplier evidence into the OceanHub review workflow."
 >
   <section class="mx-auto max-w-6xl px-6 pb-20 pt-16 sm:px-8 md:pt-24">
     <div class="max-w-3xl">
       <p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">Supplier response</p>
       <h1 class="mt-4 font-display text-4xl font-black tracking-tight text-white sm:text-6xl">Respond with evidence, capability by capability.</h1>
-      <p class="mt-6 text-lg leading-relaxed text-slate-300">Confirm what your organization can directly deliver and attach one strong evidence item to each claimed canonical capability. Submission creates an evidence packet for review; it does not automatically make the capability OceanHub-supported.</p>
+      <p class="mt-6 text-lg leading-relaxed text-slate-300">Claim only what your organization can support. Claimed capabilities require one primary evidence item; everything else is recorded as not claimed. Submission enters OceanHub as <strong class="text-white">evidence-submitted</strong>, never automatically supported.</p>
     </div>
 
     <div id="supplier-response-invalid" class="mt-10 hidden rounded-2xl border border-amber-400/20 bg-amber-500/5 p-6 text-sm leading-relaxed text-slate-300">
@@ -32,14 +32,14 @@ const payload = {
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <aside class="lg:col-span-4">
           <div class="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
-            <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">EOI request</p>
+            <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Tracked EOI request</p>
             <dl class="mt-4 space-y-4 text-sm">
-              <div><dt class="text-xs text-slate-500">Request ID</dt><dd id="supplier-request-id" class="mt-1 font-mono text-slate-200"></dd></div>
+              <div><dt class="text-xs text-slate-500">Request ID</dt><dd id="supplier-request-id" class="mt-1 break-all font-mono text-slate-200"></dd></div>
               <div><dt class="text-xs text-slate-500">Mapped provider</dt><dd id="supplier-provider-name" class="mt-1 font-bold text-white"></dd></div>
               <div><dt class="text-xs text-slate-500">Project / region</dt><dd id="supplier-project-context" class="mt-1 text-slate-300"></dd></div>
               <div><dt class="text-xs text-slate-500">Lifecycle / focus</dt><dd id="supplier-stage-focus" class="mt-1 text-slate-300"></dd></div>
             </dl>
-            <p class="mt-5 border-t border-white/10 pt-5 text-xs leading-relaxed text-slate-500">Public-source mapping is only a discovery signal. Your response below is a separate supplier-submitted evidence record.</p>
+            <p class="mt-5 border-t border-white/10 pt-5 text-xs leading-relaxed text-slate-500">Public-source mapping is only a discovery signal. This response creates a separate supplier-submitted evidence record that must be reviewed.</p>
           </div>
         </aside>
 
@@ -65,18 +65,18 @@ const payload = {
                 <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-300">Requested capabilities</p>
                 <h2 class="mt-2 text-2xl font-black text-white">Claim only what you can support with evidence.</h2>
               </div>
-              <p class="text-xs text-slate-500">Unchecked capabilities are returned as not claimed.</p>
+              <p class="text-xs text-slate-500">Unchecked capabilities are recorded as not claimed.</p>
             </div>
             <div id="supplier-capability-list" class="mt-6 space-y-4"></div>
           </div>
 
-          <div class="mt-8 flex flex-wrap gap-3 border-t border-white/10 pt-8">
-            <button id="build-supplier-response" type="button" class="rounded-xl bg-cyan-400 px-5 py-3 text-xs font-black text-slate-950 hover:bg-cyan-300">Build evidence response</button>
-            <button id="copy-supplier-response" type="button" class="hidden rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-xs font-bold text-white hover:bg-white/10">Copy response</button>
-            <a id="email-supplier-response" class="hidden rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-5 py-3 text-xs font-bold text-emerald-100 hover:bg-emerald-500/15">Email response to OceanHub</a>
+          <div class="mt-8 border-t border-white/10 pt-8">
+            <button id="submit-supplier-response" type="button" class="rounded-xl bg-cyan-400 px-5 py-3 text-xs font-black text-slate-950 hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-50">Submit evidence response</button>
+            <p id="supplier-response-status" class="mt-3 text-xs text-slate-500" aria-live="polite"></p>
+            <div id="supplier-response-success" class="mt-5 hidden rounded-2xl border border-emerald-400/20 bg-emerald-500/5 p-5 text-sm leading-relaxed text-slate-300">
+              <strong class="text-emerald-200">Evidence response received.</strong> Claimed capabilities are now in <code class="text-emerald-100">evidence-submitted</code> state and await reviewer assessment. Resubmitting this same tracked response replaces the supplier evidence and resets affected claims for review.
+            </div>
           </div>
-          <p id="supplier-response-status" class="mt-3 text-xs text-slate-500" aria-live="polite"></p>
-          <pre id="supplier-response-output" class="mt-6 hidden max-h-[40rem] overflow-auto whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-5 text-xs leading-6 text-slate-300"></pre>
         </div>
       </div>
     </div>
@@ -88,7 +88,8 @@ const payload = {
 <script>
   interface Capability { id: string; label: string; summary: string }
   interface Provider { id: string; name: string }
-  interface Payload { providers: Provider[]; capabilities: Capability[]; evidenceTypes: Record<string, string>; intakeEmail: string }
+  interface Payload { providers: Provider[]; capabilities: Capability[]; evidenceTypes: Record<string, string>; intakeUrl: string }
+  interface SubmitResult { responseId?: string; reviewState?: string; error?: string }
 
   const data = JSON.parse(document.getElementById('supplier-response-data')?.textContent ?? '{}') as Payload;
   const params = new URLSearchParams(window.location.search);
@@ -106,10 +107,7 @@ const payload = {
   else app?.classList.remove('hidden');
 
   const esc = (value: string) => value.replace(/[&<>'\"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '\"': '&quot;' })[character] ?? character);
-  const value = (id: string) => {
-    const field = document.getElementById(id) as HTMLInputElement | null;
-    return field?.value.trim() || '';
-  };
+  const value = (id: string) => (document.getElementById(id) as HTMLInputElement | null)?.value.trim() || '';
 
   if (valid && provider) {
     const org = document.getElementById('supplier-org') as HTMLInputElement | null;
@@ -143,69 +141,66 @@ const payload = {
     });
   }
 
-  const output = document.getElementById('supplier-response-output');
-  const copyButton = document.getElementById('copy-supplier-response') as HTMLButtonElement | null;
-  const emailLink = document.getElementById('email-supplier-response') as HTMLAnchorElement | null;
+  const submit = document.getElementById('submit-supplier-response') as HTMLButtonElement | null;
   const status = document.getElementById('supplier-response-status');
+  const success = document.getElementById('supplier-response-success');
 
-  function buildPacket() {
-    if (!valid || !provider) return '';
+  submit?.addEventListener('click', async () => {
+    if (!valid || !provider || !data.intakeUrl || !submit) return;
+    const organization = value('supplier-org');
+    const contactEmail = value('supplier-contact');
+    const operatingRegion = value('supplier-regions');
+    if (!organization || !contactEmail.includes('@') || !operatingRegion) {
+      if (status) status.textContent = 'Organization, valid response email and operating region are required.';
+      return;
+    }
+
     const claimed = Array.from(document.querySelectorAll<HTMLElement>('[data-supplier-assertion]')).flatMap((section) => {
       const checkbox = section.querySelector<HTMLInputElement>('.supplier-claim');
       if (!checkbox?.checked) return [];
       const capabilityId = section.dataset.supplierAssertion || '';
       const capability = data.capabilities.find((item) => item.id === capabilityId);
-      const type = section.querySelector<HTMLSelectElement>('.supplier-evidence-type')?.value || 'reference-project';
-      const detail = section.querySelector<HTMLTextAreaElement>('.supplier-evidence-detail')?.value.trim() || '[not provided]';
-      return [{ capabilityId, label: capability?.label || capabilityId, type, detail }];
+      const evidenceType = section.querySelector<HTMLSelectElement>('.supplier-evidence-type')?.value || '';
+      const evidenceDetail = section.querySelector<HTMLTextAreaElement>('.supplier-evidence-detail')?.value.trim() || '';
+      return [{ capabilityId, capabilityLabel: capability?.label || capabilityId, evidenceType, evidenceDetail }];
     });
-    const unclaimed = requestedCapabilities.filter((capability) => !claimed.some((item) => item.capabilityId === capability.id));
-    const lines = claimed.flatMap((item, index) => [
-      `${index + 1}. Assertion ID: ${requestId}:${provider.id}:${item.capabilityId}`,
-      `   Capability: ${item.capabilityId} — ${item.label}`,
-      `   Evidence type: ${item.type}`,
-      `   Evidence detail: ${item.detail}`,
-      '   Review state: evidence-submitted (not yet reviewed)'
-    ]);
-    return [
-      'OceanHub — Supplier Capability Evidence Response',
-      '',
-      `Request ID: ${requestId}`,
-      `Mapped provider ID: ${provider.id}`,
-      `Organization: ${value('supplier-org') || provider.name}`,
-      `Contact email: ${value('supplier-contact') || '[not provided]'}`,
-      `Operating regions / mobilization: ${value('supplier-regions') || '[not provided]'}`,
-      `Project / region: ${params.get('project') || '[not supplied]'}`,
-      `Lifecycle / focus: ${params.get('stage') || '[not supplied]'} · ${params.get('focus') || '[not supplied]'}`,
-      'Packet review state: evidence-submitted (not yet reviewed)',
-      '',
-      'Capability assertions:',
-      ...(lines.length ? lines : ['[no capabilities claimed]']),
-      '',
-      'Requested capabilities not claimed:',
-      ...(unclaimed.length ? unclaimed.map((capability) => `- ${capability.id} — ${capability.label}`) : ['- None']),
-      '',
-      'Review note: submission does not imply OceanHub support. Each assertion remains pending review against capability-specific evidence criteria.'
-    ].join('\n');
-  }
+    const missingEvidence = claimed.find((item) => !item.evidenceType || !item.evidenceDetail);
+    if (missingEvidence) {
+      if (status) status.textContent = `Add primary evidence for ${missingEvidence.capabilityLabel}.`;
+      return;
+    }
+    const claimedIds = new Set(claimed.map((item) => item.capabilityId));
+    const notClaimedCapabilityIds = requestedCapabilities.filter((capability) => !claimedIds.has(capability.id)).map((capability) => capability.id);
 
-  document.getElementById('build-supplier-response')?.addEventListener('click', () => {
-    const packet = buildPacket();
-    if (!packet || !output || !copyButton || !emailLink) return;
-    output.textContent = packet;
-    output.classList.remove('hidden');
-    copyButton.classList.remove('hidden');
-    emailLink.classList.remove('hidden');
-    const org = value('supplier-org') || provider?.name || providerId;
-    emailLink.href = `mailto:${data.intakeEmail}?subject=${encodeURIComponent(`[OceanHub Supplier Response] ${requestId} — ${org}`)}&body=${encodeURIComponent(packet)}`;
-    if (status) status.textContent = 'Evidence packet built. It is ready to copy or return to OceanHub for review.';
-  });
+    submit.disabled = true;
+    submit.textContent = 'Submitting…';
+    success?.classList.add('hidden');
+    if (status) status.textContent = 'Persisting supplier evidence into the OceanHub review queue…';
 
-  copyButton?.addEventListener('click', async () => {
-    if (!output?.textContent) return;
-    await navigator.clipboard.writeText(output.textContent);
-    const original = copyButton.textContent || 'Copy response';
-    copyButton.textContent = 'Copied';
-    window.setTimeout(() => { copyButton.textContent = original; }, 1500);
+    try {
+      const response = await fetch(data.intakeUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submit_response',
+          requestId,
+          providerId,
+          organization,
+          contactEmail,
+          operatingRegion,
+          assertions: claimed,
+          notClaimedCapabilityIds
+        })
+      });
+      const result = await response.json() as SubmitResult;
+      if (!response.ok || !result.responseId) throw new Error(result.error || 'Could not persist supplier response.');
+      if (status) status.textContent = `Response ${result.responseId} persisted · review state: ${result.reviewState || 'evidence-submitted'}.`;
+      success?.classList.remove('hidden');
+    } catch (error) {
+      if (status) status.textContent = error instanceof Error ? error.message : 'Could not persist supplier response.';
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Submit evidence response';
+    }
   });
 </script>
