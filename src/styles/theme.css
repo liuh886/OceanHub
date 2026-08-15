@@ -1,0 +1,366 @@
+:root,
+html[data-theme='dark'] {
+  --theme-page: #040812;
+  --theme-surface: #060d1e;
+  --theme-surface-raised: #081226;
+  --theme-surface-soft: rgba(255, 255, 255, 0.04);
+  --theme-nav: rgba(4, 8, 18, 0.9);
+  --theme-footer: #03060e;
+  --theme-heading: #f8fafc;
+  --theme-text: #cbd5e1;
+  --theme-muted: #94a3b8;
+  --theme-subtle: #64748b;
+  --theme-border: rgba(255, 255, 255, 0.1);
+  --theme-border-soft: rgba(255, 255, 255, 0.06);
+  --theme-shadow: rgba(0, 0, 0, 0.45);
+  --theme-cyan: #67e8f9;
+  --theme-emerald: #6ee7b7;
+}
+
+html[data-theme='light'] {
+  --theme-page: #f5f8fc;
+  --theme-surface: #ffffff;
+  --theme-surface-raised: #f9fbfd;
+  --theme-surface-soft: rgba(15, 23, 42, 0.035);
+  --theme-nav: rgba(255, 255, 255, 0.9);
+  --theme-footer: #edf3f8;
+  --theme-heading: #0f172a;
+  --theme-text: #334155;
+  --theme-muted: #52657a;
+  --theme-subtle: #64748b;
+  --theme-border: #d8e2ec;
+  --theme-border-soft: #e7edf3;
+  --theme-shadow: rgba(15, 23, 42, 0.1);
+  --theme-cyan: #0e7490;
+  --theme-emerald: #047857;
+}
+
+html[data-theme] {
+  background: var(--theme-page);
+  color: var(--theme-text);
+}
+
+html[data-theme] body {
+  background: var(--theme-page) !important;
+  color: var(--theme-text) !important;
+}
+
+.site-nav {
+  border-color: var(--theme-border-soft);
+  background: var(--theme-nav);
+  color: var(--theme-text);
+}
+
+.mobile-drawer-surface {
+  border-color: var(--theme-border);
+  background: color-mix(in srgb, var(--theme-surface) 98%, transparent);
+}
+
+.site-footer {
+  border-color: var(--theme-border);
+  background: var(--theme-footer);
+}
+
+.nav-elevated {
+  box-shadow: 0 12px 30px var(--theme-shadow);
+}
+
+.oceanhub-logo {
+  filter: brightness(0) invert(1);
+}
+
+.theme-toggle {
+  flex-shrink: 0;
+}
+
+.theme-icon {
+  grid-area: 1 / 1;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+html[data-theme='dark'] .theme-icon-light {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+html[data-theme='dark'] .theme-icon-dark {
+  opacity: 0;
+  transform: rotate(-20deg) scale(0.75);
+}
+
+html[data-theme='light'] .theme-icon-light {
+  opacity: 0;
+  transform: rotate(20deg) scale(0.75);
+}
+
+html[data-theme='light'] .theme-icon-dark {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+html[data-theme='light'] .oceanhub-logo {
+  filter: none;
+}
+
+html[data-theme='light'] .theme-toggle,
+html[data-theme='light'] .mobile-menu-toggle {
+  border-color: #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #334155 !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+html[data-theme='light'] .theme-toggle:hover,
+html[data-theme='light'] .mobile-menu-toggle:hover {
+  border-color: #94a3b8 !important;
+  background: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Light theme translates the existing OceanHub utility vocabulary into one coherent palette. */
+html[data-theme='light'] .text-white {
+  color: #0f172a !important;
+}
+
+html[data-theme='light'] .text-slate-100 {
+  color: #1e293b !important;
+}
+
+html[data-theme='light'] .text-slate-200 {
+  color: #334155 !important;
+}
+
+html[data-theme='light'] .text-slate-300 {
+  color: #3f5268 !important;
+}
+
+html[data-theme='light'] .text-slate-400 {
+  color: #52657a !important;
+}
+
+html[data-theme='light'] .text-slate-500,
+html[data-theme='light'] .text-slate-600 {
+  color: #64748b !important;
+}
+
+html[data-theme='light'] .text-cyan-200,
+html[data-theme='light'] .text-cyan-300,
+html[data-theme='light'] .text-cyan-400 {
+  color: #0e7490 !important;
+}
+
+html[data-theme='light'] .text-emerald-200,
+html[data-theme='light'] .text-emerald-300,
+html[data-theme='light'] .text-emerald-400 {
+  color: #047857 !important;
+}
+
+html[data-theme='light'] .text-sky-300,
+html[data-theme='light'] .text-sky-400 {
+  color: #0369a1 !important;
+}
+
+html[data-theme='light'] .text-blue-200,
+html[data-theme='light'] .text-blue-300,
+html[data-theme='light'] .text-blue-400 {
+  color: #1d4ed8 !important;
+}
+
+html[data-theme='light'] .text-amber-200,
+html[data-theme='light'] .text-amber-300,
+html[data-theme='light'] .text-amber-400 {
+  color: #b45309 !important;
+}
+
+html[data-theme='light'] .text-rose-200,
+html[data-theme='light'] .text-rose-300,
+html[data-theme='light'] .text-rose-400 {
+  color: #be123c !important;
+}
+
+html[data-theme='light'] .hover\:text-white:hover {
+  color: #0f172a !important;
+}
+
+html[data-theme='light'] .hover\:text-cyan-200:hover,
+html[data-theme='light'] .hover\:text-cyan-300:hover {
+  color: #155e75 !important;
+}
+
+html[data-theme='light'] [class~='border-white/5'],
+html[data-theme='light'] [class~='border-white/10'],
+html[data-theme='light'] [class~='border-white/15'],
+html[data-theme='light'] [class~='border-white/20'] {
+  border-color: var(--theme-border) !important;
+}
+
+html[data-theme='light'] [class~='divide-white/10'] > :not(:last-child) {
+  border-color: var(--theme-border) !important;
+}
+
+html[data-theme='light'] [class~='bg-white/5'],
+html[data-theme='light'] [class~='bg-white/10'],
+html[data-theme='light'] [class~='bg-white/[0.02]'],
+html[data-theme='light'] [class~='bg-white/[0.025]'],
+html[data-theme='light'] [class~='bg-white/[0.04]'],
+html[data-theme='light'] [class~='bg-white/[0.08]'] {
+  background-color: var(--theme-surface-soft) !important;
+}
+
+html[data-theme='light'] [class~='bg-black/10'],
+html[data-theme='light'] [class~='bg-black/15'],
+html[data-theme='light'] [class~='bg-black/20'],
+html[data-theme='light'] [class~='bg-black/25'],
+html[data-theme='light'] [class~='bg-black/30'] {
+  background-color: rgba(15, 23, 42, 0.035) !important;
+}
+
+html[data-theme='light'] [class*='bg-slate-950/'],
+html[data-theme='light'] [class*='bg-slate-900/'] {
+  background-color: #ffffff !important;
+}
+
+html[data-theme='light'] [class*='bg-cyan-950/'] {
+  background-color: #ecfeff !important;
+}
+
+html[data-theme='light'] [class*='bg-emerald-950/'] {
+  background-color: #ecfdf5 !important;
+}
+
+html[data-theme='light'] [class*='bg-blue-950/'] {
+  background-color: #eff6ff !important;
+}
+
+html[data-theme='light'] [class*='bg-amber-950/'] {
+  background-color: #fffbeb !important;
+}
+
+html[data-theme='light'] [class*='bg-[#0'] {
+  background-color: var(--theme-surface) !important;
+  background-image: none !important;
+}
+
+html[data-theme='light'] .glass-panel,
+html[data-theme='light'] .glass-panel-dark,
+html[data-theme='light'] .glass-card,
+html[data-theme='light'] .glass-card-interactive {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbfe 100%) !important;
+  border-color: #d5e2ea !important;
+  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.08) !important;
+}
+
+html[data-theme='light'] .glass-card:hover,
+html[data-theme='light'] .glass-card-interactive:hover {
+  border-color: rgba(8, 145, 178, 0.38) !important;
+  box-shadow: 0 18px 42px rgba(8, 145, 178, 0.12) !important;
+}
+
+html[data-theme='light'] .hud-badge,
+html[data-theme='light'] .evidence-chip {
+  border-color: rgba(8, 145, 178, 0.24) !important;
+  background: #ecfeff !important;
+  color: #0e7490 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme='light'] .hud-badge-emerald {
+  border-color: rgba(5, 150, 105, 0.24) !important;
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme='light'] .hud-badge-amber {
+  border-color: rgba(217, 119, 6, 0.24) !important;
+  background: #fffbeb !important;
+  color: #b45309 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme='light'] .sensor-chip,
+html[data-theme='light'] .depth-badge {
+  border-color: #d8e2ec !important;
+  background: #f8fafc !important;
+}
+
+html[data-theme='light'] .offline-save-panel {
+  border-color: #ccecf3 !important;
+  background: #f0fbfd !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+html[data-theme='light'] .offline-save-button,
+html[data-theme='light'] .offline-briefcase-link {
+  background: #ffffff !important;
+  color: #0e7490 !important;
+}
+
+html[data-theme='light'] .cyber-grid {
+  background-image:
+    linear-gradient(to right, rgba(14, 116, 144, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 116, 144, 0.055) 1px, transparent 1px);
+}
+
+html[data-theme='light'] .cyber-dots {
+  background-image: radial-gradient(rgba(14, 116, 144, 0.12) 1.5px, transparent 0);
+}
+
+html[data-theme='light'] .ocean-isobaths {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(14, 116, 144, 0.07), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(14, 165, 233, 0.05), transparent 60%);
+}
+
+html[data-theme='light'] .glow-text-cyan,
+html[data-theme='light'] .glow-text-emerald {
+  text-shadow: none;
+}
+
+html[data-theme='light'] input:not([type='checkbox']):not([type='radio']),
+html[data-theme='light'] select,
+html[data-theme='light'] textarea {
+  border-color: #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+html[data-theme='light'] input::placeholder,
+html[data-theme='light'] textarea::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
+html[data-theme='light'] select option {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+html[data-theme='light'] #collaboration-modal {
+  background: rgba(15, 23, 42, 0.55) !important;
+}
+
+html[data-theme='light'] ::selection {
+  background: #cffafe;
+  color: #164e63;
+}
+
+html[data-theme='light'] ::-webkit-scrollbar-track {
+  background: #edf3f8;
+}
+
+html[data-theme='light'] ::-webkit-scrollbar-thumb {
+  background: #b8c7d6;
+  border-color: #edf3f8;
+}
+
+html[data-theme='light'] ::-webkit-scrollbar-thumb:hover {
+  background: #0e7490;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-icon {
+    transition: none;
+  }
+}

@@ -9,6 +9,7 @@
     "ci": "npm run check && npm run build",
     "test:briefcase": "node scripts/test-briefcase.mjs",
     "test:deployed": "node scripts/test-deployed-pwa.mjs",
+    "test:theme": "node scripts/test-theme.mjs",
     "test:scoper": "node scripts/test-decision-scoper.mjs",
     "test:jips": "node scripts/test-jip-capabilities.mjs",
     "test:references": "node scripts/test-engineering-references.mjs",
