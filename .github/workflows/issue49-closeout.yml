@@ -73,7 +73,7 @@ jobs:
               raise RuntimeError('inline theme define-vars anchor missing')
           text = text.replace(inline_tag, '<script is:inline>', 1)
           inline_start = '''      (() => {\n        let storedTheme = null;'''
-          inline_replacement = '''      (() => {\n        const root = document.documentElement;\n        const themeStorageKey = root.dataset.themeStorageKey;\n        const lightThemeColor = root.dataset.lightThemeColor;\n        const darkThemeColor = root.dataset.darkThemeColor;\n        if (!themeStorageKey || !lightThemeColor || !darkThemeColor) return;\n        let storedTheme = null;'''
+          inline_replacement = '''      (() => {\n        const root = document.documentElement;\n        const themeStorageKey = root.dataset.themeStorageKey || '';\n        const lightThemeColor = root.dataset.lightThemeColor || '';\n        const darkThemeColor = root.dataset.darkThemeColor || '';\n        if (!themeStorageKey || !lightThemeColor || !darkThemeColor) return;\n        let storedTheme = null;'''
           if inline_start not in text:
               raise RuntimeError('inline theme bootstrap anchor missing')
           text = text.replace(inline_start, inline_replacement, 1)
@@ -84,7 +84,7 @@ jobs:
               raise RuntimeError('processed theme define-vars anchor missing')
           text = text.replace(processed_tag, '<script>', 1)
           processed_start = '''    <script>\n      const themeMedia = window.matchMedia('(prefers-color-scheme: light)');'''
-          processed_replacement = '''    <script>\n      const root = document.documentElement;\n      const themeStorageKey = root.dataset.themeStorageKey;\n      const lightThemeColor = root.dataset.lightThemeColor;\n      const darkThemeColor = root.dataset.darkThemeColor;\n      if (!themeStorageKey || !lightThemeColor || !darkThemeColor) throw new Error('OceanHub theme configuration is missing.');\n      const themeMedia = window.matchMedia('(prefers-color-scheme: light)');'''
+          processed_replacement = '''    <script>\n      const root = document.documentElement;\n      const themeStorageKey = root.dataset.themeStorageKey || '';\n      const lightThemeColor = root.dataset.lightThemeColor || '';\n      const darkThemeColor = root.dataset.darkThemeColor || '';\n      if (!themeStorageKey || !lightThemeColor || !darkThemeColor) throw new Error('OceanHub theme configuration is missing.');\n      const themeMedia = window.matchMedia('(prefers-color-scheme: light)');'''
           if processed_start not in text:
               raise RuntimeError('processed theme script anchor missing')
           text = text.replace(processed_start, processed_replacement, 1)
