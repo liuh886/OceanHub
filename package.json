@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "astro dev",
     "check": "astro check",
+    "check:theme-mappings": "node scripts/check-theme-mappings.mjs",
     "build": "astro build",
-    "ci": "npm run check && npm run build",
+    "ci": "npm run check && npm run check:theme-mappings && npm run build",
     "test:briefcase": "node scripts/test-briefcase.mjs",
     "test:deployed": "node scripts/test-deployed-pwa.mjs",
     "test:theme": "node scripts/test-theme.mjs",
