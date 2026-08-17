@@ -55,6 +55,42 @@ jobs:
       - name: Apply product patch
         run: python3 scripts/issue49_patch.py
 
+      - name: Keep theme constants in one rendered DOM boundary
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/layouts/Layout.astro')
+          text = path.read_text(encoding='utf-8')
+          old_html = '<html lang="en" data-theme="dark">'
+          new_html = '<html lang="en" data-theme="dark" data-theme-storage-key={THEME_STORAGE_KEY} data-light-theme-color={LIGHT_THEME_COLOR} data-dark-theme-color={DARK_THEME_COLOR}>'
+          if old_html not in text:
+              raise RuntimeError('html theme boundary anchor missing')
+          text = text.replace(old_html, new_html, 1)
+
+          inline_tag = '<script is:inline define:vars={{ themeStorageKey: THEME_STORAGE_KEY, lightThemeColor: LIGHT_THEME_COLOR, darkThemeColor: DARK_THEME_COLOR }}>'
+          if inline_tag not in text:
+              raise RuntimeError('inline theme define-vars anchor missing')
+          text = text.replace(inline_tag, '<script is:inline>', 1)
+          inline_start = '''      (() => {\n        let storedTheme = null;'''
+          inline_replacement = '''      (() => {\n        const root = document.documentElement;\n        const themeStorageKey = root.dataset.themeStorageKey;\n        const lightThemeColor = root.dataset.lightThemeColor;\n        const darkThemeColor = root.dataset.darkThemeColor;\n        if (!themeStorageKey || !lightThemeColor || !darkThemeColor) return;\n        let storedTheme = null;'''
+          if inline_start not in text:
+              raise RuntimeError('inline theme bootstrap anchor missing')
+          text = text.replace(inline_start, inline_replacement, 1)
+          text = text.replace('''        const root = document.documentElement;\n        root.dataset.theme = theme;''', '''        root.dataset.theme = theme;''', 1)
+
+          processed_tag = '<script define:vars={{ themeStorageKey: THEME_STORAGE_KEY, lightThemeColor: LIGHT_THEME_COLOR, darkThemeColor: DARK_THEME_COLOR }}>'
+          if processed_tag not in text:
+              raise RuntimeError('processed theme define-vars anchor missing')
+          text = text.replace(processed_tag, '<script>', 1)
+          processed_start = '''    <script>\n      const themeMedia = window.matchMedia('(prefers-color-scheme: light)');'''
+          processed_replacement = '''    <script>\n      const root = document.documentElement;\n      const themeStorageKey = root.dataset.themeStorageKey;\n      const lightThemeColor = root.dataset.lightThemeColor;\n      const darkThemeColor = root.dataset.darkThemeColor;\n      if (!themeStorageKey || !lightThemeColor || !darkThemeColor) throw new Error('OceanHub theme configuration is missing.');\n      const themeMedia = window.matchMedia('(prefers-color-scheme: light)');'''
+          if processed_start not in text:
+              raise RuntimeError('processed theme script anchor missing')
+          text = text.replace(processed_start, processed_replacement, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
