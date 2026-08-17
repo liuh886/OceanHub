@@ -6,6 +6,8 @@ const intakeEmail = 'liuzhihao109@foxmail.com';
   const modal = document.getElementById('collaboration-modal');
   const copyButton = document.getElementById('collaboration-copy');
   const partnerPanel = document.getElementById('partner-intake');
+  const actionStatus = document.getElementById('collaboration-action-status');
+  const MAX_MAILTO_LENGTH = 1800;
 
   if (modal && copyButton && partnerPanel) {
     copyButton.textContent = 'Copy draft';
@@ -17,6 +19,13 @@ const intakeEmail = 'liuzhihao109@foxmail.com';
     emailLink.className = 'shrink-0 rounded-xl bg-cyan-400 px-5 py-3 text-xs font-black text-slate-950 hover:bg-cyan-300';
     emailLink.dataset.recipient = intakeEmail;
     copyButton.insertAdjacentElement('afterend', emailLink);
+
+    const downloadButton = document.createElement('button');
+    downloadButton.type = 'button';
+    downloadButton.id = 'collaboration-download-draft';
+    downloadButton.className = 'shrink-0 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-xs font-black text-white hover:bg-white/10';
+    downloadButton.textContent = 'Download draft';
+    emailLink.insertAdjacentElement('afterend', downloadButton);
 
     const value = (id) => {
       const field = document.getElementById(id);
@@ -93,9 +102,31 @@ const intakeEmail = 'liuzhihao109@foxmail.com';
       const subject = partner
         ? `OceanHub Partner Capability Evidence${org ? ` — ${org}` : ''}`
         : `OceanHub Project Inquiry${org ? ` — ${org}` : ''}`;
-      emailLink.textContent = partner ? 'Email evidence packet' : 'Email project inquiry';
-      emailLink.href = `mailto:${intakeEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(buildDraft())}`;
+      const draft = buildDraft();
+      const fullMailto = `mailto:${intakeEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(draft)}`;
+      const tooLong = fullMailto.length > MAX_MAILTO_LENGTH;
+      emailLink.textContent = tooLong ? 'Email (attach draft)' : (partner ? 'Email evidence packet' : 'Email project inquiry');
+      emailLink.href = tooLong
+        ? `mailto:${intakeEmail}?subject=${encodeURIComponent(subject)}`
+        : fullMailto;
+      if (actionStatus) {
+        actionStatus.textContent = tooLong
+          ? 'This draft is too long for a reliable mail link. Download it, then attach or paste the complete draft before sending.'
+          : '';
+      }
     };
+
+    downloadButton.addEventListener('click', () => {
+      const blob = new Blob([buildDraft()], { type: 'text/plain;charset=utf-8' });
+      const href = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = href;
+      anchor.download = isPartnerIntent() ? 'oceanhub-partner-evidence.txt' : 'oceanhub-project-inquiry.txt';
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(href);
+    });
 
     modal.addEventListener('input', updateEmailLink);
     modal.addEventListener('change', () => window.setTimeout(updateEmailLink, 0));

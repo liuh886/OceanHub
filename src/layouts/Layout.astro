@@ -6,6 +6,7 @@ import PWAController from '../components/PWAController.astro';
 import CollaborationModal from '../components/CollaborationModal.astro';
 import CollaborationEmailAction from '../components/CollaborationEmailAction.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import { DARK_THEME_COLOR, LIGHT_THEME_COLOR, THEME_STORAGE_KEY } from '../lib/theme';
 
 interface Props {
   title: string;
@@ -23,7 +24,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" data-theme-storage-key={THEME_STORAGE_KEY} data-light-theme-color={LIGHT_THEME_COLOR} data-dark-theme-color={DARK_THEME_COLOR}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -38,20 +39,23 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="theme-color" content="#040812" />
     <script is:inline>
       (() => {
-        const storageKey = 'oceanhub-theme';
+        const root = document.documentElement;
+        const themeStorageKey = root.dataset.themeStorageKey || '';
+        const lightThemeColor = root.dataset.lightThemeColor || '';
+        const darkThemeColor = root.dataset.darkThemeColor || '';
+        if (!themeStorageKey || !lightThemeColor || !darkThemeColor) return;
         let storedTheme = null;
         try {
-          storedTheme = localStorage.getItem(storageKey);
+          storedTheme = localStorage.getItem(themeStorageKey);
         } catch {}
         const theme = storedTheme === 'light' || storedTheme === 'dark'
           ? storedTheme
           : window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-        const root = document.documentElement;
         root.dataset.theme = theme;
         root.classList.toggle('dark', theme === 'dark');
         root.style.colorScheme = theme;
         const themeColor = document.querySelector('meta[name="theme-color"]');
-        themeColor?.setAttribute('content', theme === 'light' ? '#F5F8FC' : '#040812');
+        themeColor?.setAttribute('content', theme === 'light' ? lightThemeColor : darkThemeColor);
       })();
     </script>
     <meta name="mobile-web-app-capable" content="yes" />
@@ -72,7 +76,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" /></noscript>
   </head>
   <body class="min-h-screen selection:bg-cyan-500/20 selection:text-cyan-200">
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -172,7 +178,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     </footer>
 
     <script>
-      const themeStorageKey = 'oceanhub-theme';
+      const root = document.documentElement;
+      const themeStorageKey = root.dataset.themeStorageKey || '';
+      const lightThemeColor = root.dataset.lightThemeColor || '';
+      const darkThemeColor = root.dataset.darkThemeColor || '';
+      if (!themeStorageKey || !lightThemeColor || !darkThemeColor) throw new Error('OceanHub theme configuration is missing.');
       const themeMedia = window.matchMedia('(prefers-color-scheme: light)');
       const themeToggles = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
 
@@ -201,7 +211,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         root.dataset.theme = theme;
         root.classList.toggle('dark', theme === 'dark');
         root.style.colorScheme = theme;
-        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#F5F8FC' : '#040812');
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? lightThemeColor : darkThemeColor);
         if (persist) {
           try {
             localStorage.setItem(themeStorageKey, theme);

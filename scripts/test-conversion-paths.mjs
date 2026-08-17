@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { readFile } from 'node:fs/promises';
 
 function normalizeBaseUrl(value) {
   const url = new URL(value);
@@ -29,6 +30,22 @@ function decodeMailto(href) {
   };
 }
 
+async function assertCompleteDraftContext(page, mailto, needles, label) {
+  if (mailto.body) {
+    for (const needle of needles) assert(mailto.body.includes(needle), `${label} mailto body lost canonical context: ${needle}`);
+    return;
+  }
+
+  await page.getByText('This draft is too long for a reliable mail link. Download it, then attach or paste the complete draft before sending.').waitFor();
+  const downloadPromise = page.waitForEvent('download');
+  await page.locator('#collaboration-download-draft').click();
+  const download = await downloadPromise;
+  const downloadPath = await download.path();
+  assert(downloadPath, `${label} fallback draft was not downloaded.`);
+  const draft = await readFile(downloadPath, 'utf8');
+  for (const needle of needles) assert(draft.includes(needle), `${label} downloaded draft lost canonical context: ${needle}`);
+}
+
 const browser = await chromium.launch();
 const page = await browser.newPage();
 
@@ -38,8 +55,12 @@ try {
   const partnersHref = await page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Partners' }).getAttribute('href');
   assert(partnersHref?.endsWith('/partners/'), 'Primary Partners navigation does not route to the capability evidence surface.');
 
-  await page.getByRole('button', { name: 'Join as a Partner' }).click();
+  const partnerTrigger = page.getByRole('button', { name: 'Join as a Partner' });
+  await partnerTrigger.focus();
+  await partnerTrigger.click();
   await page.getByRole('heading', { name: 'Present capability evidence' }).waitFor();
+  assert(await page.evaluate(() => getComputedStyle(document.body).overflow) === 'hidden', 'Open collaboration modal does not own background scrolling.');
+  assert(await page.locator('main').getAttribute('inert') === '', 'Open collaboration modal does not inert the page background.');
   assert(await page.locator('#partner-intake').isVisible(), 'Partner intake did not open from the homepage.');
   assert(!(await page.locator('#project-intake').isVisible()), 'Project intake remained visible in partner mode.');
   await page.locator('#collaboration-org').fill('Example Capability Partner');
@@ -58,6 +79,8 @@ try {
   assert(partnerMailto.body.includes('Evidence type: Reference project / client case'), 'Partner evidence packet did not include typed capability evidence.');
   assert(partnerMailto.body.includes('North Sea route survey'), 'Partner evidence packet did not include capability-specific evidence detail.');
   await page.getByRole('button', { name: 'Close collaboration form' }).click();
+  assert(await partnerTrigger.evaluate((element) => element === document.activeElement), 'Closing collaboration modal did not restore trigger focus.');
+  assert(await page.evaluate(() => getComputedStyle(document.body).overflow) !== 'hidden', 'Closing collaboration modal did not release background scrolling.');
 
   await page.goto(route('scope/'), { waitUntil: 'networkidle' });
   await page.getByRole('button', { name: 'Discuss capability needs' }).click();
@@ -70,6 +93,23 @@ try {
   assert(projectMailto.address === intakeEmail, 'Project inquiry email draft is not routed to the confirmed intake address.');
   assert(projectMailto.subject.includes('Project Inquiry'), 'Project inquiry email subject does not preserve project intent.');
   assert(projectMailto.body.includes('Define a defensible pre-FEED monitoring evidence plan.'), 'Project inquiry email body did not include the project decision.');
+
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: () => Promise.reject(new Error('blocked')) } });
+    document.execCommand = () => false;
+  });
+  await page.locator('#collaboration-copy').click();
+  await page.getByText('Automatic copy failed. Download the draft instead, then attach or paste it into your message.').waitFor();
+
+  await page.locator('#project-context').fill('x'.repeat(2600));
+  const guardedMailto = decodeMailto(await page.locator('#collaboration-email-draft').getAttribute('href'));
+  assert(guardedMailto.body === '', 'Long inquiry still relies on a potentially truncated mailto body.');
+  await page.getByText('This draft is too long for a reliable mail link. Download it, then attach or paste the complete draft before sending.').waitFor();
+  const downloadPromise = page.waitForEvent('download');
+  await page.locator('#collaboration-download-draft').click();
+  const download = await downloadPromise;
+  assert(download.suggestedFilename() === 'oceanhub-project-inquiry.txt', 'Draft download uses an unexpected filename.');
+
   await page.getByRole('button', { name: 'Close collaboration form' }).click();
 
   await page.goto(route('jips/#ccus-4d-mrv'), { waitUntil: 'networkidle' });
@@ -82,8 +122,10 @@ try {
   await page.waitForTimeout(25);
   const jipMailto = decodeMailto(await page.locator('#collaboration-email-draft').getAttribute('href'));
   assert(jipMailto.address === intakeEmail, 'JIP interest email draft is not routed to the confirmed intake address.');
-  assert(jipMailto.body.includes('ccus-4d-mrv'), 'JIP-specific email draft did not carry the preselected JIP context.');
-  assert(jipMailto.body.includes('distributed-fiber-sensing — Distributed fiber-optic sensing'), 'JIP-specific email draft did not carry canonical capability context.');
+  await assertCompleteDraftContext(page, jipMailto, [
+    'ccus-4d-mrv',
+    'distributed-fiber-sensing — Distributed fiber-optic sensing'
+  ], 'JIP-specific evidence packet');
   await page.getByRole('button', { name: 'Close collaboration form' }).click();
 
   await page.goto(route('capabilities/#underwater-acoustics'), { waitUntil: 'networkidle' });
@@ -95,7 +137,7 @@ try {
   assert(await page.locator('[data-capability-assertion="underwater-acoustics"]').isVisible(), 'Capability-specific CTA did not create a matching evidence assertion.');
   await page.waitForTimeout(25);
   const capabilityMailto = decodeMailto(await page.locator('#collaboration-email-draft').getAttribute('href'));
-  assert(capabilityMailto.body.includes('underwater-acoustics — Underwater acoustics'), 'Capability-specific email draft did not carry canonical capability context.');
+  await assertCompleteDraftContext(page, capabilityMailto, ['underwater-acoustics — Underwater acoustics'], 'Capability-specific evidence packet');
   await page.getByRole('button', { name: 'Close collaboration form' }).click();
 
   await page.goto(route('partners/'), { waitUntil: 'networkidle' });

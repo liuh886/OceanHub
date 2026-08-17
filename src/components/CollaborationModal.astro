@@ -31,6 +31,7 @@ const evidenceTypeOptions = Object.entries(partnerEvidenceTypeLabels).map(([valu
   role="dialog"
   aria-modal="true"
   aria-labelledby="collaboration-modal-title"
+  aria-describedby="collaboration-modal-description"
 >
   <div class="my-auto w-full max-w-3xl overflow-hidden rounded-3xl border border-white/10 bg-[#060D1F] shadow-[0_24px_70px_rgba(0,0,0,0.55)]">
     <header class="flex items-start justify-between gap-5 border-b border-white/10 p-6 sm:p-8">
@@ -183,7 +184,10 @@ const evidenceTypeOptions = Object.entries(partnerEvidenceTypeLabels).map(([valu
     </div>
 
     <footer class="flex flex-col gap-4 border-t border-white/10 bg-black/20 p-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-      <p id="collaboration-footnote" class="max-w-xl text-[11px] leading-relaxed text-slate-500">Non-binding project inquiry. No commercial engagement is created by preparing this draft.</p>
+      <div class="max-w-xl">
+        <p id="collaboration-footnote" class="text-[11px] leading-relaxed text-slate-500">Non-binding project inquiry. No commercial engagement is created by preparing this draft.</p>
+        <p id="collaboration-action-status" class="mt-1 text-[11px] leading-relaxed text-amber-300" role="status" aria-live="polite"></p>
+      </div>
       <button id="collaboration-copy" type="button" class="shrink-0 rounded-xl bg-cyan-400 px-5 py-3 text-xs font-black text-slate-950 hover:bg-cyan-300">Copy project inquiry</button>
     </footer>
   </div>
@@ -204,6 +208,7 @@ const evidenceTypeOptions = Object.entries(partnerEvidenceTypeLabels).map(([valu
   const intentButtons = document.querySelectorAll<HTMLElement>('[data-intent-switch]');
   const copyButton = document.getElementById('collaboration-copy') as HTMLButtonElement | null;
   const footnote = document.getElementById('collaboration-footnote');
+  const actionStatus = document.getElementById('collaboration-action-status');
   const orgInput = document.getElementById('collaboration-org') as HTMLInputElement | null;
   const emailInput = document.getElementById('collaboration-email') as HTMLInputElement | null;
   const capabilityCount = document.getElementById('partner-capability-count');
@@ -212,6 +217,17 @@ const evidenceTypeOptions = Object.entries(partnerEvidenceTypeLabels).map(([valu
   const assertionEvidence = new Map<string, { type: string; detail: string }>();
 
   let intent: 'project' | 'partner' = 'project';
+  let lastTrigger: HTMLElement | null = null;
+
+  const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+  function setBackgroundInert(inert: boolean) {
+    document.querySelectorAll<HTMLElement>('body > nav, body > main, body > footer, body > .skip-link').forEach((element) => {
+      if (inert) element.setAttribute('inert', '');
+      else element.removeAttribute('inert');
+    });
+    document.body.classList.toggle('collaboration-modal-open', inert);
+  }
 
   function inputValue(id: string) {
     const element = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
@@ -394,18 +410,43 @@ const evidenceTypeOptions = Object.entries(partnerEvidenceTypeLabels).map(([valu
     ].join('\n');
   }
 
+  function legacyCopy(text: string) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    const copied = document.execCommand('copy');
+    textarea.remove();
+    return copied;
+  }
+
   async function copyDraft() {
     const draft = intent === 'project' ? projectDraft() : partnerDraft();
-    await navigator.clipboard.writeText(draft);
+    let copied = false;
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard API unavailable');
+      await navigator.clipboard.writeText(draft);
+      copied = true;
+    } catch {
+      try { copied = legacyCopy(draft); } catch { copied = false; }
+    }
     if (!copyButton) return;
     const original = copyButton.textContent || '';
-    copyButton.textContent = 'Copied';
-    window.setTimeout(() => {
-      copyButton.textContent = original;
-    }, 1800);
+    if (copied) {
+      copyButton.textContent = 'Copied';
+      if (actionStatus) actionStatus.textContent = '';
+    } else {
+      copyButton.textContent = 'Copy failed';
+      if (actionStatus) actionStatus.textContent = 'Automatic copy failed. Download the draft instead, then attach or paste it into your message.';
+    }
+    window.setTimeout(() => { copyButton.textContent = original; }, 1800);
   }
 
   function openModal(nextIntent: 'project' | 'partner', jipId?: string, capabilityId?: string) {
+    lastTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setIntent(nextIntent);
     if (nextIntent === 'partner') {
       resetPartnerContext();
@@ -414,12 +455,17 @@ const evidenceTypeOptions = Object.entries(partnerEvidenceTypeLabels).map(([valu
     }
     modal?.classList.remove('hidden');
     modal?.classList.add('flex');
+    setBackgroundInert(true);
+    if (actionStatus) actionStatus.textContent = '';
     orgInput?.focus();
   }
 
   function closeModal() {
     modal?.classList.add('hidden');
     modal?.classList.remove('flex');
+    setBackgroundInert(false);
+    lastTrigger?.focus();
+    lastTrigger = null;
   }
 
   intentButtons.forEach((button) => {
@@ -447,7 +493,24 @@ const evidenceTypeOptions = Object.entries(partnerEvidenceTypeLabels).map(([valu
     if (event.target === modal) closeModal();
   });
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !modal?.classList.contains('hidden')) closeModal();
+    if (modal?.classList.contains('hidden')) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeModal();
+      return;
+    }
+    if (event.key !== 'Tab' || !modal) return;
+    const focusable = Array.from(modal.querySelectorAll<HTMLElement>(focusableSelector)).filter((element) => !element.hidden && element.getClientRects().length > 0);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   });
 
   setIntent('project');
