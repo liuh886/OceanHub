@@ -19,6 +19,39 @@ jobs:
           ref: fix/frontend-reliability-49
           fetch-depth: 0
 
+      - name: Repair temporary exact-theme transformer
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/issue49_patch.py')
+          text = path.read_text(encoding='utf-8')
+          start = text.index('families = [')
+          end = text.index("\nold = \"html[data-theme='light'] [class*='bg-[#0']", start)
+          replacement = '''families = [
+              (("bg-slate-950/", "bg-slate-900/"), '#ffffff'),
+              (("bg-cyan-950/",), '#ecfeff'),
+              (("bg-emerald-950/",), '#ecfdf5'),
+              (("bg-blue-950/",), '#eff6ff'),
+              (("bg-amber-950/",), '#fffbeb'),
+          ]
+          for prefixes, color in families:
+              if len(prefixes) == 2:
+                  old = "html[data-theme='light'] [class*='bg-slate-950/'],\\nhtml[data-theme='light'] [class*='bg-slate-900/'] {\\n  background-color: #ffffff !important;\\n}"
+              else:
+                  old = f"html[data-theme='light'] [class*='{prefixes[0]}'] {{\\n  background-color: {color} !important;\\n}}"
+              if old not in theme:
+                  raise RuntimeError(f'missing theme block for {prefixes}')
+              selectors = tokens_for(*prefixes)
+              if not selectors:
+                  raise RuntimeError(f'no current source utility tokens found for {prefixes}')
+              replacement = ',\\n'.join(f"html[data-theme='light'] [class~='{token}']" for token in selectors) + f" {{\\n  background-color: {color} !important;\\n}}"
+              theme = theme.replace(old, replacement, 1)
+          '''
+          path.write_text(text[:start] + replacement + text[end:], encoding='utf-8')
+          PY
+
       - name: Apply product patch
         run: python3 scripts/issue49_patch.py
 
