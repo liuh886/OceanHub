@@ -1,0 +1,58 @@
+name: Issue 49 closeout
+
+on:
+  push:
+    branches:
+      - fix/frontend-reliability-49
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: fix/frontend-reliability-49
+          fetch-depth: 0
+
+      - name: Apply product patch
+        run: python3 scripts/issue49_patch.py
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Validate product and browser contracts
+        run: |
+          npm run ci
+          npx playwright install --with-deps chromium
+          npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/oceanhub-preview.log 2>&1 &
+          PREVIEW_PID=$!
+          trap 'kill $PREVIEW_PID 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:4321/OceanHub/ > /dev/null && break
+            if [ "$attempt" -eq 30 ]; then cat /tmp/oceanhub-preview.log; exit 1; fi
+            sleep 1
+          done
+          export OCEANHUB_TEST_BASE_URL=http://127.0.0.1:4321/OceanHub/
+          npm run test:theme
+          npm run test:conversion
+          npm run test:scoper
+
+      - name: Commit product changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A ':!.github/workflows/issue49-closeout.yml' ':!scripts/issue49_patch.py'
+          git diff --cached --quiet && exit 0
+          git commit -m "fix(frontend): harden collaboration and theme boundaries"
+          git push origin HEAD:fix/frontend-reliability-49
