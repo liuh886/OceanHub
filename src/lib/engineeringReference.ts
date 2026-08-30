@@ -13,4 +13,8 @@ export interface EngineeringReference {
   decisionTopics: string[];
   scopeSummary: string;
   applicabilityNotes?: string[];
+  keyClauses?: string[];
+  complianceChecklist?: string[];
+  relevanceLevel?: 'primary' | 'supporting';
 }
+

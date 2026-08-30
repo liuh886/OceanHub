@@ -6,21 +6,50 @@ export const engineeringReferences: EngineeringReference[] = [
     edition: 'Edition 2, 2026-03', publishedYear: 2026, status: 'current', officialUrl: 'https://www.iso.org/standard/84578.html',
     domains: ['ccs-storage'], lifecycleStages: ['screening','feasibility','pre-feed','feed','operations','monitoring','closure'],
     decisionTopics: ['storage-site screening','characterization','development','operations','termination preparation','stored CO2 quantification'],
-    scopeSummary: 'Lifecycle requirements for geological CO2 storage, including site-specific risk and uncertainty management.'
+    scopeSummary: 'Lifecycle requirements for geological CO2 storage, including site-specific risk and uncertainty management.',
+    keyClauses: [
+      'Clause 5: Storage site selection and characterization requirements',
+      'Clause 6: Risk management and plume migration containment assessment',
+      'Clause 8: Design and verification of measurement, monitoring and verification (MMV) systems'
+    ],
+    complianceChecklist: [
+      'Geomechanical integrity assessment conforming to Clause 5.4',
+      'Plume migration and spill-point containment models compliant with Clause 6.2',
+      'Monitoring baseline datasets and trigger thresholds conforming to Clause 8.3'
+    ],
+    relevanceLevel: 'primary'
   },
   {
     id: 'iso-27913-2024', code: 'ISO 27913:2024', title: 'Carbon dioxide capture, transportation and geological storage — Pipeline transportation systems', issuer: 'ISO', kind: 'standard',
     edition: 'Edition 2, 2024-10; corrected 2025-09', publishedYear: 2024, status: 'current', officialUrl: 'https://www.iso.org/standard/84840.html',
     domains: ['co2-transport','subsea-pipelines'], lifecycleStages: ['feasibility','pre-feed','feed','construction','operations'],
     decisionTopics: ['CO2 pipeline design','existing-pipeline conversion','stream quality','transport monitoring'],
-    scopeSummary: 'Requirements and recommendations for onshore and offshore CO2 pipeline transport systems.'
+    scopeSummary: 'Requirements and recommendations for onshore and offshore CO2 pipeline transport systems.',
+    keyClauses: [
+      'Clause 6: Dense-phase CO2 pipeline material selection and fracture control',
+      'Clause 9: Subsea tie-in and conversion integrity assessment'
+    ],
+    complianceChecklist: [
+      'Dense-phase running fracture arrest verification',
+      'Impurity stream tolerance limits specification'
+    ],
+    relevanceLevel: 'primary'
   },
   {
     id: 'dnv-rp-j203', code: 'DNV-RP-J203', title: 'Geological storage of carbon dioxide', issuer: 'DNV', kind: 'recommended-practice',
     edition: '2019-09; amended 2021-09', publishedYear: 2019, status: 'current', officialUrl: 'https://www.dnv.com/energy/standards-guidelines/dnv-rp-j203-geological-storage-of-carbon-dioxide/',
     domains: ['ccs-storage'], lifecycleStages: ['screening','feasibility','pre-feed','feed','operations','monitoring','closure'],
     decisionTopics: ['site qualification','risk management','monitoring','well management','closure'],
-    scopeSummary: 'Procedures and performance requirements for qualifying and managing geological CO2 storage sites.'
+    scopeSummary: 'Procedures and performance requirements for qualifying and managing geological CO2 storage sites.',
+    keyClauses: [
+      'Section 3: Storage site qualification process and evidence matrices',
+      'Section 5: Monitoring plan and leakage risk mitigation'
+    ],
+    complianceChecklist: [
+      'Site qualification dossier aligned with DNV evidence criteria',
+      'Quantitative containment risk assessment'
+    ],
+    relevanceLevel: 'primary'
   },
   {
     id: 'dnv-se-0617', code: 'DNV-SE-0617', title: 'Qualification management for geological storage of CO2', issuer: 'DNV', kind: 'service-specification',

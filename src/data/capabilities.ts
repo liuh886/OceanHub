@@ -1,10 +1,75 @@
 import type { Capability } from '../lib/capability';
 
 export const capabilities: Capability[] = [
-  { id: 'marine-seismic-acquisition', label: 'Marine seismic acquisition', family: 'ccs-subsurface', summary: 'Acquire repeatable marine seismic data for subsurface imaging and storage monitoring.', disciplines: ['geophysics'], lifecycleStages: ['feasibility','pre-feed','feed','operations','monitoring'], projectArchetypes: ['offshore-ccs','offshore-field-development'], methodExamples: ['3D seismic acquisition','repeat seismic survey'], providerTypes: ['Marine geophysical contractor','Seismic acquisition specialist'] },
-  { id: 'time-lapse-seismic', label: 'Time-lapse / 4D seismic', family: 'ccs-subsurface', summary: 'Design, process and interpret repeat seismic data to detect subsurface change through time.', disciplines: ['geophysics','monitoring'], lifecycleStages: ['operations','monitoring'], projectArchetypes: ['offshore-ccs'], methodExamples: ['4D repeatability design','time-lapse processing','difference-volume interpretation'], providerTypes: ['4D seismic specialist','Subsurface interpretation team'] },
-  { id: 'reservoir-characterization', label: 'Reservoir and storage characterization', family: 'ccs-subsurface', summary: 'Integrate geological, geophysical and well evidence into reservoir, seal and storage models.', disciplines: ['geology','geophysics','wells'], lifecycleStages: ['screening','feasibility','pre-feed','feed','operations','monitoring'], projectArchetypes: ['offshore-ccs','offshore-field-development'], methodExamples: ['well-to-seismic integration','storage modelling','reservoir interpretation'], providerTypes: ['Subsurface consultancy','Reservoir engineering team'] },
-  { id: 'petrophysics-well-testing', label: 'Petrophysics and well testing', family: 'ccs-subsurface', summary: 'Characterize reservoir and seal properties from logs, cores, samples and well tests.', disciplines: ['wells','geology'], lifecycleStages: ['feasibility','pre-feed','feed','operations'], projectArchetypes: ['offshore-ccs','offshore-field-development'], methodExamples: ['well logging','core analysis','injectivity testing'], providerTypes: ['Petrophysics provider','Well-test contractor','Core laboratory'] },
+  {
+    id: 'marine-seismic-acquisition', label: 'Marine seismic acquisition', family: 'ccs-subsurface',
+    summary: 'Acquire repeatable marine seismic data for subsurface imaging and storage monitoring.',
+    disciplines: ['geophysics'], lifecycleStages: ['feasibility','pre-feed','feed','operations','monitoring'],
+    projectArchetypes: ['offshore-ccs','offshore-field-development'],
+    methodExamples: ['3D seismic acquisition','repeat seismic survey'],
+    providerTypes: ['Marine geophysical contractor','Seismic acquisition specialist'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater', 'ultra-deepwater'],
+      coreAssets: ['DP2 Seismic Vessel', 'Ocean Bottom Nodes (OBN)', 'Multi-streamer Spread'],
+      deliveryRegions: ['North Sea', 'Gulf of Mexico', 'APAC', 'Middle East']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Completed 3D/4D marine baseline or repeat seismic acquisition in relevant sea states and water depths.',
+      assetRequirement: 'Vessel specifications, source array tuning and node positioning precision records.',
+      deliverableExample: 'Processed SEG-Y volumes, P1/90 navigation data and acquisition QA/QC report.'
+    }
+  },
+  {
+    id: 'time-lapse-seismic', label: 'Time-lapse / 4D seismic', family: 'ccs-subsurface',
+    summary: 'Design, process and interpret repeat seismic data to detect subsurface change through time.',
+    disciplines: ['geophysics','monitoring'], lifecycleStages: ['operations','monitoring'],
+    projectArchetypes: ['offshore-ccs'],
+    methodExamples: ['4D repeatability design','time-lapse processing','difference-volume interpretation'],
+    providerTypes: ['4D seismic specialist','Subsurface interpretation team'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater'],
+      coreAssets: ['High-performance seismic processing cluster', '4D binning & regularization software'],
+      deliveryRegions: ['Global']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Delivered 4D time-lapse processing or interpretation detecting fluid saturation / pressure changes.',
+      assetRequirement: 'Proprietary 4D inversion and normalization toolchains.',
+      deliverableExample: '4D difference volumes, NRMS repeatability maps and plume migration interpretation report.'
+    }
+  },
+  {
+    id: 'reservoir-characterization', label: 'Reservoir and storage characterization', family: 'ccs-subsurface',
+    summary: 'Integrate geological, geophysical and well evidence into reservoir, seal and storage models.',
+    disciplines: ['geology','geophysics','wells'], lifecycleStages: ['screening','feasibility','pre-feed','feed','operations','monitoring'],
+    projectArchetypes: ['offshore-ccs','offshore-field-development'],
+    methodExamples: ['well-to-seismic integration','storage modelling','reservoir interpretation'],
+    providerTypes: ['Subsurface consultancy','Reservoir engineering team'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater', 'ultra-deepwater'],
+      deliveryRegions: ['Global']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Delivered static and dynamic reservoir/storage simulation models for offshore carbon storage or oil & gas.',
+      deliverableExample: 'Static 3D geological model, dynamic capacity estimate and containment risk dossier.'
+    }
+  },
+  {
+    id: 'petrophysics-well-testing', label: 'Petrophysics and well testing', family: 'ccs-subsurface',
+    summary: 'Characterize reservoir and seal properties from logs, cores, samples and well tests.',
+    disciplines: ['wells','geology'], lifecycleStages: ['feasibility','pre-feed','feed','operations'],
+    projectArchetypes: ['offshore-ccs','offshore-field-development'],
+    methodExamples: ['well logging','core analysis','injectivity testing'],
+    providerTypes: ['Petrophysics provider','Well-test contractor','Core laboratory'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater'],
+      coreAssets: ['Downhole wireline logging tools', 'Core flooding laboratory', 'Special core analysis (SCAL) apparatus'],
+      deliveryRegions: ['Global']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Executed offshore well log interpretation, core flood test under in-situ P/T conditions.',
+      deliverableExample: 'Integrated petrophysical evaluation report, relative permeability curves and caprock seal capacity test data.'
+    }
+  },
   { id: 'ccs-well-engineering', label: 'CO2 injection well engineering', family: 'ccs-subsurface', summary: 'Design, convert, complete, test and assure wells for CO2 injection service.', disciplines: ['wells'], lifecycleStages: ['pre-feed','feed','construction','operations','monitoring'], projectArchetypes: ['offshore-ccs'], methodExamples: ['injection-well completion','well conversion','well-integrity verification'], providerTypes: ['Well engineering contractor','Drilling and completion specialist'] },
   { id: 'passive-seismic-monitoring', label: 'Passive seismic and microseismic monitoring', family: 'ccs-subsurface', summary: 'Continuously detect and interpret seismic activity relevant to storage or integrity decisions.', disciplines: ['monitoring','geophysics'], lifecycleStages: ['operations','monitoring'], projectArchetypes: ['offshore-ccs'], methodExamples: ['passive seismic monitoring','event detection','microseismic interpretation'], providerTypes: ['Seismology provider','Monitoring technology company'] },
   { id: 'reservoir-geomechanics', label: 'Reservoir geomechanics', family: 'ccs-subsurface', summary: 'Assess pressure, stress and deformation effects around injection and storage systems.', disciplines: ['geomechanics','geology'], lifecycleStages: ['feasibility','pre-feed','feed','operations','monitoring'], projectArchetypes: ['offshore-ccs'], methodExamples: ['geomechanical modelling','pressure-response analysis'], providerTypes: ['Geomechanics consultancy','Subsurface modelling team'] },

@@ -6,6 +6,18 @@ export interface ProviderSource {
   url: string;
 }
 
+export interface ProviderCredentials {
+  classificationSocieties?: string[];
+  hseCertifications?: string[];
+  coreFleetOrLabs?: string[];
+}
+
+export interface ProviderEvidenceTriad {
+  referenceProjectsCount?: number;
+  featuredAssets?: string[];
+  sampleDeliverables?: string[];
+}
+
 export interface MarketProvider {
   id: string;
   name: string;
@@ -15,6 +27,8 @@ export interface MarketProvider {
   capabilityIds: string[];
   evidenceBasis: ProviderEvidenceBasis;
   sources: ProviderSource[];
+  credentials?: ProviderCredentials;
+  evidenceTriad?: ProviderEvidenceTriad;
 }
 
 export interface ProviderMatch {
@@ -22,3 +36,4 @@ export interface ProviderMatch {
   matchedCapabilityIds: string[];
   missingCapabilityIds: string[];
 }
+
