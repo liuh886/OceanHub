@@ -16,6 +16,10 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function plainMarkdown(value) {
+  return (value ?? '').replace(/\*\*/g, '');
+}
+
 const browser = await chromium.launch();
 const page = await browser.newPage();
 
@@ -33,11 +37,12 @@ try {
   await eoi.getByRole('button', { name: 'Generate supplier EOI & shortlist' }).click();
 
   const ccsEoiText = await eoi.locator('#project-eoi-text').textContent();
+  const ccsEoiPlainText = plainMarkdown(ccsEoiText);
   assert(ccsEoiText?.includes('ISO 27914:2026'), 'Generated CCS EOI did not carry ISO 27914 reference metadata.');
   assert(ccsEoiText?.includes('HSE & operational safety'), 'Generated EOI did not carry the HSE procurement gate.');
   assert(ccsEoiText?.includes('Classification & technical verification'), 'Generated EOI did not carry the classification gate.');
-  assert(ccsEoiText?.includes('Water-depth tier: Shallow'), 'Generated EOI did not carry the structured water-depth constraint.');
-  assert(ccsEoiText?.includes('Delivery region: APAC'), 'Generated EOI did not carry the structured delivery-region constraint.');
+  assert(ccsEoiPlainText.includes('Water-depth tier: Shallow'), 'Generated EOI did not carry the structured water-depth constraint.');
+  assert(ccsEoiPlainText.includes('Delivery region: APAC'), 'Generated EOI did not carry the structured delivery-region constraint.');
   assert(!ccsEoiText?.includes('Desirable / Value-Add Capabilities'), 'Superseded desirable capability tier returned to the EOI.');
   assert(ccsEoiText?.includes('verify against the official publication'), 'Standards output did not preserve the official-publication verification boundary.');
 
