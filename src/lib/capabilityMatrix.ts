@@ -50,7 +50,6 @@ export interface MatrixRow {
   capabilityId: string;
   capabilityLabel: string;
   capabilityFamily: string;
-  tier: 'mandatory' | 'desirable';
   cells: Record<string, MatrixCell>;
 }
 
@@ -59,137 +58,93 @@ export interface CapabilityMatrixResult {
   rows: MatrixRow[];
   summary: {
     totalRequiredCapabilities: number;
-    mandatoryCapabilitiesCount: number;
     providerCount: number;
     topCoverageProviderName?: string;
+  };
+}
+
+function assertionCell(assertion: ProviderResponseAssertion): MatrixCell {
+  if (assertion.review_outcome === 'supported') {
+    return { status: 'reviewed-supported', statusLabel: 'Supported', evidenceType: assertion.evidence_type, evidenceSnippet: assertion.evidence_detail, reviewOutcome: 'supported' };
+  }
+  if (assertion.review_outcome === 'partially-supported') {
+    return { status: 'reviewed-partial', statusLabel: 'Partially supported', evidenceType: assertion.evidence_type, evidenceSnippet: assertion.evidence_detail, reviewOutcome: 'partially-supported' };
+  }
+  if (assertion.review_outcome === 'insufficient') {
+    return { status: 'reviewed-insufficient', statusLabel: 'Insufficient evidence', evidenceType: assertion.evidence_type, evidenceSnippet: assertion.evidence_detail, reviewOutcome: 'insufficient' };
+  }
+  return {
+    status: 'claimed-with-evidence',
+    statusLabel: assertion.review_state === 'under-review' ? 'Under review' : 'Evidence submitted',
+    evidenceType: assertion.evidence_type,
+    evidenceSnippet: assertion.evidence_detail
   };
 }
 
 export function buildCapabilityMatrix(
   requiredCapabilities: Capability[],
   providers: MarketProvider[],
-  responses: ProviderResponseStatus[] = [],
-  options: { mandatoryCapabilityIds?: string[] } = {}
+  responses: ProviderResponseStatus[] = []
 ): CapabilityMatrixResult {
-  const mandatorySet = new Set(options.mandatoryCapabilityIds ?? requiredCapabilities.map((c) => c.id));
-  const responseByProvider = new Map(responses.map((r) => [r.providerId, r]));
+  const responseByProvider = new Map(responses.map((response) => [response.providerId, response]));
+  const requiredIds = requiredCapabilities.map((capability) => capability.id);
 
   const columns: MatrixColumn[] = providers.map((provider) => {
     const response = responseByProvider.get(provider.id);
-    const requiredIds = requiredCapabilities.map((c) => c.id);
-
-    let coveredCount = 0;
+    let coverageCount = 0;
     if (response && response.responseState !== 'awaiting-response') {
-      const claimedIds = new Set(response.assertions?.map((a) => a.capability_id) ?? []);
-      coveredCount = requiredIds.filter((id) => claimedIds.has(id)).length;
+      const claimed = new Set(response.assertions?.map((assertion) => assertion.capability_id) ?? []);
+      coverageCount = requiredIds.filter((id) => claimed.has(id)).length;
     } else {
-      const publicSet = new Set(provider.capabilityIds);
-      coveredCount = requiredIds.filter((id) => publicSet.has(id)).length;
+      const publicMapped = new Set(provider.capabilityIds);
+      coverageCount = requiredIds.filter((id) => publicMapped.has(id)).length;
     }
-
-    const percentage = requiredCapabilities.length > 0 ? Math.round((coveredCount / requiredCapabilities.length) * 100) : 0;
-
     return {
       providerId: provider.id,
       providerName: provider.name,
       evidenceBasis: provider.evidenceBasis,
       responseState: response?.responseState ?? 'awaiting-response',
-      coverageCount: coveredCount,
-      coveragePercentage: percentage
+      coverageCount,
+      coveragePercentage: requiredIds.length ? Math.round((coverageCount / requiredIds.length) * 100) : 0
     };
   });
 
-  const rows: MatrixRow[] = requiredCapabilities.map((cap) => {
-    const isMandatory = mandatorySet.has(cap.id);
+  const rows: MatrixRow[] = requiredCapabilities.map((capability) => {
     const cells: Record<string, MatrixCell> = {};
-
     for (const provider of providers) {
       const response = responseByProvider.get(provider.id);
+      if (!response || response.responseState === 'awaiting-response') {
+        cells[provider.id] = provider.capabilityIds.includes(capability.id)
+          ? { status: 'matched-public', statusLabel: 'Public mapped' }
+          : { status: 'missing-public', statusLabel: 'Uncovered' };
+        continue;
+      }
 
-      if (response && response.responseState !== 'awaiting-response') {
-        const assertion = response.assertions?.find((a) => a.capability_id === cap.id);
-        const isNotClaimed = response.notClaimedCapabilityIds?.includes(cap.id);
-
-        if (assertion) {
-          if (assertion.review_outcome === 'supported') {
-            cells[provider.id] = {
-              status: 'reviewed-supported',
-              statusLabel: 'Supported (Verified)',
-              evidenceType: assertion.evidence_type,
-              evidenceSnippet: assertion.evidence_detail,
-              reviewOutcome: 'supported'
-            };
-          } else if (assertion.review_outcome === 'partially-supported') {
-            cells[provider.id] = {
-              status: 'reviewed-partial',
-              statusLabel: 'Partially Supported',
-              evidenceType: assertion.evidence_type,
-              evidenceSnippet: assertion.evidence_detail,
-              reviewOutcome: 'partially-supported'
-            };
-          } else if (assertion.review_outcome === 'insufficient') {
-            cells[provider.id] = {
-              status: 'reviewed-insufficient',
-              statusLabel: 'Insufficient Evidence',
-              evidenceType: assertion.evidence_type,
-              evidenceSnippet: assertion.evidence_detail,
-              reviewOutcome: 'insufficient'
-            };
-          } else {
-            cells[provider.id] = {
-              status: 'claimed-with-evidence',
-              statusLabel: 'Claimed (Evidence Submitted)',
-              evidenceType: assertion.evidence_type,
-              evidenceSnippet: assertion.evidence_detail
-            };
-          }
-        } else if (isNotClaimed) {
-          cells[provider.id] = {
-            status: 'unclaimed',
-            statusLabel: 'Not Claimed'
-          };
-        } else {
-          cells[provider.id] = {
-            status: 'awaiting',
-            statusLabel: 'Awaiting Response'
-          };
-        }
+      const assertion = response.assertions?.find((item) => item.capability_id === capability.id);
+      if (assertion) {
+        cells[provider.id] = assertionCell(assertion);
+      } else if (response.notClaimedCapabilityIds?.includes(capability.id)) {
+        cells[provider.id] = { status: 'unclaimed', statusLabel: 'Not claimed' };
       } else {
-        // Public mapping state
-        const hasPublicMapping = provider.capabilityIds.includes(cap.id);
-        if (hasPublicMapping) {
-          cells[provider.id] = {
-            status: 'matched-public',
-            statusLabel: 'Public Mapped'
-          };
-        } else {
-          cells[provider.id] = {
-            status: 'missing-public',
-            statusLabel: 'Uncovered'
-          };
-        }
+        cells[provider.id] = { status: 'awaiting', statusLabel: 'Awaiting response' };
       }
     }
-
     return {
-      capabilityId: cap.id,
-      capabilityLabel: cap.label,
-      capabilityFamily: cap.family,
-      tier: isMandatory ? 'mandatory' : 'desirable',
+      capabilityId: capability.id,
+      capabilityLabel: capability.label,
+      capabilityFamily: capability.family,
       cells
     };
   });
 
-  const sortedColumns = [...columns].sort((a, b) => b.coverageCount - a.coverageCount);
-
+  const top = [...columns].sort((a, b) => b.coverageCount - a.coverageCount || a.providerName.localeCompare(b.providerName))[0];
   return {
     columns,
     rows,
     summary: {
       totalRequiredCapabilities: requiredCapabilities.length,
-      mandatoryCapabilitiesCount: requiredCapabilities.filter((c) => mandatorySet.has(c.id)).length,
       providerCount: providers.length,
-      topCoverageProviderName: sortedColumns[0]?.providerName
+      topCoverageProviderName: top?.providerName
     }
   };
 }
