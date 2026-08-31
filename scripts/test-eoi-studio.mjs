@@ -53,10 +53,12 @@ try {
   assert(matrixHeader?.includes('TGS') || matrixHeader?.includes('SLB'), 'Matrix header missing candidate providers.');
   assert(!matrixHeader?.includes('Tier'), 'Superseded mandatory/desirable tier column returned to the matrix.');
 
+  // Multi-domain contracts deliberately use the unfiltered evidence view unless
+  // the underlying EvidenceRequirement records carry focus-level tags.
   await scoper.locator('#scoper-archetype').selectOption('floating-offshore-wind');
   await scoper.getByRole('heading', { name: 'Build a traceable floating offshore wind evidence plan' }).waitFor();
   await scoper.locator('#scoper-stage').selectOption('construction');
-  await scoper.locator('#scoper-focus').selectOption('floating-wind');
+  await scoper.locator('#scoper-focus').selectOption('all');
   await eoi.locator('#eoi-water-depth').selectOption('deepwater');
   await eoi.locator('#eoi-delivery-region').selectOption('North Sea');
   await eoi.getByRole('button', { name: 'Generate supplier EOI & shortlist' }).click();
@@ -69,13 +71,14 @@ try {
   await scoper.locator('#scoper-archetype').selectOption('subsea-corridor');
   await scoper.getByRole('heading', { name: 'Build a traceable subsea infrastructure evidence plan' }).waitFor();
   await scoper.locator('#scoper-stage').selectOption('feed');
-  await scoper.locator('#scoper-focus').selectOption('route');
+  await scoper.locator('#scoper-focus').selectOption('all');
   await eoi.locator('#eoi-water-depth').selectOption('deepwater');
+  await eoi.locator('#eoi-delivery-region').selectOption('');
   await eoi.getByRole('button', { name: 'Generate supplier EOI & shortlist' }).click();
 
   const subseaEoiText = await eoi.locator('#project-eoi-text').textContent();
   assert(subseaEoiText?.includes('Subsea infrastructure & corridors'), 'Generated EOI did not reflect the subsea-corridor archetype.');
-  assert(subseaEoiText?.includes('pipeline-route-engineering') || subseaEoiText?.includes('marine-geophysics'), 'Subsea EOI missing route-engineering capabilities.');
+  assert(subseaEoiText?.includes('subsea-cable-engineering') || subseaEoiText?.includes('marine-geophysics'), 'Subsea EOI missing route/corridor capabilities.');
 
   console.log(`OceanHub constraint-aware multi-archetype EOI Studio contract passed against ${scopeUrl}`);
 } finally {
