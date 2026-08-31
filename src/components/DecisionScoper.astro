@@ -4,22 +4,26 @@ import type { LifecycleStage, ProjectArchetype } from '../lib/decisionEvidence';
 
 const base = import.meta.env.BASE_URL;
 const url = (path = '') => `${base}${path.replace(/^\/+/, '')}`;
+const MAX_INLINE_COMBINATIONS = 50;
+const MIN_EXPOSED_COMBINATIONS = 2;
 
 interface ArchetypeOption {
   value: ProjectArchetype;
   label: string;
+  title: string;
   scopeSummary: string;
   referenceDescription: string;
   stages: Array<{ value: LifecycleStage; label: string; selectedByDefault?: boolean }>;
   focuses: Array<{ value: string; label: string; tags?: string[] }>;
 }
 
-const archetypeOptions: ArchetypeOption[] = [
+const candidateArchetypes: ArchetypeOption[] = [
   {
     value: 'offshore-ccs',
     label: 'Offshore CO₂ geological storage',
-    scopeSummary: 'Trace evidence from storage-site qualification through monitoring assurance based on Sleipner and Northern Lights benchmarks.',
-    referenceDescription: 'Sleipner and Northern Lights Aurora, linked to operator/project evidence plus ISO 27914 & DNV-RP-J203.',
+    title: 'Build a traceable offshore CCS evidence plan',
+    scopeSummary: 'Trace storage-site qualification, characterization and monitoring decisions to source-backed evidence and delivery capabilities.',
+    referenceDescription: 'Sleipner, Northern Lights, Porthos, Greensand and other encoded CCS precedents plus canonical engineering references.',
     stages: [
       { value: 'feasibility', label: 'Feasibility — storage-site qualification' },
       { value: 'pre-feed', label: 'Pre-FEED — characterization & baseline design', selectedByDefault: true },
@@ -28,7 +32,7 @@ const archetypeOptions: ArchetypeOption[] = [
       { value: 'monitoring', label: 'Monitoring — assurance & verification' }
     ],
     focuses: [
-      { value: 'all', label: 'All matched evidence', tags: undefined },
+      { value: 'all', label: 'All matched evidence' },
       { value: 'baseline', label: 'Pre-injection baseline & characterization', tags: ['baseline'] },
       { value: 'containment', label: 'Plume migration & containment', tags: ['containment'] },
       { value: 'induced-seismicity', label: 'Injection-related seismicity', tags: ['induced-seismicity'] }
@@ -36,63 +40,68 @@ const archetypeOptions: ArchetypeOption[] = [
   },
   {
     value: 'floating-offshore-wind',
-    label: 'Floating Offshore Wind',
-    scopeSummary: 'Floating substructures, shared mooring, dynamic power cables and tow-to-shore heavy intervention based on Hywind precedents.',
-    referenceDescription: 'Hywind Tampen and Hywind Scotland precedents, conforming to IEC 61400-3-2 & DNV-ST-0119.',
+    label: 'Floating offshore wind',
+    title: 'Build a traceable floating offshore wind evidence plan',
+    scopeSummary: 'Trace floating structure, mooring, cable and marine-operation decisions to encoded Hywind and standards-backed evidence.',
+    referenceDescription: 'Hywind Tampen and Hywind Scotland precedents plus IEC and DNV reference metadata.',
     stages: [
       { value: 'construction', label: 'Construction — floater assembly, tow & installation', selectedByDefault: true },
       { value: 'operations', label: 'Operations — integrity & tow-to-shore maintenance' },
       { value: 'pre-feed', label: 'Pre-FEED — station-keeping & dynamic cable layout' },
-      { value: 'feed', label: 'FEED — mooring analysis & platform electrical integration' }
+      { value: 'feed', label: 'FEED — mooring analysis & electrical integration' }
     ],
     focuses: [
-      { value: 'all', label: 'All matched evidence', tags: undefined },
-      { value: 'floating-wind', label: 'Floater fabrication, mooring & marine installation', tags: ['floating-wind', 'spar', 'mooring', 'anchor', 'tow-out', 'cables'] },
-      { value: 'dynamic-cable', label: 'Dynamic cable & host platform electrical integration', tags: ['dynamic-cable', 'electrical', 'brownfield', 'commissioning'] },
-      { value: 'maintenance', label: 'Tow-to-shore major intervention & integrity', tags: ['maintenance', 'tow', 'integrity', 'recommissioning'] }
+      { value: 'all', label: 'All matched evidence' },
+      { value: 'floating-wind', label: 'Floater, mooring & marine installation', tags: ['floating-wind', 'spar', 'mooring', 'anchor', 'tow-out', 'cables'] },
+      { value: 'dynamic-cable', label: 'Dynamic cable & electrical integration', tags: ['dynamic-cable', 'electrical', 'brownfield', 'commissioning'] },
+      { value: 'maintenance', label: 'Tow-to-shore intervention & integrity', tags: ['maintenance', 'tow', 'integrity', 'recommissioning'] }
     ]
   },
   {
     value: 'fixed-offshore-wind',
-    label: 'Fixed-Bottom Offshore Wind',
-    scopeSummary: 'Integrated marine site investigation, foundation feasibility, cable burial risk and environmental consenting.',
-    referenceDescription: 'Vineyard, New England and Revolution Wind benchmarks conforming to ISO 19901 series & DNV-ST-0126.',
+    label: 'Fixed-bottom offshore wind',
+    title: 'Build a traceable fixed-bottom offshore wind evidence plan',
+    scopeSummary: 'Trace site investigation, foundation, cable burial and environmental decisions to public project evidence.',
+    referenceDescription: 'Vineyard, New England, Revolution Wind and other regulator/project-owner source patterns.',
     stages: [
       { value: 'feasibility', label: 'Feasibility — integrated marine site investigation' },
       { value: 'pre-feed', label: 'Pre-FEED — foundation ground model & cable burial', selectedByDefault: true },
-      { value: 'feed', label: 'FEED — environmental consenting & structural design' },
-      { value: 'screening', label: 'Screening — metocean & initial constraint review' }
+      { value: 'feed', label: 'FEED — consenting & structural design' },
+      { value: 'screening', label: 'Screening — metocean & constraint review' }
     ],
     focuses: [
-      { value: 'all', label: 'All matched evidence', tags: undefined },
+      { value: 'all', label: 'All matched evidence' },
       { value: 'site-investigation', label: 'Geophysical, geotechnical & UXO survey', tags: ['site-investigation', 'geophysics', 'geotechnics', 'uxo'] },
-      { value: 'foundation', label: 'Foundation feasibility & cable burial risk (CBRA)', tags: ['foundation', 'cable-burial', 'cbra'] },
-      { value: 'metocean', label: 'Metocean baseline & environmental evidence chain', tags: ['metocean', 'sediment', 'benthic', 'fisheries', 'acoustics'] }
+      { value: 'foundation', label: 'Foundation & cable burial risk', tags: ['foundation', 'cable-burial', 'cbra'] },
+      { value: 'metocean', label: 'Metocean & environmental evidence', tags: ['metocean', 'sediment', 'benthic', 'fisheries', 'acoustics'] }
     ]
   },
   {
     value: 'subsea-corridor',
-    label: 'Subsea Infrastructure & Corridors',
-    scopeSummary: 'Deepwater route engineering, free-span fatigue, scour and autonomous inspection based on Ormen Lange & Freedom AUV.',
-    referenceDescription: 'Ormen Lange, Sea Link and Freedom AUV precedents conforming to DNV-ST-F101 & DNV-RP-F105.',
+    label: 'Subsea infrastructure & corridors',
+    title: 'Build a traceable subsea infrastructure evidence plan',
+    scopeSummary: 'Trace route, geohazard, free-span, scour and autonomous inspection decisions to source-backed evidence.',
+    referenceDescription: 'Ormen Lange, Sea Link, Freedom AUV and standards-led pipeline-integrity patterns.',
     stages: [
       { value: 'feed', label: 'FEED — corridor alignment & geohazard engineering', selectedByDefault: true },
       { value: 'operations', label: 'Operations — autonomous inspection & condition monitoring' },
-      { value: 'monitoring', label: 'Monitoring — free-span, scour & on-bottom stability' },
+      { value: 'monitoring', label: 'Monitoring — free-span, scour & stability' },
       { value: 'pre-feed', label: 'Pre-FEED — route investigation & UXO clearance' },
       { value: 'construction', label: 'Construction — installation survey & landing control' }
     ],
     focuses: [
-      { value: 'all', label: 'All matched evidence', tags: undefined },
-      { value: 'route', label: 'Deepwater route selection & geohazard clearance', tags: ['route', 'geohazard', 'bathymetry', 'rov', 'auv', 'positioning', 'cable-route'] },
-      { value: 'pipeline-integrity', label: 'Free-span, scour & autonomous AUV inspection', tags: ['free-span', 'scour', 'burial', 'viv', 'integrity', 'auv', 'autonomous-inspection', 'pipeline-integrity'] }
+      { value: 'all', label: 'All matched evidence' },
+      { value: 'route', label: 'Route selection & geohazard clearance', tags: ['route', 'geohazard', 'bathymetry', 'rov', 'auv', 'positioning', 'cable-route'] },
+      { value: 'pipeline-integrity', label: 'Free-span, scour & autonomous inspection', tags: ['free-span', 'scour', 'burial', 'viv', 'integrity', 'auv', 'autonomous-inspection', 'pipeline-integrity'] }
     ]
   }
 ];
 
-const lookup: Record<string, any> = {};
+const lookup: Record<string, ReturnType<typeof getEvidencePlan>> = {};
+const evidenceCounts = new Map<ProjectArchetype, number>();
 
-for (const option of archetypeOptions) {
+for (const option of candidateArchetypes) {
+  let count = 0;
   for (const stage of option.stages) {
     for (const focus of option.focuses) {
       const plan = getEvidencePlan({
@@ -100,23 +109,26 @@ for (const option of archetypeOptions) {
         lifecycleStage: stage.value,
         tags: focus.tags ? [...focus.tags] : undefined
       });
+      if (!plan.length) continue;
       lookup[`${option.value}:${stage.value}:${focus.value}`] = plan;
-      // For backwards-compatibility with offshore-ccs queries
-      if (option.value === 'offshore-ccs') {
-        lookup[`${stage.value}:${focus.value}`] = plan;
-      }
+      count += 1;
     }
   }
+  evidenceCounts.set(option.value, count);
 }
 
-const defaultArchetype = archetypeOptions[0];
+const archetypeOptions = candidateArchetypes.filter((option) => (evidenceCounts.get(option.value) ?? 0) >= MIN_EXPOSED_COMBINATIONS);
+if (!archetypeOptions.length) throw new Error('Decision Scoper has no archetype with sufficient evidence depth.');
+if (Object.keys(lookup).length > MAX_INLINE_COMBINATIONS) throw new Error(`Decision Scoper inline payload exceeded ${MAX_INLINE_COMBINATIONS} evidence-bearing combinations. Split by archetype before expanding the corpus.`);
+
+const defaultArchetype = archetypeOptions.find((option) => option.value === 'offshore-ccs') ?? archetypeOptions[0];
 ---
 
 <section id="decision-scoper-root" class="my-12 overflow-hidden rounded-3xl border border-white/10 bg-[#060D1E]/65" aria-labelledby="decision-scoper-title">
   <header class="border-b border-white/10 p-6 sm:p-9">
     <p class="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-300">Decision Scoper</p>
-    <h2 id="decision-scoper-title" class="mt-3 font-display text-3xl font-black tracking-tight text-white sm:text-4xl">Build a traceable offshore CCS evidence plan</h2>
-    <p id="scoper-archetype-summary" class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-400 sm:text-base">Start from the project decision, then trace each recommendation through uncertainty, evidence, delivery capability, engineering reference and project precedent.</p>
+    <h2 id="decision-scoper-title" class="mt-3 font-display text-3xl font-black tracking-tight text-white sm:text-4xl">{defaultArchetype.title}</h2>
+    <p id="scoper-archetype-summary" class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-400 sm:text-base">{defaultArchetype.scopeSummary}</p>
   </header>
 
   <div class="grid grid-cols-1 lg:grid-cols-12">
@@ -125,30 +137,23 @@ const defaultArchetype = archetypeOptions[0];
         <div>
           <label for="scoper-archetype" class="mb-2 block text-xs font-bold text-slate-200">1. Project archetype</label>
           <select id="scoper-archetype" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none">
-            {archetypeOptions.map((opt) => (
-              <option value={opt.value} selected={opt.value === 'offshore-ccs'}>{opt.label}</option>
-            ))}
+            {archetypeOptions.map((option) => <option value={option.value} selected={option.value === defaultArchetype.value}>{option.label}</option>)}
           </select>
-          <p class="mt-2 text-xs leading-relaxed text-slate-500">Select offshore engineering archetype to load verified evidence plans.</p>
+          <p class="mt-2 text-xs leading-relaxed text-slate-500">Only archetypes with multiple source-backed evidence combinations are exposed.</p>
         </div>
 
         <div>
           <label for="scoper-stage" class="mb-2 block text-xs font-bold text-slate-200">2. Lifecycle / decision stage</label>
           <select id="scoper-stage" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none">
-            {defaultArchetype.stages.map((stage) => (
-              <option value={stage.value} selected={stage.selectedByDefault}>{stage.label}</option>
-            ))}
+            {defaultArchetype.stages.map((stage) => <option value={stage.value} selected={stage.selectedByDefault}>{stage.label}</option>)}
           </select>
         </div>
 
         <div>
           <label for="scoper-focus" class="mb-2 block text-xs font-bold text-slate-200">3. Decision focus</label>
           <select id="scoper-focus" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none">
-            {defaultArchetype.focuses.map((focus) => (
-              <option value={focus.value}>{focus.label}</option>
-            ))}
+            {defaultArchetype.focuses.map((focus) => <option value={focus.value}>{focus.label}</option>)}
           </select>
-          <p class="mt-2 text-xs leading-relaxed text-slate-500">Narrow only when the focus materially changes the evidence question.</p>
         </div>
 
         <div class="border-l-2 border-cyan-400/30 pl-4">
@@ -161,24 +166,16 @@ const defaultArchetype = archetypeOptions[0];
     <div class="p-6 sm:p-8 lg:col-span-8 lg:p-10">
       <ol class="mb-8 grid grid-cols-1 gap-2 sm:grid-cols-5" aria-label="OceanHub evidence trace">
         {['Decision', 'Uncertainty', 'Evidence', 'Capability', 'Provenance'].map((step, index) => (
-          <li class="rounded-xl border border-white/10 bg-white/[0.025] px-3 py-3">
-            <span class="font-mono text-[10px] text-cyan-400">0{index + 1}</span>
-            <span class="ml-3 text-xs font-bold text-slate-200 sm:ml-0 sm:mt-1 sm:block">{step}</span>
-          </li>
+          <li class="rounded-xl border border-white/10 bg-white/[0.025] px-3 py-3"><span class="font-mono text-[10px] text-cyan-400">0{index + 1}</span><span class="ml-3 text-xs font-bold text-slate-200 sm:ml-0 sm:mt-1 sm:block">{step}</span></li>
         ))}
       </ol>
 
-      <div class="mb-6 border-b border-white/10 pb-5">
-        <p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-300">Evidence plan</p>
-        <p id="scoper-plan-summary" class="mt-2 text-sm text-slate-400" aria-live="polite"></p>
-      </div>
-
+      <div class="mb-6 border-b border-white/10 pb-5"><p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-300">Evidence plan</p><p id="scoper-plan-summary" class="mt-2 text-sm text-slate-400" aria-live="polite"></p></div>
       <div id="scoper-plan-list" class="space-y-6" aria-live="polite"></div>
 
       <div class="mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
         <p class="max-w-xl text-xs leading-relaxed text-slate-500">OceanHub structures evidence for project discussion; it does not replace project-specific engineering judgement, consenting review or specialist design.</p>
         <div class="flex flex-wrap gap-3">
-          <a href={url('jips/')} class="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-xs font-bold text-white hover:bg-white/10">Explore proposed JIPs</a>
           <a href={url('capabilities/')} class="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-xs font-bold text-white hover:bg-white/10">Capability library</a>
           <a href={url('references/')} class="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-xs font-bold text-white hover:bg-white/10">Engineering references</a>
           <button type="button" data-open-collaboration="project" class="rounded-xl bg-cyan-400 px-5 py-3 text-xs font-black text-slate-950 hover:bg-cyan-300">Discuss capability needs</button>
@@ -192,170 +189,71 @@ const defaultArchetype = archetypeOptions[0];
 <script id="decision-scoper-data" type="application/json" set:html={JSON.stringify(lookup)}></script>
 
 <script>
-  interface Source {
-    title: string;
-    publisher: string;
-    url: string;
-    publishedYear: number;
-    sourceType: string;
-  }
+  interface Source { title: string; publisher: string; url: string; publishedYear: number; sourceType: string }
+  interface Reference { code: string; title: string; issuer: string; edition: string; officialUrl: string }
+  interface Capability { id: string; label: string; summary: string }
+  interface Requirement { id: string; discipline: string; uncertainty: string; evidenceNeeded: string; methods: string[]; deliverables: string[]; rationale: string }
+  interface PlanItem { caseId: string; caseTitle: string; decision: string; outcome: string; projectContext: string; requirement: Requirement; capabilities: Capability[]; references: Reference[]; sources: Source[] }
+  interface ArchetypeOption { value: string; label: string; title: string; scopeSummary: string; referenceDescription: string; stages: Array<{ value: string; label: string; selectedByDefault?: boolean }>; focuses: Array<{ value: string; label: string }> }
 
-  interface Reference {
-    code: string;
-    title: string;
-    issuer: string;
-    edition: string;
-    officialUrl: string;
-    status: string;
-  }
-
-  interface Capability {
-    id: string;
-    label: string;
-    summary: string;
-  }
-
-  interface Requirement {
-    id: string;
-    discipline: string;
-    uncertainty: string;
-    evidenceNeeded: string;
-    methods: string[];
-    deliverables: string[];
-    rationale: string;
-  }
-
-  interface PlanItem {
-    caseId: string;
-    caseTitle: string;
-    decision: string;
-    outcome: string;
-    projectContext: string;
-    requirement: Requirement;
-    capabilities: Capability[];
-    references: Reference[];
-    sources: Source[];
-  }
-
-  interface ArchetypeOption {
-    value: string;
-    label: string;
-    scopeSummary: string;
-    referenceDescription: string;
-    stages: Array<{ value: string; label: string; selectedByDefault?: boolean }>;
-    focuses: Array<{ value: string; label: string; tags?: string[] }>;
-  }
-
-  const archetypeConfigList = JSON.parse(document.getElementById('decision-scoper-archetypes')?.textContent ?? '[]') as ArchetypeOption[];
-  const archetypeMap = new Map(archetypeConfigList.map((item) => [item.value, item]));
-
+  const configs = JSON.parse(document.getElementById('decision-scoper-archetypes')?.textContent ?? '[]') as ArchetypeOption[];
+  const configById = new Map(configs.map((config) => [config.value, config]));
   const data = JSON.parse(document.getElementById('decision-scoper-data')?.textContent ?? '{}') as Record<string, PlanItem[]>;
-  const archetypeSelect = document.getElementById('scoper-archetype') as HTMLSelectElement | null;
+  const archetype = document.getElementById('scoper-archetype') as HTMLSelectElement | null;
   const stage = document.getElementById('scoper-stage') as HTMLSelectElement | null;
   const focus = document.getElementById('scoper-focus') as HTMLSelectElement | null;
   const summary = document.getElementById('scoper-plan-summary');
   const list = document.getElementById('scoper-plan-list');
-  const referenceScopeText = document.getElementById('scoper-reference-scope-text');
-  const archetypeSummary = document.getElementById('scoper-archetype-summary');
+  const esc = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' })[character] ?? character);
+  const bullets = (items: string[]) => `<ul class="mt-2 space-y-1.5">${items.map((item) => `<li class="text-sm leading-relaxed text-slate-400">• ${esc(item)}</li>`).join('')}</ul>`;
 
-  const disciplineLabels: Record<string, string> = {
-    geophysics: 'Geophysics',
-    geology: 'Geology',
-    geomechanics: 'Geomechanics',
-    wells: 'Wells & direct evidence',
-    environment: 'Environment',
-    monitoring: 'Monitoring',
-    'data-integration': 'Data integration',
-    'marine-operations': 'Marine operations',
-    structures: 'Structures & naval architecture',
-    electrical: 'Subsea electrical & cables',
-    'inspection-integrity': 'Integrity & inspection',
-    'uxo-archaeology': 'UXO & marine archaeology'
-  };
+  function syncControls() {
+    if (!archetype || !stage || !focus) return;
+    const config = configById.get(archetype.value);
+    if (!config) return;
+    const title = document.getElementById('decision-scoper-title');
+    const scope = document.getElementById('scoper-archetype-summary');
+    const reference = document.getElementById('scoper-reference-scope-text');
+    if (title) title.textContent = config.title;
+    if (scope) scope.textContent = config.scopeSummary;
+    if (reference) reference.textContent = config.referenceDescription;
+    stage.innerHTML = config.stages.map((item) => `<option value="${esc(item.value)}" ${item.selectedByDefault ? 'selected' : ''}>${esc(item.label)}</option>`).join('');
+    focus.innerHTML = config.focuses.map((item) => `<option value="${esc(item.value)}">${esc(item.label)}</option>`).join('');
+  }
 
-  const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' })[character] ?? character);
-  const bullets = (items: string[]) => `<ul class="mt-2 space-y-1.5">${items.map((item) => `<li class="flex gap-2 text-sm leading-relaxed text-slate-400"><span class="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-cyan-400/70"></span><span>${escapeHtml(item)}</span></li>`).join('')}</ul>`;
-  const sourceMarkup = (items: Source[]) => items.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer" class="block rounded-xl border border-white/10 bg-black/20 p-3 hover:border-cyan-400/30"><span class="block text-xs font-bold text-slate-200">${escapeHtml(source.title)}</span><span class="mt-1 block text-[11px] text-slate-500">${escapeHtml(source.publisher)} · ${source.publishedYear} · ${escapeHtml(source.sourceType)}</span></a>`).join('');
-  const referenceMarkup = (items: Reference[]) => `<div class="mt-2 space-y-2">${items.map((reference) => `<a href="${escapeHtml(reference.officialUrl)}" target="_blank" rel="noopener noreferrer" class="block rounded-xl border border-white/10 bg-black/20 p-3 hover:border-emerald-400/30"><span class="block text-xs font-bold text-emerald-200">${escapeHtml(reference.code)}</span><span class="mt-1 block text-[11px] leading-relaxed text-slate-400">${escapeHtml(reference.title)}</span><span class="mt-1 block text-[10px] text-slate-600">${escapeHtml(reference.issuer)} · ${escapeHtml(reference.edition)}</span></a>`).join('')}</div>`;
-
-  function requirementMarkup(item: PlanItem, index: number) {
-    const requirement = item.requirement;
-    return `<section class="border-t border-white/10 pt-6 first:border-t-0 first:pt-0" data-scoper-requirement="${escapeHtml(requirement.id)}">
-      <h4 class="text-sm font-bold text-white">${String(index + 1).padStart(2, '0')} · ${escapeHtml(disciplineLabels[requirement.discipline] ?? requirement.discipline)}</h4>
-      <div class="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
-        <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Key uncertainty</p><p class="mt-2 text-sm leading-relaxed text-slate-300">${escapeHtml(requirement.uncertainty)}</p></div>
-        <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Evidence required</p><p class="mt-2 text-sm leading-relaxed text-slate-300">${escapeHtml(requirement.evidenceNeeded)}</p></div>
-        <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Recommended methods</p>${bullets(requirement.methods)}</div>
-        <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Capability modules</p>${bullets(item.capabilities.map((capability) => capability.label))}</div>
-        <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Expected deliverables</p>${bullets(requirement.deliverables)}</div>
-        <div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Engineering references</p>${referenceMarkup(item.references)}</div>
+  function requirementMarkup(item: PlanItem) {
+    return `<section class="border-t border-white/10 pt-5 first:border-t-0 first:pt-0" data-scoper-requirement="${esc(item.requirement.id)}">
+      <div class="grid gap-5 lg:grid-cols-2">
+        <div><p class="font-mono text-[10px] uppercase text-slate-500">Key uncertainty</p><p class="mt-2 text-sm text-slate-300">${esc(item.requirement.uncertainty)}</p></div>
+        <div><p class="font-mono text-[10px] uppercase text-slate-500">Evidence required</p><p class="mt-2 text-sm text-slate-300">${esc(item.requirement.evidenceNeeded)}</p></div>
+        <div><p class="font-mono text-[10px] uppercase text-slate-500">Methods</p>${bullets(item.requirement.methods)}</div>
+        <div><p class="font-mono text-[10px] uppercase text-slate-500">Capabilities</p>${bullets(item.capabilities.map((capability) => capability.label))}</div>
+        <div><p class="font-mono text-[10px] uppercase text-slate-500">Deliverables</p>${bullets(item.requirement.deliverables)}</div>
+        <div><p class="font-mono text-[10px] uppercase text-slate-500">References</p>${bullets(item.references.map((reference) => `${reference.code} — ${reference.title}`))}</div>
       </div>
-      <div class="mt-5 border-l-2 border-cyan-400/30 pl-4"><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-cyan-300">Why this is in the plan</p><p class="mt-2 text-sm leading-relaxed text-slate-400">${escapeHtml(requirement.rationale)}</p></div>
-      <div class="mt-5"><p class="mb-2 text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Precedent & provenance</p><div class="grid grid-cols-1 gap-2 md:grid-cols-2">${sourceMarkup(item.sources)}</div></div>
+      <p class="mt-5 border-l-2 border-cyan-400/30 pl-4 text-sm leading-relaxed text-slate-400">${esc(item.requirement.rationale)}</p>
+      <div class="mt-5 flex flex-wrap gap-2">${item.sources.map((source) => `<a class="text-[11px] font-bold text-cyan-300" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.publisher)} · ${source.publishedYear} ↗</a>`).join('')}</div>
     </section>`;
   }
 
-  function syncControlsForArchetype() {
-    if (!archetypeSelect || !stage || !focus) return;
-    const config = archetypeMap.get(archetypeSelect.value);
-    if (!config) return;
-
-    if (referenceScopeText) referenceScopeText.textContent = config.referenceDescription;
-    if (archetypeSummary) archetypeSummary.textContent = config.scopeSummary;
-
-    const title = document.getElementById('decision-scoper-title');
-    if (title) {
-      if (config.value === 'offshore-ccs') {
-        title.textContent = 'Build a traceable offshore CCS evidence plan';
-      } else if (config.value === 'floating-offshore-wind') {
-        title.textContent = 'Build a traceable floating offshore wind evidence plan';
-      } else if (config.value === 'fixed-offshore-wind') {
-        title.textContent = 'Build a traceable fixed-bottom offshore wind evidence plan';
-      } else if (config.value === 'subsea-corridor') {
-        title.textContent = 'Build a traceable subsea infrastructure evidence plan';
-      }
-    }
-
-    // Update stages
-    stage.innerHTML = config.stages.map((st) => `
-      <option value="${escapeHtml(st.value)}" ${st.selectedByDefault ? 'selected' : ''}>${escapeHtml(st.label)}</option>
-    `).join('');
-
-    // Update focuses
-    focus.innerHTML = config.focuses.map((fo) => `
-      <option value="${escapeHtml(fo.value)}">${escapeHtml(fo.label)}</option>
-    `).join('');
-  }
-
   function render() {
-    if (!stage || !focus || !summary || !list) return;
-    const arch = archetypeSelect?.value || 'offshore-ccs';
-    const plan = data[`${arch}:${stage.value}:${focus.value}`] ?? data[`${stage.value}:${focus.value}`] ?? [];
-
+    if (!archetype || !stage || !focus || !summary || !list) return;
+    const plan = data[`${archetype.value}:${stage.value}:${focus.value}`] ?? [];
     if (!plan.length) {
       summary.textContent = 'No direct public reference pattern is encoded for this combination yet.';
-      list.innerHTML = `<div class="rounded-2xl border border-amber-400/20 bg-amber-500/5 p-6"><h3 class="text-base font-bold text-white">Evidence gap, not a fabricated recommendation</h3><p class="mt-2 text-sm leading-relaxed text-slate-400">OceanHub does not currently have a source-backed precedent for this stage and focus. Choose a broader focus or add a validated engineering case to the knowledge layer.</p></div>`;
+      list.innerHTML = '<div class="rounded-2xl border border-amber-400/20 bg-amber-500/5 p-6 text-sm text-slate-400">Evidence gap — choose another stage/focus or add a validated case. OceanHub will not fabricate a recommendation.</div>';
       return;
     }
-
     const cases = new Map<string, PlanItem[]>();
     plan.forEach((item) => cases.set(item.caseId, [...(cases.get(item.caseId) ?? []), item]));
     summary.textContent = `${plan.length} evidence workstream${plan.length === 1 ? '' : 's'} from ${cases.size} reference pattern${cases.size === 1 ? '' : 's'}.`;
     list.innerHTML = [...cases.values()].map((items) => {
       const first = items[0];
-      return `<article class="rounded-2xl border border-white/10 bg-black/15 p-5 sm:p-7" data-scoper-case="${escapeHtml(first.caseId)}">
-        <header class="border-b border-white/10 pb-6"><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-cyan-300">Reference pattern</p><h3 class="mt-2 font-display text-xl font-black text-white">${escapeHtml(first.caseTitle)}</h3><p class="mt-3 text-sm leading-relaxed text-slate-500">${escapeHtml(first.projectContext)}</p></header>
-        <div class="grid grid-cols-1 gap-5 border-b border-white/10 py-6 xl:grid-cols-2"><div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Decision</p><p class="mt-2 text-sm font-semibold leading-relaxed text-slate-100">${escapeHtml(first.decision)}</p></div><div><p class="text-[10px] font-mono uppercase tracking-[0.14em] text-slate-500">Decision outcome</p><p class="mt-2 text-sm leading-relaxed text-slate-400">${escapeHtml(first.outcome)}</p></div></div>
-        <div class="space-y-7 pt-6">${items.map(requirementMarkup).join('')}</div>
-      </article>`;
+      return `<article class="rounded-2xl border border-white/10 bg-black/15 p-5 sm:p-7" data-scoper-case="${esc(first.caseId)}"><header class="border-b border-white/10 pb-5"><p class="font-mono text-[10px] uppercase text-cyan-300">Reference pattern</p><h3 class="mt-2 text-xl font-black text-white">${esc(first.caseTitle)}</h3><p class="mt-3 text-sm text-slate-500">${esc(first.projectContext)}</p><p class="mt-3 text-sm font-semibold text-slate-200">${esc(first.decision)}</p></header><div class="space-y-7 pt-6">${items.map(requirementMarkup).join('')}</div></article>`;
     }).join('');
   }
 
-  archetypeSelect?.addEventListener('change', () => {
-    syncControlsForArchetype();
-    render();
-  });
-
+  archetype?.addEventListener('change', () => { syncControls(); render(); });
   stage?.addEventListener('change', render);
   focus?.addEventListener('change', render);
   render();
