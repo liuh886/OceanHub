@@ -42,7 +42,7 @@ jobs:
 
           git diff --name-only "$BASE_SHA" "$GITHUB_SHA" > changed-files.txt
           cat changed-files.txt
-          if grep -Eq '^(src/|public/|scripts/test-(briefcase|deployed-pwa|theme|decision-scoper|jip-capabilities|engineering-references|capability-library|conversion-paths|review-queue)\.mjs$|astro\.config\.mjs$|package(-lock)?\.json$|tsconfig\.json$|\.github/workflows/(ci|deploy)\.yml$)' changed-files.txt; then
+          if grep -Eq '^(src/|public/|scripts/test-(briefcase|deployed-pwa|theme|decision-scoper|eoi-studio|jip-capabilities|engineering-references|capability-library|conversion-paths|review-queue)\.mjs$|astro\.config\.mjs$|package(-lock)?\.json$|tsconfig\.json$|\.github/workflows/(ci|deploy)\.yml$)' changed-files.txt; then
             echo "browser=true" >> "$GITHUB_OUTPUT"
           else
             echo "browser=false" >> "$GITHUB_OUTPUT"
@@ -113,6 +113,7 @@ jobs:
           npm run test:deployed
           npm run test:theme
           npm run test:scoper
+          npm run test:eoi
           npm run test:jips
           npm run test:references
           npm run test:capabilities
