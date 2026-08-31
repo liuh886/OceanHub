@@ -186,5 +186,72 @@ export const marketProviders: MarketProvider[] = [
         url: 'https://www.dnv.com/services/marine-operations-and-surveys-3317/'
       }
     ]
+  },
+  {
+    id: 'aker-solutions',
+    name: 'Aker Solutions',
+    summary: 'Offshore engineering, floating wind substructure design, subsea production systems and brownfield facility conversion capabilities.',
+    website: 'https://www.akersolutions.com/',
+    deliveryFootprint: 'Global offshore markets',
+    capabilityIds: [
+      'floating-structures',
+      'mooring-engineering',
+      'offshore-electrical-engineering',
+      'brownfield-offshore-conversion',
+      'systems-integration',
+      'subsea-production-systems'
+    ],
+    evidenceBasis: 'public-source-mapped',
+    sources: [
+      {
+        title: 'Floating Offshore Wind Solutions',
+        publisher: 'Aker Solutions',
+        url: 'https://www.akersolutions.com/what-we-do/offshore-wind/floating-wind/'
+      }
+    ]
+  },
+  {
+    id: 'boskalis',
+    name: 'Boskalis',
+    summary: 'Marine construction, heavy-lift transport, foundation installation, subsea cable installation and seabed intervention services.',
+    website: 'https://www.boskalis.com/',
+    deliveryFootprint: 'Global / multi-region',
+    capabilityIds: [
+      'marine-heavy-lift',
+      'offshore-foundation-installation',
+      'subsea-cable-installation',
+      'pipeline-installation',
+      'tow-marine-operations',
+      'marine-operations-planning'
+    ],
+    evidenceBasis: 'public-source-mapped',
+    sources: [
+      {
+        title: 'Offshore Energy & Cable Installation',
+        publisher: 'Boskalis',
+        url: 'https://www.boskalis.com/activities/offshore-energy.html'
+      }
+    ]
+  },
+  {
+    id: 'nexans',
+    name: 'Nexans',
+    summary: 'High-voltage subsea export and dynamic inter-array power cable design, manufacturing and turnkey offshore installation.',
+    website: 'https://www.nexans.com/',
+    deliveryFootprint: 'Global offshore markets',
+    capabilityIds: [
+      'subsea-cable-engineering',
+      'subsea-cable-installation',
+      'offshore-electrical-engineering'
+    ],
+    evidenceBasis: 'public-source-mapped',
+    sources: [
+      {
+        title: 'Subsea Power Cables Solutions',
+        publisher: 'Nexans',
+        url: 'https://www.nexans.com/en/markets/power-generation-transmission/subsea-interconnectors.html'
+      }
+    ]
   }
 ];
+

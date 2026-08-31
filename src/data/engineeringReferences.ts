@@ -135,7 +135,18 @@ export const engineeringReferences: EngineeringReference[] = [
     edition: 'Edition 1, 2025', publishedYear: 2025, status: 'current', officialUrl: 'https://webstore.iec.ch/en/publication/67761',
     domains: ['floating-offshore-wind'], lifecycleStages: ['pre-feed','feed','construction','operations'],
     decisionTopics: ['site external conditions','floating stability','loads','anchors','structural integrity'],
-    scopeSummary: 'Design requirements for floating offshore wind turbines, including site conditions, floating systems and anchor design.'
+    scopeSummary: 'Design requirements for floating offshore wind turbines, including site conditions, floating systems and anchor design.',
+    keyClauses: [
+      'Clause 7: Coupled hydrodynamic and aerodynamic load cases for floating wind',
+      'Clause 9: Station-keeping and mooring redundancy criteria',
+      'Clause 11: Dynamic cable mechanical interface integration'
+    ],
+    complianceChecklist: [
+      'Coupled aero-hydro-servo-elastic load simulation dossier',
+      'Mooring line intact and single-line failure ULS/FLS analysis',
+      'Extreme offset and dynamic cable bend-stiffener envelope verification'
+    ],
+    relevanceLevel: 'primary'
   },
   {
     id: 'dnv-st-0126', code: 'DNV-ST-0126', title: 'Support structures for wind turbines', issuer: 'DNV', kind: 'standard',
@@ -149,14 +160,34 @@ export const engineeringReferences: EngineeringReference[] = [
     edition: '2025-12', publishedYear: 2025, status: 'current', officialUrl: 'https://www.dnv.com/energy/standards-guidelines/dnv-st-0119-floating-wind-turbines/',
     domains: ['floating-offshore-wind'], lifecycleStages: ['pre-feed','feed','construction','operations'],
     decisionTopics: ['floating structures','station keeping','design','construction','in-service inspection'],
-    scopeSummary: 'General principles and requirements for design and assessment of floating wind turbines.'
+    scopeSummary: 'General principles and requirements for design and assessment of floating wind turbines.',
+    keyClauses: [
+      'Section 4: Structural design and stability of floating substructures',
+      'Section 6: Station-keeping system design, anchor holding and fatigue',
+      'Section 9: Marine operations, tow-out and offshore hook-up'
+    ],
+    complianceChecklist: [
+      'Substructure naval architecture and intact/damaged stability book',
+      'Anchor holding capacity geotechnical verification in target seabed',
+      'Tow-out, station hook-up and tensioning marine operational procedures'
+    ],
+    relevanceLevel: 'primary'
   },
   {
     id: 'dnv-rp-e303', code: 'DNV-RP-E303', title: 'Geotechnical design and installation of suction anchors in clay', issuer: 'DNV', kind: 'recommended-practice',
     edition: '2017-04; amended 2021-10', publishedYear: 2017, status: 'current', officialUrl: 'https://www.dnv.com/energy/standards-guidelines/dnv-rp-e303-geotechnical-design-and-installation-of-suction-anchors-in-clay/',
     domains: ['marine-geotechnics','floating-offshore-wind'], lifecycleStages: ['pre-feed','feed','construction'],
     decisionTopics: ['suction-anchor design','installation','clay response'],
-    scopeSummary: 'Design code and guidance for geotechnical design and installation of suction anchors in clay.'
+    scopeSummary: 'Design code and guidance for geotechnical design and installation of suction anchors in clay.',
+    keyClauses: [
+      'Section 3: Holding capacity calculation under multi-directional cyclic loading',
+      'Section 5: Penetration resistance and underpressure limits during installation'
+    ],
+    complianceChecklist: [
+      'Site-specific cyclic shear strength DSS/triaxial geotechnical test basis',
+      'Suction anchor holding capacity ULS/ALS safety factor verification'
+    ],
+    relevanceLevel: 'primary'
   },
   {
     id: 'dnv-rp-0360', code: 'DNV-RP-0360', title: 'Subsea power cables in shallow water', issuer: 'DNV', kind: 'recommended-practice',
@@ -170,7 +201,16 @@ export const engineeringReferences: EngineeringReference[] = [
     edition: '2019-09; amended 2021-09', publishedYear: 2019, status: 'current', officialUrl: 'https://www.dnv.com/energy/standards-guidelines/dnv-rp-f401-electrical-power-cables-in-subsea-applications/',
     domains: ['subsea-cables','floating-offshore-wind'], lifecycleStages: ['pre-feed','feed','construction','operations'],
     decisionTopics: ['deepwater power cables','dynamic excitation','subsea electrical cable design'],
-    scopeSummary: 'Additional requirements for subsea power cables exposed to deep water or dynamic excitation.'
+    scopeSummary: 'Additional requirements for subsea power cables exposed to deep water or dynamic excitation.',
+    keyClauses: [
+      'Section 3: Dynamic cable configuration design (Lazy wave, pliant wave)',
+      'Section 5: Fatigue life and mechanical-electrical insulation integrity'
+    ],
+    complianceChecklist: [
+      'Coupled floater motion and dynamic cable bend radius verification',
+      'Subsea cable buoyancy module distribution and seabed touchdown stability'
+    ],
+    relevanceLevel: 'primary'
   },
   {
     id: 'iec-63026-2019', code: 'IEC 63026:2019', title: 'Submarine power cables with extruded insulation and accessories for 6 kV to 60 kV — Test methods and requirements', issuer: 'IEC', kind: 'standard',
@@ -185,14 +225,32 @@ export const engineeringReferences: EngineeringReference[] = [
     edition: '2021-08; amended 2021-12', publishedYear: 2021, status: 'current', officialUrl: 'https://www.dnv.com/energy/standards-guidelines/dnv-st-f101-submarine-pipeline-systems/',
     domains: ['subsea-pipelines','co2-transport'], lifecycleStages: ['feasibility','pre-feed','feed','construction','operations','closure'],
     decisionTopics: ['pipeline design','materials','installation','pre-commissioning','operation','abandonment'],
-    scopeSummary: 'Lifecycle structural-integrity framework for submarine pipeline systems.'
+    scopeSummary: 'Lifecycle structural-integrity framework for submarine pipeline systems.',
+    keyClauses: [
+      'Section 5: Wall thickness design and pressure containment (limit state criteria)',
+      'Section 10: Construction, pipelay tension, trenching and as-built survey'
+    ],
+    complianceChecklist: [
+      'Pipeline wall thickness and local buckling limit state verification',
+      'Pipelay installation analysis under design sea state limits'
+    ],
+    relevanceLevel: 'primary'
   },
   {
     id: 'dnv-rp-f105', code: 'DNV-RP-F105', title: 'Free spanning pipelines', issuer: 'DNV', kind: 'recommended-practice',
     edition: '2025-12', publishedYear: 2025, status: 'current', officialUrl: 'https://www.dnv.com/energy/standards-guidelines/dnv-rp-f105-free-spanning-pipelines/',
     domains: ['subsea-pipelines'], lifecycleStages: ['feed','construction','operations','monitoring'],
     decisionTopics: ['free spans','VIV','fatigue','wave loading','sensor evidence'],
-    scopeSummary: 'Assessment guidance for free-span ULS/FLS, VIV and direct wave loading.'
+    scopeSummary: 'Assessment guidance for free-span ULS/FLS, VIV and direct wave loading.',
+    keyClauses: [
+      'Section 3: Vortex-induced vibration (VIV) screening and modal analysis',
+      'Section 5: Multi-span interaction and seabed intervention triggers'
+    ],
+    complianceChecklist: [
+      'High-resolution multi-beam survey span length and gap identification',
+      'Fatigue life verification against cross-flow and in-line VIV'
+    ],
+    relevanceLevel: 'primary'
   },
   {
     id: 'dnv-rp-f109', code: 'DNV-RP-F109', title: 'On-bottom stability design of submarine pipelines, cables and umbilicals', issuer: 'DNV', kind: 'recommended-practice',

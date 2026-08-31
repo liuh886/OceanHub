@@ -164,9 +164,11 @@ const providerPayload = marketProviders.map((provider) => ({
 
   function currentPlan() {
     const dataNode = document.getElementById('decision-scoper-data');
+    const archSelect = document.getElementById('scoper-archetype') as HTMLSelectElement | null;
     if (!dataNode || !stage || !focus) return [] as PlanItem[];
     const data = JSON.parse(dataNode.textContent ?? '{}') as Record<string, PlanItem[]>;
-    return data[`${stage.value}:${focus.value}`] ?? [];
+    const arch = archSelect?.value || 'offshore-ccs';
+    return data[`${arch}:${stage.value}:${focus.value}`] ?? data[`${stage.value}:${focus.value}`] ?? [];
   }
 
   function uniqueById(items: any[]) {
@@ -249,6 +251,8 @@ const providerPayload = marketProviders.map((provider) => ({
     const matches = providerMatches(requiredCapabilities).slice(0, 6);
     const capabilityById = new Map(requiredCapabilities.map((capability) => [capability.id, capability]));
 
+    const archSelect = document.getElementById('scoper-archetype') as HTMLSelectElement | null;
+    const archetypeLabel = archSelect?.selectedOptions[0]?.textContent?.trim() || 'Offshore CO2 geological storage';
     const stageLabel = stage?.selectedOptions[0]?.textContent?.trim() || stage?.value || '';
     const focusLabel = focus?.selectedOptions[0]?.textContent?.trim() || focus?.value || '';
 
@@ -263,7 +267,8 @@ const providerPayload = marketProviders.map((provider) => ({
       {
         projectContext: projectContext?.value,
         stageLabel,
-        focusLabel
+        focusLabel,
+        archetype: archetypeLabel
       },
       clauseOptions
     );
@@ -303,7 +308,8 @@ const providerPayload = marketProviders.map((provider) => ({
     result?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  [stage, focus].forEach((control) => control?.addEventListener('change', () => {
+  const archSelect = document.getElementById('scoper-archetype') as HTMLSelectElement | null;
+  [stage, focus, archSelect].forEach((control) => control?.addEventListener('change', () => {
     if (!result?.classList.contains('hidden')) render();
   }));
   projectContext?.addEventListener('input', () => {
