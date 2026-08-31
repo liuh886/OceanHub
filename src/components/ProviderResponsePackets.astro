@@ -6,20 +6,9 @@ const responsePath = `${base}respond/`;
 const statusPath = `${base}status/`;
 ---
 
-<section
-  id="provider-response-builder"
-  class="mt-10 hidden rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8"
-  data-response-path={responsePath}
-  data-status-path={statusPath}
-  data-intake-url={oceanhubBackend.intakeUrl}
-  aria-labelledby="provider-response-title"
->
+<section id="provider-response-builder" class="mt-10 hidden rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8" data-response-path={responsePath} data-status-path={statusPath} data-intake-url={oceanhubBackend.intakeUrl} aria-labelledby="provider-response-title">
   <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-    <div>
-      <p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">EOI response loop</p>
-      <h2 id="provider-response-title" class="mt-2 text-2xl font-black text-white">Select 2–5 providers and open a tracked EOI.</h2>
-      <p class="mt-2 max-w-3xl text-xs leading-relaxed text-slate-500">OceanHub persists one EOI request, gives every selected provider a capability-specific response link, and gives the buyer a private tracking link for response and review status. Outreach remains in your procurement channel.</p>
-    </div>
+    <div><p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">EOI response loop</p><h2 id="provider-response-title" class="mt-2 text-2xl font-black text-white">Select 2–5 providers and open a tracked EOI.</h2><p class="mt-2 max-w-3xl text-xs leading-relaxed text-slate-500">The persisted request becomes the single source for supplier response and review status. Outreach remains in your procurement channel.</p></div>
     <button id="generate-provider-packets" type="button" disabled class="shrink-0 rounded-xl bg-emerald-400 px-5 py-3 text-xs font-black text-slate-950 disabled:cursor-not-allowed disabled:opacity-40">Open tracked EOI</button>
   </div>
   <p id="provider-selection-status" class="mt-4 text-xs text-slate-500" aria-live="polite">Select at least 2 candidate providers from the shortlist above.</p>
@@ -41,20 +30,20 @@ const statusPath = `${base}status/`;
   const packets = document.getElementById('provider-response-packets');
   const stage = document.getElementById('scoper-stage') as HTMLSelectElement | null;
   const focus = document.getElementById('scoper-focus') as HTMLSelectElement | null;
+  const archetype = document.getElementById('scoper-archetype') as HTMLSelectElement | null;
   const project = document.getElementById('eoi-project-context') as HTMLInputElement | null;
   const responsePath = builder?.dataset.responsePath || '/respond/';
   const statusPath = builder?.dataset.statusPath || '/status/';
   const intakeUrl = builder?.dataset.intakeUrl || '';
   const providers = JSON.parse(document.getElementById('market-provider-data')?.textContent ?? '[]') as Provider[];
-
   const esc = (value: string) => value.replace(/[&<>'\"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '\"': '&quot;' })[character] ?? character);
   const selected = () => Array.from(document.querySelectorAll<HTMLInputElement>('.provider-response-select:checked'));
 
-  function currentPlan() {
+  function currentPlan(): PlanItem[] {
     const node = document.getElementById('decision-scoper-data');
-    if (!node || !stage || !focus) return [] as PlanItem[];
+    if (!node || !stage || !focus || !archetype) return [];
     const data = JSON.parse(node.textContent ?? '{}') as Record<string, PlanItem[]>;
-    return data[`${stage.value}:${focus.value}`] ?? [];
+    return data[`${archetype.value}:${stage.value}:${focus.value}`] ?? [];
   }
 
   function requiredCapabilities() {
@@ -62,14 +51,8 @@ const statusPath = `${base}status/`;
   }
 
   function resetPackets() {
-    if (packets) {
-      packets.classList.add('hidden');
-      packets.innerHTML = '';
-    }
-    if (tracking) {
-      tracking.classList.add('hidden');
-      tracking.innerHTML = '';
-    }
+    if (packets) { packets.classList.add('hidden'); packets.innerHTML = ''; }
+    if (tracking) { tracking.classList.add('hidden'); tracking.innerHTML = ''; }
   }
 
   function updateSelectionState() {
@@ -77,19 +60,12 @@ const statusPath = `${base}status/`;
     const all = Array.from(document.querySelectorAll<HTMLInputElement>('.provider-response-select'));
     all.forEach((checkbox) => { checkbox.disabled = count >= 5 && !checkbox.checked; });
     if (generate) generate.disabled = count < 2 || count > 5;
-    if (status) status.textContent = count === 0
-      ? 'Select at least 2 candidate providers from the shortlist above.'
-      : count < 2
-        ? `${count} selected · choose at least one more provider.`
-        : `${count} selected · ready to open one tracked EOI request.`;
+    if (status) status.textContent = count === 0 ? 'Select at least 2 candidate providers from the shortlist above.' : count < 2 ? `${count} selected · choose at least one more provider.` : `${count} selected · ready to open one tracked EOI request.`;
   }
 
   function decorateShortlist() {
     const cards = Array.from(shortlist?.querySelectorAll<HTMLElement>('[data-provider-match]') ?? []);
-    if (!cards.length) {
-      builder?.classList.add('hidden');
-      return;
-    }
+    if (!cards.length) { builder?.classList.add('hidden'); return; }
     builder?.classList.remove('hidden');
     cards.forEach((card) => {
       if (card.querySelector('.provider-response-select')) return;
@@ -100,13 +76,9 @@ const statusPath = `${base}status/`;
       label.className = 'mt-4 flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/[0.025] px-3 py-2.5 text-xs font-bold text-slate-200';
       label.innerHTML = `<input type="checkbox" class="provider-response-select h-4 w-4 rounded border-white/20 bg-slate-950" value="${esc(providerId)}" /> <span>Select ${esc(provider.name)} for response request</span>`;
       card.appendChild(label);
-      label.querySelector('input')?.addEventListener('change', () => {
-        resetPackets();
-        updateSelectionState();
-      });
+      label.querySelector('input')?.addEventListener('change', () => { resetPackets(); updateSelectionState(); });
     });
-    resetPackets();
-    updateSelectionState();
+    resetPackets(); updateSelectionState();
   }
 
   const observer = new MutationObserver(decorateShortlist);
@@ -114,25 +86,17 @@ const statusPath = `${base}status/`;
   decorateShortlist();
 
   async function createTrackedRequest(required: Capability[], chosenProviders: Provider[], stageLabel: string, focusLabel: string, projectContext: string) {
-    const response = await fetch(intakeUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'create_request',
-        projectContext,
-        lifecycleStage: stageLabel,
-        decisionFocus: focusLabel,
-        requiredCapabilities: required,
-        providerRequests: chosenProviders.map((provider) => ({
-          providerId: provider.id,
-          providerName: provider.name,
-          capabilityIds: required.map((capability) => capability.id)
-        }))
-      })
-    });
+    const response = await fetch(intakeUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create_request', projectContext, lifecycleStage: stageLabel, decisionFocus: focusLabel, requiredCapabilities: required, providerRequests: chosenProviders.map((provider) => ({ providerId: provider.id, providerName: provider.name, capabilityIds: required.map((capability) => capability.id) })) }) });
     const data = await response.json() as CreateRequestResponse;
     if (!response.ok || !data.requestId || !data.buyerToken) throw new Error(data.error || 'Could not persist EOI request.');
     return { requestId: data.requestId, buyerToken: data.buyerToken };
+  }
+
+  async function copyText(button: HTMLButtonElement, text: string) {
+    const original = button.textContent || 'Copy response request';
+    try { await navigator.clipboard.writeText(text); button.textContent = 'Copied'; }
+    catch { button.textContent = 'Copy failed'; }
+    window.setTimeout(() => { button.textContent = original; }, 1400);
   }
 
   generate?.addEventListener('click', async () => {
@@ -140,10 +104,7 @@ const statusPath = `${base}status/`;
     if (chosenCheckboxes.length < 2 || chosenCheckboxes.length > 5 || !packets || !generate || !intakeUrl) return;
     const required = requiredCapabilities();
     if (!required.length) return;
-
-    const chosenProviders = chosenCheckboxes
-      .map((checkbox) => providers.find((item) => item.id === checkbox.value))
-      .filter(Boolean) as Provider[];
+    const chosenProviders = chosenCheckboxes.map((checkbox) => providers.find((provider) => provider.id === checkbox.value)).filter(Boolean) as Provider[];
     if (chosenProviders.length !== chosenCheckboxes.length) return;
 
     const requiredIds = required.map((capability) => capability.id);
@@ -152,77 +113,32 @@ const statusPath = `${base}status/`;
     const focusLabel = focus?.selectedOptions[0]?.textContent?.trim() || focus?.value || '';
     const projectContext = project?.value.trim() || '[project / region not provided]';
 
-    generate.disabled = true;
-    generate.textContent = 'Opening EOI…';
+    generate.disabled = true; generate.textContent = 'Opening EOI…';
     if (status) status.textContent = 'Persisting the EOI request before response links are issued…';
     resetPackets();
 
     try {
       const { requestId, buyerToken } = await createTrackedRequest(required, chosenProviders, stageLabel, focusLabel, projectContext);
       const statusUrl = new URL(statusPath, window.location.origin);
-      statusUrl.searchParams.set('request', requestId);
-      statusUrl.searchParams.set('token', buyerToken);
-
-      if (tracking) {
-        tracking.innerHTML = `<strong class="text-cyan-100">Buyer tracking link:</strong> <a class="ml-1 break-all text-cyan-300 hover:text-cyan-200" href="${esc(statusUrl.toString())}" target="_blank" rel="noopener noreferrer">${esc(statusUrl.toString())}</a><p class="mt-2 text-slate-500">Keep this private URL. It shows response/review states but never supplier evidence detail or contact data.</p>`;
-        tracking.classList.remove('hidden');
-      }
+      statusUrl.searchParams.set('request', requestId); statusUrl.searchParams.set('token', buyerToken);
+      if (tracking) { tracking.innerHTML = `<strong class="text-cyan-100">Buyer tracking link:</strong> <a class="ml-1 break-all text-cyan-300" href="${esc(statusUrl.toString())}" target="_blank" rel="noopener noreferrer">${esc(statusUrl.toString())}</a><p class="mt-2 text-slate-500">Keep this private URL. It exposes review states, not supplier evidence detail.</p>`; tracking.classList.remove('hidden'); }
 
       packets.innerHTML = chosenProviders.map((provider) => {
-        const matched = requiredIds.filter((id) => provider.capabilityIds.includes(id));
+        const mapped = requiredIds.filter((id) => provider.capabilityIds.includes(id));
         const missing = requiredIds.filter((id) => !provider.capabilityIds.includes(id));
         const url = new URL(responsePath, window.location.origin);
-        url.searchParams.set('request', requestId);
-        url.searchParams.set('provider', provider.id);
-        url.searchParams.set('caps', requiredIds.join(','));
-        url.searchParams.set('mapped', matched.join(','));
-        url.searchParams.set('project', projectContext);
-        url.searchParams.set('stage', stageLabel);
-        url.searchParams.set('focus', focusLabel);
-        const text = [
-          'OceanHub — Supplier EOI Response Request',
-          '',
-          `Request ID: ${requestId}`,
-          `Provider: ${provider.name} (${provider.id})`,
-          `Project / region: ${projectContext}`,
-          `Lifecycle stage: ${stageLabel}`,
-          `Decision focus: ${focusLabel}`,
-          '',
-          'Capabilities currently evidenced by public mapping:',
-          ...(matched.length ? matched.map((id) => `- ${id} — ${capabilityById.get(id) || id}`) : ['- None']),
-          '',
-          'EOI requirements not covered by the current public mapping:',
-          ...(missing.length ? missing.map((id) => `- ${id} — ${capabilityById.get(id) || id}`) : ['- None']),
-          '',
-          'Supplier action requested:',
-          '- Respond to every requested canonical capability. Claim it only when you can provide supporting evidence.',
-          '- Provide one primary evidence item for each requested capability.',
-          '- State operating regions / mobilization basis and response contact.',
-          '',
-          `Structured response link: ${url.toString()}`,
-          '',
-          'OceanHub note: public-source mapping is a discovery aid, not an endorsement. Supplier-submitted evidence remains evidence-submitted until reviewed.'
-        ].join('\n');
-        return `<article class="rounded-2xl border border-white/10 bg-black/20 p-5" data-provider-response-packet="${esc(provider.id)}">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-emerald-300">${esc(requestId)}</p><h3 class="mt-1 text-lg font-bold text-white">${esc(provider.name)} response packet</h3><p class="mt-1 text-xs text-slate-500">${matched.length}/${requiredIds.length} requirements currently covered by public-source mapping; supplier is asked to respond to all ${requiredIds.length}.</p></div><a href="${esc(url.toString())}" target="_blank" rel="noopener noreferrer" class="shrink-0 rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-4 py-2.5 text-xs font-bold text-emerald-100">Open supplier response ↗</a></div>
-          <pre class="provider-response-text mt-4 max-h-72 overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-slate-950/60 p-4 text-[11px] leading-5 text-slate-400">${esc(text)}</pre>
-          <button type="button" class="copy-provider-response mt-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-bold text-white">Copy response request</button>
-        </article>`;
+        url.searchParams.set('request', requestId); url.searchParams.set('provider', provider.id); url.searchParams.set('caps', requiredIds.join(',')); url.searchParams.set('mapped', mapped.join(',')); url.searchParams.set('project', projectContext); url.searchParams.set('stage', stageLabel); url.searchParams.set('focus', focusLabel);
+        const text = ['OceanHub — Supplier EOI Response Request', '', `Request ID: ${requestId}`, `Provider: ${provider.name} (${provider.id})`, `Project / region: ${projectContext}`, `Lifecycle stage: ${stageLabel}`, `Decision focus: ${focusLabel}`, '', 'Public-source mapped capabilities:', ...(mapped.length ? mapped.map((id) => `- ${id} — ${capabilityById.get(id) || id}`) : ['- None']), '', 'Requirements not covered by the current public mapping:', ...(missing.length ? missing.map((id) => `- ${id} — ${capabilityById.get(id) || id}`) : ['- None']), '', 'Supplier action requested:', '- Respond to every requested canonical capability.', '- Claim a capability only with capability-specific supporting evidence.', '- State operating region / mobilization basis and material subcontracting.', '', `Structured response link: ${url.toString()}`, '', 'OceanHub note: supplier evidence remains evidence-submitted until an explicit review outcome is recorded.'].join('\n');
+        return `<article class="rounded-2xl border border-white/10 bg-black/20 p-5" data-provider-response-packet="${esc(provider.id)}"><div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><p class="font-mono text-[10px] uppercase text-emerald-300">${esc(requestId)}</p><h3 class="mt-1 text-lg font-bold text-white">${esc(provider.name)} response packet</h3></div><a href="${esc(url.toString())}" target="_blank" rel="noopener noreferrer" class="rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-4 py-2.5 text-xs font-bold text-emerald-100">Open supplier response ↗</a></div><pre class="provider-response-text mt-4 max-h-72 overflow-auto whitespace-pre-wrap rounded-xl border border-white/10 bg-slate-950/60 p-4 text-[11px] leading-5 text-slate-400">${esc(text)}</pre><button type="button" class="copy-provider-response mt-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-bold text-white">Copy response request</button></article>`;
       }).join('');
       packets.classList.remove('hidden');
-      packets.querySelectorAll<HTMLButtonElement>('.copy-provider-response').forEach((button) => button.addEventListener('click', async () => {
-        const text = button.closest('[data-provider-response-packet]')?.querySelector('.provider-response-text')?.textContent || '';
-        await navigator.clipboard.writeText(text);
-        const original = button.textContent || 'Copy response request';
-        button.textContent = 'Copied';
-        window.setTimeout(() => { button.textContent = original; }, 1400);
-      }));
+      packets.querySelectorAll<HTMLButtonElement>('.copy-provider-response').forEach((button) => button.addEventListener('click', () => copyText(button, button.closest('[data-provider-response-packet]')?.querySelector('.provider-response-text')?.textContent || '')));
+      window.dispatchEvent(new CustomEvent('oceanhub:tracked-eoi-opened', { detail: { requestId, buyerToken, intakeUrl, providerIds: chosenProviders.map((provider) => provider.id) } }));
       if (status) status.textContent = `Tracked EOI ${requestId} opened for ${chosenProviders.length} providers.`;
     } catch (error) {
       if (status) status.textContent = error instanceof Error ? error.message : 'Could not open the tracked EOI request.';
     } finally {
-      generate.textContent = 'Open tracked EOI';
-      updateSelectionState();
+      generate.textContent = 'Open tracked EOI'; updateSelectionState();
     }
   });
 </script>
