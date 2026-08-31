@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: oceanhub-validate-${{ github.event.pull_request.number || github.ref }}
+  group: oceanhub-validate-v2-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
