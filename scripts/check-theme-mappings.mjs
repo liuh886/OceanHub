@@ -1,9 +1,10 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { extname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = new URL('../', import.meta.url);
-const sourceRoot = new URL('../src/', import.meta.url);
-const theme = await readFile(new URL('../src/styles/theme.css', import.meta.url), 'utf8');
+const rootPath = fileURLToPath(new URL('../', import.meta.url));
+const sourceRootPath = fileURLToPath(new URL('../src/', import.meta.url));
+const theme = await readFile(fileURLToPath(new URL('../src/styles/theme.css', import.meta.url)), 'utf8');
 
 if (theme.includes("[class*='")) {
   throw new Error('Light-theme utility mapping must use exact class-token selectors, not substring selectors.');
@@ -31,10 +32,10 @@ async function walk(dir) {
   }
 }
 
-await walk(sourceRoot.pathname);
+await walk(sourceRootPath);
 const missing = [...tokens].filter((token) => !theme.includes(`[class~='${token}']`)).sort();
 if (missing.length) {
   throw new Error(`Dark surface utilities missing exact light-theme mappings:\n${missing.join('\n')}`);
 }
 
-console.log(`Light-theme mapping contract passed for ${tokens.size} dark surface utility tokens under ${root.pathname}.`);
+console.log(`Light-theme mapping contract passed for ${tokens.size} dark surface utility tokens under ${rootPath}.`);

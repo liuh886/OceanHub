@@ -11,6 +11,20 @@ export type CapabilityFamily =
   | 'digital-integration'
   | 'decommissioning';
 
+export type WaterDepthTier = 'shallow' | 'deepwater' | 'ultra-deepwater';
+
+export interface OperationalEnvelope {
+  waterDepthTiers?: WaterDepthTier[];
+  coreAssets?: string[];
+  deliveryRegions?: string[];
+}
+
+export interface EvidenceTriadGuidance {
+  referenceProjectExample?: string;
+  assetRequirement?: string;
+  deliverableExample?: string;
+}
+
 export interface Capability {
   id: string;
   label: string;
@@ -21,4 +35,7 @@ export interface Capability {
   projectArchetypes: ProjectArchetype[];
   methodExamples: string[];
   providerTypes: string[];
+  operationalEnvelope?: OperationalEnvelope;
+  evidenceTriadGuidance?: EvidenceTriadGuidance;
 }
+

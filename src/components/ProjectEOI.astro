@@ -1,70 +1,85 @@
 ---
-import { capabilities } from '../data/capabilities';
 import { marketProviders } from '../data/marketProviders';
-import '../lib/matchMarketProviders';
 
-const providerPayload = marketProviders.map((provider) => ({
-  ...provider,
-  capabilityLabels: provider.capabilityIds.map((capabilityId) => capabilities.find((capability) => capability.id === capabilityId)?.label ?? capabilityId)
-}));
+const providerPayload = marketProviders;
 ---
 
 <section id="project-eoi-builder" class="mt-8 border-t border-white/10 pt-10" aria-labelledby="project-eoi-title">
-  <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
-    <div class="lg:col-span-5">
-      <p class="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-300">Supplier EOI</p>
-      <h2 id="project-eoi-title" class="mt-3 font-display text-3xl font-black tracking-tight text-white sm:text-4xl">Turn the evidence plan into a supplier brief.</h2>
-      <p class="mt-4 text-sm leading-relaxed text-slate-400">OceanHub converts the active Decision Scoper result into canonical capability requirements, a procurement-ready EOI draft and a transparent market shortlist.</p>
+  <div class="grid gap-8 lg:grid-cols-12 lg:gap-12">
+    <div class="lg:col-span-7">
+      <p class="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-300">Supplier EOI Studio</p>
+      <h2 id="project-eoi-title" class="mt-3 font-display text-3xl font-black tracking-tight text-white sm:text-4xl">Turn the evidence plan into a project-specific sourcing brief.</h2>
+      <p class="mt-4 text-sm leading-relaxed text-slate-400">Project constraints are explicit hard gates on the encoded capability envelope. Supplier discovery remains explainable: canonical capability overlap first, then constraint compatibility, then supplier evidence and review state.</p>
 
-      <div class="mt-7">
-        <label for="eoi-project-context" class="mb-2 block text-xs font-bold text-slate-200">Project / region note</label>
-        <input id="eoi-project-context" type="text" placeholder="e.g. Gulf of Thailand · 80 m water depth · Pre-FEED" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-cyan-400 focus:outline-none" />
-        <p class="mt-2 text-xs leading-relaxed text-slate-500">Used in the EOI only. Provider matching in v1 is exact capability overlap; no hidden location or quality score is applied.</p>
+      <div class="mt-6 grid gap-4 sm:grid-cols-2">
+        <div class="sm:col-span-2">
+          <label for="eoi-project-context" class="mb-2 block text-xs font-bold text-slate-200">Project / region note</label>
+          <input id="eoi-project-context" type="text" placeholder="e.g. Gulf of Thailand · Pre-FEED storage project" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:border-cyan-400 focus:outline-none" />
+        </div>
+        <div>
+          <label for="eoi-water-depth" class="mb-2 block text-xs font-bold text-slate-200">Water-depth tier</label>
+          <select id="eoi-water-depth" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none">
+            <option value="">No depth gate</option>
+            <option value="shallow">Shallow</option>
+            <option value="deepwater">Deepwater</option>
+            <option value="ultra-deepwater">Ultra-deepwater</option>
+          </select>
+        </div>
+        <div>
+          <label for="eoi-delivery-region" class="mb-2 block text-xs font-bold text-slate-200">Delivery region</label>
+          <select id="eoi-delivery-region" class="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white focus:border-cyan-400 focus:outline-none">
+            <option value="">No region gate</option>
+            <option value="North Sea">North Sea</option>
+            <option value="Gulf of Mexico">Gulf of Mexico</option>
+            <option value="APAC">APAC</option>
+            <option value="Middle East">Middle East</option>
+            <option value="Mediterranean">Mediterranean</option>
+            <option value="US West Coast">US West Coast</option>
+          </select>
+        </div>
       </div>
 
-      <button id="generate-project-eoi" type="button" class="mt-6 w-full rounded-xl bg-cyan-400 px-5 py-3.5 text-sm font-black text-slate-950 hover:bg-cyan-300 sm:w-auto">Generate supplier EOI & shortlist</button>
+      <div class="mt-4 rounded-xl border border-white/10 bg-white/[0.02] p-4">
+        <p class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Procurement gates</p>
+        <div class="mt-3 space-y-3 text-xs text-slate-300">
+          <label class="flex items-center gap-2.5"><input id="eoi-clause-hse" type="checkbox" checked class="rounded border-white/20 bg-slate-900 text-cyan-400" /><span>Request project-relevant HSE evidence and management-system certification</span></label>
+          <label class="flex items-center gap-2.5"><input id="eoi-clause-class" type="checkbox" checked class="rounded border-white/20 bg-slate-900 text-cyan-400" /><span>Request applicable marine class / technical verification evidence</span></label>
+          <div class="flex items-center gap-3"><label for="eoi-contract-model" class="shrink-0 text-slate-400">Contract model</label><select id="eoi-contract-model" class="rounded-lg border border-white/10 bg-slate-900 px-3 py-1.5 text-xs text-white"><option value="feed-call-off">Pre-FEED / FEED call-off</option><option value="lump-sum">Firm lump-sum deliverable</option><option value="epci">Integrated EPCI</option><option value="time-and-materials">Time & materials capped</option></select></div>
+        </div>
+      </div>
+
+      <button id="generate-project-eoi" type="button" class="mt-6 rounded-xl bg-cyan-400 px-5 py-3.5 text-sm font-black text-slate-950 hover:bg-cyan-300">Generate supplier EOI & shortlist</button>
     </div>
 
-    <div class="lg:col-span-7">
+    <div class="lg:col-span-5">
       <div class="border-l-2 border-white/10 pl-5 sm:pl-7">
-        <p class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Matching contract</p>
-        <div class="mt-4 space-y-3 text-sm leading-relaxed text-slate-400">
-          <p><strong class="text-slate-200">Exact capability IDs.</strong> Providers only match requirements explicitly mapped to the same canonical capability.</p>
-          <p><strong class="text-slate-200">Explainable shortlist.</strong> OceanHub shows matched and uncovered requirements rather than a black-box supplier score.</p>
-          <p><strong class="text-slate-200">Evidence state stays visible.</strong> The first market seed is public-source mapped; it is not an OceanHub-reviewed endorsement.</p>
+        <p class="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Decision contract</p>
+        <div class="mt-4 space-y-4 text-sm leading-relaxed text-slate-400">
+          <p><strong class="text-slate-200">No supplier score.</strong> Coverage is shown capability by capability.</p>
+          <p><strong class="text-slate-200">Hard constraints stay visible.</strong> Encoded water-depth and regional envelopes can exclude a public capability mapping from the shortlist.</p>
+          <p><strong class="text-slate-200">Evidence state is authoritative.</strong> Public mapping, supplier submission and OceanHub review are separate states.</p>
         </div>
       </div>
     </div>
   </div>
 
   <div id="project-eoi-result" class="mt-10 hidden border-t border-white/10 pt-10" aria-live="polite">
-    <div class="grid grid-cols-1 gap-10 xl:grid-cols-12 xl:gap-12">
-      <article class="xl:col-span-7">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-300">Generated procurement brief</p>
-            <h3 class="mt-2 font-display text-2xl font-black text-white">Project EOI draft</h3>
-            <p id="project-eoi-summary" class="mt-2 text-xs leading-relaxed text-slate-500"></p>
-          </div>
-          <button id="copy-project-eoi" type="button" class="shrink-0 rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-xs font-bold text-white hover:bg-white/10">Copy EOI</button>
-        </div>
+    <div class="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-4">
+      <div><p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-300">Generated procurement brief</p><h3 class="mt-1 font-display text-2xl font-black text-white">Project EOI draft</h3><p id="project-eoi-summary" class="mt-1 text-xs leading-relaxed text-slate-500"></p></div>
+      <div class="flex flex-wrap gap-2"><button id="view-eoi-doc" type="button" class="rounded-lg bg-cyan-400/10 px-3.5 py-2 text-xs font-bold text-cyan-300">EOI Specification</button><button id="view-eoi-matrix" type="button" class="rounded-lg border border-white/10 px-3.5 py-2 text-xs font-bold text-slate-300">Comparison Matrix</button><button id="copy-project-eoi" type="button" class="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-xs font-bold text-white">Copy EOI</button><button id="download-eoi-md" type="button" class="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-xs font-bold text-white">Download .MD</button></div>
+    </div>
 
-        <div class="mt-6">
-          <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Required capabilities</p>
-          <div id="project-eoi-capabilities" class="mt-3 flex flex-wrap gap-2"></div>
-        </div>
+    <div id="eoi-constraint-warning" class="mt-5 hidden rounded-xl border border-amber-400/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-100"></div>
+    <div class="mt-6"><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Required canonical capabilities</p><div id="project-eoi-capabilities" class="mt-2.5 flex flex-wrap gap-2"></div></div>
 
-        <pre id="project-eoi-text" class="mt-6 max-h-[38rem] overflow-auto whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-5 text-xs leading-6 text-slate-300 sm:p-6"></pre>
-      </article>
+    <div id="eoi-panel-doc" class="mt-6 grid gap-10 xl:grid-cols-12 xl:gap-12">
+      <article class="xl:col-span-7"><pre id="project-eoi-text" class="max-h-[42rem] overflow-auto whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/25 p-5 text-xs leading-6 text-slate-300 sm:p-6"></pre></article>
+      <aside class="xl:col-span-5" aria-labelledby="provider-shortlist-title"><div class="border-b border-white/10 pb-4"><p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">Market shortlist</p><h3 id="provider-shortlist-title" class="mt-1 font-display text-xl font-black text-white">Candidate service providers</h3><p class="mt-1.5 text-xs leading-relaxed text-slate-500">Exact capability mapping after the selected operational-envelope gates.</p></div><div id="provider-shortlist" class="max-h-[40rem] divide-y divide-white/10 overflow-auto"></div></aside>
+    </div>
 
-      <aside class="xl:col-span-5" aria-labelledby="provider-shortlist-title">
-        <div class="border-b border-white/10 pb-5">
-          <p class="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">Market shortlist</p>
-          <h3 id="provider-shortlist-title" class="mt-2 font-display text-2xl font-black text-white">Candidate service providers</h3>
-          <p class="mt-2 text-xs leading-relaxed text-slate-500">Ordered by number of required canonical capabilities covered, then company name. This is capability coverage, not a quality ranking.</p>
-        </div>
-        <div id="provider-shortlist" class="divide-y divide-white/10"></div>
-      </aside>
+    <div id="eoi-panel-matrix" class="mt-6 hidden">
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-3"><p id="matrix-evidence-note" class="text-xs text-slate-500">Public-source mapping baseline. Open a tracked EOI to hydrate supplier response and review states.</p><button id="refresh-reviewed-matrix" type="button" class="hidden rounded-lg border border-cyan-400/20 bg-cyan-500/5 px-3 py-2 text-xs font-bold text-cyan-200">Refresh reviewed states</button></div>
+      <div class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/60 p-4"><table class="w-full text-left text-xs text-slate-300"><thead><tr id="matrix-header-row" class="border-b border-white/10 font-mono text-[11px] uppercase text-slate-400"><th class="min-w-[220px] px-4 py-3">Capability requirement</th></tr></thead><tbody id="matrix-body-rows" class="divide-y divide-white/5"></tbody></table></div>
     </div>
   </div>
 </section>
@@ -72,189 +87,191 @@ const providerPayload = marketProviders.map((provider) => ({
 <script id="market-provider-data" type="application/json" set:html={JSON.stringify(providerPayload)}></script>
 
 <script>
-  interface Capability {
-    id: string;
-    label: string;
-  }
+  import { buildStructuredEoi, formatEoiAsMarkdown, type PlanItem, type ProcurementClauseOptions } from '../lib/eoiBuilder';
+  import { buildCapabilityMatrix, type ProviderResponseStatus } from '../lib/capabilityMatrix';
+  import { capabilityConstraintGaps, matchProviderWithConstraints, type SourcingConstraints } from '../lib/sourcingConstraints';
+  import type { Capability } from '../lib/capability';
+  import type { MarketProvider } from '../lib/marketProvider';
 
-  interface Reference {
-    code: string;
-    title: string;
-  }
-
-  interface Requirement {
-    id: string;
-    evidenceNeeded: string;
-    deliverables: string[];
-  }
-
-  interface PlanItem {
-    decision: string;
-    requirement: Requirement;
-    capabilities: Capability[];
-    references: Reference[];
-  }
-
-  interface ProviderSource {
-    title: string;
-    publisher: string;
-    url: string;
-  }
-
-  interface Provider {
-    id: string;
-    name: string;
-    summary: string;
-    website: string;
-    deliveryFootprint: string;
-    capabilityIds: string[];
-    evidenceBasis: string;
-    sources: ProviderSource[];
-  }
-
-  const providers = JSON.parse(document.getElementById('market-provider-data')?.textContent ?? '[]') as Provider[];
+  const providers = JSON.parse(document.getElementById('market-provider-data')?.textContent ?? '[]') as MarketProvider[];
   const result = document.getElementById('project-eoi-result');
   const summary = document.getElementById('project-eoi-summary');
   const capabilityList = document.getElementById('project-eoi-capabilities');
   const eoiText = document.getElementById('project-eoi-text');
   const providerList = document.getElementById('provider-shortlist');
+  const warning = document.getElementById('eoi-constraint-warning');
   const projectContext = document.getElementById('eoi-project-context') as HTMLInputElement | null;
-  const generateButton = document.getElementById('generate-project-eoi');
-  const copyButton = document.getElementById('copy-project-eoi') as HTMLButtonElement | null;
+  const waterDepth = document.getElementById('eoi-water-depth') as HTMLSelectElement | null;
+  const deliveryRegion = document.getElementById('eoi-delivery-region') as HTMLSelectElement | null;
+  const clauseHse = document.getElementById('eoi-clause-hse') as HTMLInputElement | null;
+  const clauseClass = document.getElementById('eoi-clause-class') as HTMLInputElement | null;
+  const contractModel = document.getElementById('eoi-contract-model') as HTMLSelectElement | null;
+  const generate = document.getElementById('generate-project-eoi');
+  const copy = document.getElementById('copy-project-eoi') as HTMLButtonElement | null;
+  const download = document.getElementById('download-eoi-md') as HTMLButtonElement | null;
   const stage = document.getElementById('scoper-stage') as HTMLSelectElement | null;
   const focus = document.getElementById('scoper-focus') as HTMLSelectElement | null;
+  const archetype = document.getElementById('scoper-archetype') as HTMLSelectElement | null;
+  const panelDoc = document.getElementById('eoi-panel-doc');
+  const panelMatrix = document.getElementById('eoi-panel-matrix');
+  const matrixHeader = document.getElementById('matrix-header-row');
+  const matrixBody = document.getElementById('matrix-body-rows');
+  const matrixNote = document.getElementById('matrix-evidence-note');
+  const refreshReviewed = document.getElementById('refresh-reviewed-matrix') as HTMLButtonElement | null;
+  const esc = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' })[character] ?? character);
 
-  const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' })[character] ?? character);
+  let latestRequired: Capability[] = [];
+  let latestMatrixProviders: MarketProvider[] = [];
+  let reviewResponses: ProviderResponseStatus[] = [];
+  let tracking: { requestId: string; buyerToken: string; intakeUrl: string; providerIds: string[] } | null = null;
 
-  function currentPlan() {
-    const dataNode = document.getElementById('decision-scoper-data');
-    if (!dataNode || !stage || !focus) return [] as PlanItem[];
-    const data = JSON.parse(dataNode.textContent ?? '{}') as Record<string, PlanItem[]>;
-    return data[`${stage.value}:${focus.value}`] ?? [];
+  function currentPlan(): PlanItem[] {
+    const node = document.getElementById('decision-scoper-data');
+    if (!node || !stage || !focus || !archetype) return [];
+    const data = JSON.parse(node.textContent ?? '{}') as Record<string, PlanItem[]>;
+    return data[`${archetype.value}:${stage.value}:${focus.value}`] ?? [];
   }
 
-  function uniqueById(items: Capability[]) {
-    return [...new Map(items.map((item) => [item.id, item])).values()];
+  function constraints(): SourcingConstraints {
+    return {
+      waterDepthTier: (waterDepth?.value || undefined) as SourcingConstraints['waterDepthTier'],
+      deliveryRegion: deliveryRegion?.value || undefined
+    };
   }
 
-  function uniqueStrings(items: string[]) {
-    return [...new Set(items.filter(Boolean))];
+  function uniqueCapabilities(plan: PlanItem[]) {
+    return [...new Map(plan.flatMap((item) => item.capabilities).map((capability) => [capability.id, capability])).values()];
   }
 
   function providerMatches(required: Capability[]) {
-    const requiredIds = required.map((capability) => capability.id);
-    const requiredSet = new Set(requiredIds);
+    const activeConstraints = constraints();
     return providers
-      .map((provider) => ({
-        provider,
-        matched: provider.capabilityIds.filter((capabilityId) => requiredSet.has(capabilityId)),
-        missing: requiredIds.filter((capabilityId) => !provider.capabilityIds.includes(capabilityId))
-      }))
-      .filter((match) => match.matched.length > 0)
-      .sort((a, b) => b.matched.length - a.matched.length || a.provider.name.localeCompare(b.provider.name));
+      .map((provider) => matchProviderWithConstraints(provider, required, activeConstraints))
+      .filter((match) => match.matchedCapabilityIds.length > 0)
+      .sort((a, b) => b.matchedCapabilityIds.length - a.matchedCapabilityIds.length || a.provider.name.localeCompare(b.provider.name));
   }
 
-  function buildEoi(plan: PlanItem[], requiredCapabilities: Capability[]) {
-    const stageLabel = stage?.selectedOptions[0]?.textContent?.trim() || stage?.value || '[not selected]';
-    const focusLabel = focus?.selectedOptions[0]?.textContent?.trim() || focus?.value || '[not selected]';
-    const context = projectContext?.value.trim() || '[project / region not provided]';
-    const decisions = uniqueStrings(plan.map((item) => item.decision));
-    const workstreams = uniqueStrings(plan.map((item) => item.requirement.evidenceNeeded));
-    const deliverables = uniqueStrings(plan.flatMap((item) => item.requirement.deliverables));
-    const references = [...new Map(plan.flatMap((item) => item.references).map((reference) => [reference.code, reference])).values()];
+  function cellTone(status: string) {
+    if (status === 'reviewed-supported') return 'text-emerald-300';
+    if (status === 'reviewed-partial' || status === 'claimed-with-evidence' || status === 'awaiting') return 'text-amber-300';
+    if (status === 'reviewed-insufficient') return 'text-rose-300';
+    if (status === 'matched-public') return 'text-cyan-300';
+    return 'text-slate-600';
+  }
 
-    return [
-      'OceanHub — Supplier Expression of Interest (EOI)',
-      '',
-      `Project / region: ${context}`,
-      'Project archetype: Offshore CO2 geological storage',
-      `Lifecycle stage: ${stageLabel}`,
-      `Decision focus: ${focusLabel}`,
-      '',
-      '1. Decision scope',
-      ...decisions.map((decision) => `- ${decision}`),
-      '',
-      '2. Evidence workstreams',
-      ...workstreams.map((workstream) => `- ${workstream}`),
-      '',
-      '3. Required canonical capabilities',
-      ...requiredCapabilities.map((capability) => `- ${capability.id} — ${capability.label}`),
-      '',
-      '4. Expected deliverables',
-      ...deliverables.map((deliverable) => `- ${deliverable}`),
-      '',
-      '5. Engineering references',
-      ...references.map((reference) => `- ${reference.code} — ${reference.title}`),
-      '',
-      '6. Supplier response requested',
-      '- Confirm which required canonical capabilities your organization can directly deliver.',
-      '- State operating region, likely delivery location / mobilization basis, and material subcontracting interfaces.',
-      '- Provide relevant reference projects, field assets, datasets or delivered technical outputs for each claimed capability.',
-      '- Outline the proposed delivery approach, key interfaces, assumptions and evidence gaps that require clarification.',
-      '',
-      'OceanHub note: this EOI is generated from source-backed engineering reference patterns and is intended to accelerate early supplier discovery. Project-specific engineering and procurement review remain required.'
-    ].join('\n');
+  function renderMatrix() {
+    if (!matrixHeader || !matrixBody) return;
+    const matrix = buildCapabilityMatrix(latestRequired, latestMatrixProviders, reviewResponses);
+    matrixHeader.innerHTML = `<th class="min-w-[220px] px-4 py-3">Capability requirement</th>${matrix.columns.map((column) => `<th class="min-w-[145px] px-3 py-3 text-center"><div class="font-bold text-white">${esc(column.providerName)}</div><div class="mt-1 text-[10px] font-normal text-slate-500">${column.coverageCount}/${matrix.summary.totalRequiredCapabilities} current coverage</div></th>`).join('')}`;
+    matrixBody.innerHTML = matrix.rows.map((row) => `<tr><td class="px-4 py-3"><div class="font-medium text-slate-200">${esc(row.capabilityLabel)}</div><div class="font-mono text-[10px] text-slate-600">${esc(row.capabilityId)}</div></td>${matrix.columns.map((column) => { const cell = row.cells[column.providerId]; return `<td class="px-3 py-3 text-center"><span class="text-[11px] font-bold ${cellTone(cell.status)}">${esc(cell.statusLabel)}</span></td>`; }).join('')}</tr>`).join('');
   }
 
   function render() {
     const plan = currentPlan();
     if (!result || !summary || !capabilityList || !eoiText || !providerList) return;
-
     result.classList.remove('hidden');
+    reviewResponses = [];
+    tracking = null;
+    refreshReviewed?.classList.add('hidden');
+    if (matrixNote) matrixNote.textContent = 'Public-source mapping baseline. Open a tracked EOI to hydrate supplier response and review states.';
 
     if (!plan.length) {
-      summary.textContent = 'No source-backed evidence plan exists for the active Scoper selection, so OceanHub will not fabricate an EOI or supplier shortlist.';
+      summary.textContent = 'No source-backed evidence plan exists for the active Scoper selection.';
       capabilityList.innerHTML = '';
-      eoiText.textContent = 'Evidence gap — broaden the Decision Scoper focus or add a validated engineering case first.';
-      providerList.innerHTML = '<p class="py-6 text-sm text-slate-500">No provider shortlist generated without defined capability requirements.</p>';
+      eoiText.textContent = 'Evidence gap — no EOI generated.';
+      providerList.innerHTML = '<p class="py-6 text-sm text-slate-500">No provider shortlist without defined capability requirements.</p>';
+      latestRequired = [];
+      latestMatrixProviders = [];
+      renderMatrix();
       return;
     }
 
-    const requiredCapabilities = uniqueById(plan.flatMap((item) => item.capabilities));
-    const matches = providerMatches(requiredCapabilities).slice(0, 6);
-    const capabilityById = new Map(requiredCapabilities.map((capability) => [capability.id, capability]));
+    const required = uniqueCapabilities(plan);
+    const matches = providerMatches(required).slice(0, 6);
+    const capabilityById = new Map(required.map((capability) => [capability.id, capability]));
+    const gaps = capabilityConstraintGaps(required, constraints());
+    latestRequired = required;
+    latestMatrixProviders = matches.map((match) => ({ ...match.provider, capabilityIds: match.matchedCapabilityIds }));
 
-    summary.textContent = `${requiredCapabilities.length} canonical capabilities derived from ${plan.length} evidence workstream${plan.length === 1 ? '' : 's'} · ${matches.length} market candidates with at least one exact capability match.`;
-    capabilityList.innerHTML = requiredCapabilities.map((capability) => `<span data-eoi-capability="${escapeHtml(capability.id)}" class="rounded-full border border-cyan-400/20 bg-cyan-500/5 px-3 py-1.5 text-[11px] font-semibold text-cyan-100">${escapeHtml(capability.label)}</span>`).join('');
-    eoiText.textContent = buildEoi(plan, requiredCapabilities);
+    if (warning) {
+      if (gaps.length) {
+        warning.textContent = `Constraint evidence gap: ${gaps.map((capability) => capability.label).join(' · ')} is outside the encoded operational envelope for the selected project constraints. OceanHub will not count those public capability mappings as covered.`;
+        warning.classList.remove('hidden');
+      } else {
+        warning.classList.add('hidden');
+        warning.textContent = '';
+      }
+    }
 
-    providerList.innerHTML = matches.length
-      ? matches.map(({ provider, matched, missing }) => {
-          const matchedLabels = matched.map((capabilityId) => capabilityById.get(capabilityId)?.label ?? capabilityId);
-          const missingLabels = missing.map((capabilityId) => capabilityById.get(capabilityId)?.label ?? capabilityId);
-          const sourceLinks = provider.sources.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-300 hover:text-cyan-200">${escapeHtml(source.publisher)} source</a>`).join(' · ');
-          return `<article class="py-6" data-provider-match="${escapeHtml(provider.id)}" data-match-count="${matched.length}">
-            <div class="flex items-start justify-between gap-4">
-              <div><h4 class="text-base font-bold text-white">${escapeHtml(provider.name)}</h4><p class="mt-1 text-[11px] text-emerald-300">Public-source mapped · not OceanHub reviewed</p></div>
-              <a href="${escapeHtml(provider.website)}" target="_blank" rel="noopener noreferrer" class="shrink-0 text-xs font-bold text-slate-300 hover:text-white">Official site ↗</a>
-            </div>
-            <p class="mt-3 text-sm leading-relaxed text-slate-400">${escapeHtml(provider.summary)}</p>
-            <p class="mt-3 text-xs text-slate-500">${matched.length} of ${requiredCapabilities.length} required capabilities evidenced in the public mapping · ${escapeHtml(provider.deliveryFootprint)}</p>
-            <div class="mt-4"><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-600">Matched requirements</p><p class="mt-2 text-xs leading-relaxed text-slate-300">${matchedLabels.map(escapeHtml).join(' · ')}</p></div>
-            ${missingLabels.length ? `<div class="mt-3"><p class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-600">Not covered by this public mapping</p><p class="mt-2 text-xs leading-relaxed text-slate-500">${missingLabels.map(escapeHtml).join(' · ')}</p></div>` : ''}
-            <div class="mt-3">${sourceLinks}</div>
-          </article>`;
-        }).join('')
-      : '<p class="py-6 text-sm text-slate-500">The current public provider seed does not cover these capability requirements yet.</p>';
+    const stageLabel = stage?.selectedOptions[0]?.textContent?.trim() || stage?.value || '';
+    const focusLabel = focus?.selectedOptions[0]?.textContent?.trim() || focus?.value || '';
+    const archetypeLabel = archetype?.selectedOptions[0]?.textContent?.trim() || archetype?.value || '';
+    const clauseOptions: ProcurementClauseOptions = { includeHseClause: clauseHse?.checked ?? true, includeClassificationClause: clauseClass?.checked ?? true, contractModel: (contractModel?.value as ProcurementClauseOptions['contractModel']) ?? 'feed-call-off' };
+    const structured = buildStructuredEoi(plan, { projectContext: projectContext?.value, stageLabel, focusLabel, archetype: archetypeLabel, waterDepthTier: waterDepth?.selectedOptions[0]?.textContent || undefined, deliveryRegion: deliveryRegion?.value || undefined }, clauseOptions);
+    eoiText.textContent = formatEoiAsMarkdown(structured);
+    summary.textContent = `${required.length} required capabilities · ${matches.length} constraint-compatible market candidates · ${gaps.length} encoded constraint gap${gaps.length === 1 ? '' : 's'}.`;
+    capabilityList.innerHTML = required.map((capability) => `<span data-eoi-capability="${esc(capability.id)}" class="rounded-full border border-cyan-400/20 bg-cyan-500/5 px-3 py-1.5 text-[11px] font-semibold text-cyan-100">${esc(capability.label)}</span>`).join('');
+
+    providerList.innerHTML = matches.length ? matches.map((match) => {
+      const matched = match.matchedCapabilityIds.map((id) => capabilityById.get(id)?.label ?? id);
+      const missing = match.missingCapabilityIds.map((id) => capabilityById.get(id)?.label ?? id);
+      const out = match.outOfEnvelopeCapabilityIds.map((id) => capabilityById.get(id)?.label ?? id);
+      const sources = match.provider.sources.map((source) => `<a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-300">${esc(source.publisher)} source</a>`).join(' · ');
+      return `<article class="py-6" data-provider-match="${esc(match.provider.id)}" data-match-count="${match.matchedCapabilityIds.length}"><div class="flex items-start justify-between gap-4"><div><h4 class="text-base font-bold text-white">${esc(match.provider.name)}</h4><p class="mt-1 text-[11px] text-emerald-300">Public-source mapped · not OceanHub reviewed</p></div><a href="${esc(match.provider.website)}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-slate-300">Official site ↗</a></div><p class="mt-3 text-sm leading-relaxed text-slate-400">${esc(match.provider.summary)}</p><p class="mt-3 text-xs text-slate-500">${match.matchedCapabilityIds.length}/${required.length} requirements pass the selected capability/constraint gate.</p><div class="mt-4"><p class="font-mono text-[10px] uppercase text-slate-600">Matched</p><p class="mt-2 text-xs text-slate-300">${matched.map(esc).join(' · ')}</p></div>${out.length ? `<div class="mt-3"><p class="font-mono text-[10px] uppercase text-amber-500">Out of encoded envelope</p><p class="mt-2 text-xs text-amber-200/80">${out.map(esc).join(' · ')}</p></div>` : ''}${missing.length ? `<div class="mt-3"><p class="font-mono text-[10px] uppercase text-slate-600">Uncovered</p><p class="mt-2 text-xs text-slate-500">${missing.map(esc).join(' · ')}</p></div>` : ''}<div class="mt-3">${sources}</div></article>`;
+    }).join('') : '<p class="py-6 text-sm text-slate-500">No public provider mapping passes the current capability and project-constraint gates.</p>';
+    renderMatrix();
   }
 
-  generateButton?.addEventListener('click', () => {
-    render();
-    result?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
+  async function refreshReviewStates() {
+    if (!tracking || !latestRequired.length || !refreshReviewed) return;
+    refreshReviewed.disabled = true;
+    refreshReviewed.textContent = 'Refreshing…';
+    try {
+      const response = await fetch(tracking.intakeUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'request_status', requestId: tracking.requestId, buyerToken: tracking.buyerToken }) });
+      const data = await response.json() as { providers?: ProviderResponseStatus[]; error?: string };
+      if (!response.ok || !data.providers) throw new Error(data.error || 'Could not load reviewed states.');
+      reviewResponses = data.providers;
+      latestMatrixProviders = latestMatrixProviders.filter((provider) => tracking?.providerIds.includes(provider.id));
+      if (matrixNote) matrixNote.textContent = `Tracked EOI ${tracking.requestId}: matrix now shows supplier response and review outcomes where available.`;
+      renderMatrix();
+    } catch (error) {
+      if (matrixNote) matrixNote.textContent = error instanceof Error ? error.message : 'Could not refresh reviewed states.';
+    } finally {
+      refreshReviewed.disabled = false;
+      refreshReviewed.textContent = 'Refresh reviewed states';
+    }
+  }
 
-  [stage, focus].forEach((control) => control?.addEventListener('change', () => {
-    if (!result?.classList.contains('hidden')) render();
-  }));
-  projectContext?.addEventListener('input', () => {
-    if (!result?.classList.contains('hidden')) render();
-  });
+  generate?.addEventListener('click', () => { render(); result?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  [stage, focus, archetype, waterDepth, deliveryRegion, clauseHse, clauseClass, contractModel].forEach((control) => control?.addEventListener('change', () => { if (!result?.classList.contains('hidden')) render(); }));
+  projectContext?.addEventListener('input', () => { if (!result?.classList.contains('hidden')) render(); });
 
-  copyButton?.addEventListener('click', async () => {
+  document.getElementById('view-eoi-doc')?.addEventListener('click', () => { panelDoc?.classList.remove('hidden'); panelMatrix?.classList.add('hidden'); });
+  document.getElementById('view-eoi-matrix')?.addEventListener('click', () => { panelDoc?.classList.add('hidden'); panelMatrix?.classList.remove('hidden'); });
+  refreshReviewed?.addEventListener('click', refreshReviewStates);
+
+  window.addEventListener('oceanhub:tracked-eoi-opened', ((event: CustomEvent) => {
+    const detail = event.detail as { requestId: string; buyerToken: string; intakeUrl: string; providerIds: string[] };
+    tracking = detail;
+    refreshReviewed?.classList.remove('hidden');
+    refreshReviewStates();
+  }) as EventListener);
+
+  copy?.addEventListener('click', async () => {
     if (!eoiText?.textContent) return;
-    await navigator.clipboard.writeText(eoiText.textContent);
-    const original = copyButton.textContent || 'Copy EOI';
-    copyButton.textContent = 'Copied';
-    window.setTimeout(() => { copyButton.textContent = original; }, 1600);
+    const original = copy.textContent || 'Copy EOI';
+    try { await navigator.clipboard.writeText(eoiText.textContent); copy.textContent = 'Copied'; }
+    catch { copy.textContent = 'Copy failed'; }
+    window.setTimeout(() => { copy.textContent = original; }, 1600);
+  });
+
+  download?.addEventListener('click', () => {
+    if (!eoiText?.textContent) return;
+    const blob = new Blob([eoiText.textContent], { type: 'text/markdown;charset=utf-8' });
+    const objectUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = objectUrl;
+    anchor.download = `OceanHub-Supplier-EOI-${new Date().toISOString().split('T')[0]}.md`;
+    document.body.appendChild(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(objectUrl);
   });
 </script>

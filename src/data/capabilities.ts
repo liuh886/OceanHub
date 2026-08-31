@@ -1,10 +1,75 @@
 import type { Capability } from '../lib/capability';
 
 export const capabilities: Capability[] = [
-  { id: 'marine-seismic-acquisition', label: 'Marine seismic acquisition', family: 'ccs-subsurface', summary: 'Acquire repeatable marine seismic data for subsurface imaging and storage monitoring.', disciplines: ['geophysics'], lifecycleStages: ['feasibility','pre-feed','feed','operations','monitoring'], projectArchetypes: ['offshore-ccs','offshore-field-development'], methodExamples: ['3D seismic acquisition','repeat seismic survey'], providerTypes: ['Marine geophysical contractor','Seismic acquisition specialist'] },
-  { id: 'time-lapse-seismic', label: 'Time-lapse / 4D seismic', family: 'ccs-subsurface', summary: 'Design, process and interpret repeat seismic data to detect subsurface change through time.', disciplines: ['geophysics','monitoring'], lifecycleStages: ['operations','monitoring'], projectArchetypes: ['offshore-ccs'], methodExamples: ['4D repeatability design','time-lapse processing','difference-volume interpretation'], providerTypes: ['4D seismic specialist','Subsurface interpretation team'] },
-  { id: 'reservoir-characterization', label: 'Reservoir and storage characterization', family: 'ccs-subsurface', summary: 'Integrate geological, geophysical and well evidence into reservoir, seal and storage models.', disciplines: ['geology','geophysics','wells'], lifecycleStages: ['screening','feasibility','pre-feed','feed','operations','monitoring'], projectArchetypes: ['offshore-ccs','offshore-field-development'], methodExamples: ['well-to-seismic integration','storage modelling','reservoir interpretation'], providerTypes: ['Subsurface consultancy','Reservoir engineering team'] },
-  { id: 'petrophysics-well-testing', label: 'Petrophysics and well testing', family: 'ccs-subsurface', summary: 'Characterize reservoir and seal properties from logs, cores, samples and well tests.', disciplines: ['wells','geology'], lifecycleStages: ['feasibility','pre-feed','feed','operations'], projectArchetypes: ['offshore-ccs','offshore-field-development'], methodExamples: ['well logging','core analysis','injectivity testing'], providerTypes: ['Petrophysics provider','Well-test contractor','Core laboratory'] },
+  {
+    id: 'marine-seismic-acquisition', label: 'Marine seismic acquisition', family: 'ccs-subsurface',
+    summary: 'Acquire repeatable marine seismic data for subsurface imaging and storage monitoring.',
+    disciplines: ['geophysics'], lifecycleStages: ['feasibility','pre-feed','feed','operations','monitoring'],
+    projectArchetypes: ['offshore-ccs','offshore-field-development'],
+    methodExamples: ['3D seismic acquisition','repeat seismic survey'],
+    providerTypes: ['Marine geophysical contractor','Seismic acquisition specialist'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater', 'ultra-deepwater'],
+      coreAssets: ['DP2 Seismic Vessel', 'Ocean Bottom Nodes (OBN)', 'Multi-streamer Spread'],
+      deliveryRegions: ['North Sea', 'Gulf of Mexico', 'APAC', 'Middle East']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Completed 3D/4D marine baseline or repeat seismic acquisition in relevant sea states and water depths.',
+      assetRequirement: 'Vessel specifications, source array tuning and node positioning precision records.',
+      deliverableExample: 'Processed SEG-Y volumes, P1/90 navigation data and acquisition QA/QC report.'
+    }
+  },
+  {
+    id: 'time-lapse-seismic', label: 'Time-lapse / 4D seismic', family: 'ccs-subsurface',
+    summary: 'Design, process and interpret repeat seismic data to detect subsurface change through time.',
+    disciplines: ['geophysics','monitoring'], lifecycleStages: ['operations','monitoring'],
+    projectArchetypes: ['offshore-ccs'],
+    methodExamples: ['4D repeatability design','time-lapse processing','difference-volume interpretation'],
+    providerTypes: ['4D seismic specialist','Subsurface interpretation team'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater'],
+      coreAssets: ['High-performance seismic processing cluster', '4D binning & regularization software'],
+      deliveryRegions: ['Global']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Delivered 4D time-lapse processing or interpretation detecting fluid saturation / pressure changes.',
+      assetRequirement: 'Proprietary 4D inversion and normalization toolchains.',
+      deliverableExample: '4D difference volumes, NRMS repeatability maps and plume migration interpretation report.'
+    }
+  },
+  {
+    id: 'reservoir-characterization', label: 'Reservoir and storage characterization', family: 'ccs-subsurface',
+    summary: 'Integrate geological, geophysical and well evidence into reservoir, seal and storage models.',
+    disciplines: ['geology','geophysics','wells'], lifecycleStages: ['screening','feasibility','pre-feed','feed','operations','monitoring'],
+    projectArchetypes: ['offshore-ccs','offshore-field-development'],
+    methodExamples: ['well-to-seismic integration','storage modelling','reservoir interpretation'],
+    providerTypes: ['Subsurface consultancy','Reservoir engineering team'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater', 'ultra-deepwater'],
+      deliveryRegions: ['Global']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Delivered static and dynamic reservoir/storage simulation models for offshore carbon storage or oil & gas.',
+      deliverableExample: 'Static 3D geological model, dynamic capacity estimate and containment risk dossier.'
+    }
+  },
+  {
+    id: 'petrophysics-well-testing', label: 'Petrophysics and well testing', family: 'ccs-subsurface',
+    summary: 'Characterize reservoir and seal properties from logs, cores, samples and well tests.',
+    disciplines: ['wells','geology'], lifecycleStages: ['feasibility','pre-feed','feed','operations'],
+    projectArchetypes: ['offshore-ccs','offshore-field-development'],
+    methodExamples: ['well logging','core analysis','injectivity testing'],
+    providerTypes: ['Petrophysics provider','Well-test contractor','Core laboratory'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater'],
+      coreAssets: ['Downhole wireline logging tools', 'Core flooding laboratory', 'Special core analysis (SCAL) apparatus'],
+      deliveryRegions: ['Global']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Executed offshore well log interpretation, core flood test under in-situ P/T conditions.',
+      deliverableExample: 'Integrated petrophysical evaluation report, relative permeability curves and caprock seal capacity test data.'
+    }
+  },
   { id: 'ccs-well-engineering', label: 'CO2 injection well engineering', family: 'ccs-subsurface', summary: 'Design, convert, complete, test and assure wells for CO2 injection service.', disciplines: ['wells'], lifecycleStages: ['pre-feed','feed','construction','operations','monitoring'], projectArchetypes: ['offshore-ccs'], methodExamples: ['injection-well completion','well conversion','well-integrity verification'], providerTypes: ['Well engineering contractor','Drilling and completion specialist'] },
   { id: 'passive-seismic-monitoring', label: 'Passive seismic and microseismic monitoring', family: 'ccs-subsurface', summary: 'Continuously detect and interpret seismic activity relevant to storage or integrity decisions.', disciplines: ['monitoring','geophysics'], lifecycleStages: ['operations','monitoring'], projectArchetypes: ['offshore-ccs'], methodExamples: ['passive seismic monitoring','event detection','microseismic interpretation'], providerTypes: ['Seismology provider','Monitoring technology company'] },
   { id: 'reservoir-geomechanics', label: 'Reservoir geomechanics', family: 'ccs-subsurface', summary: 'Assess pressure, stress and deformation effects around injection and storage systems.', disciplines: ['geomechanics','geology'], lifecycleStages: ['feasibility','pre-feed','feed','operations','monitoring'], projectArchetypes: ['offshore-ccs'], methodExamples: ['geomechanical modelling','pressure-response analysis'], providerTypes: ['Geomechanics consultancy','Subsurface modelling team'] },
@@ -34,10 +99,58 @@ export const capabilities: Capability[] = [
   { id: 'marine-environmental-assessment', label: 'Marine environmental assessment', family: 'metocean-environment', summary: 'Integrate physical and ecological evidence into offshore impact, mitigation and consenting decisions.', disciplines: ['environment','marine-ecology','data-integration'], lifecycleStages: ['screening','feasibility','pre-feed','feed','construction','closure'], projectArchetypes: ['fixed-offshore-wind','floating-offshore-wind','marine-infrastructure','decommissioning','subsea-corridor'], methodExamples: ['environmental impact assessment','alternatives assessment','mitigation register'], providerTypes: ['Environmental consultancy','Consenting specialist'] },
   { id: 'benthic-environmental-monitoring', label: 'Benthic and environmental monitoring', family: 'metocean-environment', summary: 'Design repeatable seabed sampling and monitoring programmes for baseline, recovery and closure assurance.', disciplines: ['marine-ecology','monitoring'], lifecycleStages: ['monitoring','closure'], projectArchetypes: ['decommissioning','fixed-offshore-wind','marine-infrastructure'], methodExamples: ['repeat seabed sampling','baseline comparison','debris-clearance verification'], providerTypes: ['Environmental monitoring contractor','Benthic survey specialist'] },
   { id: 'foundation-anchor-engineering', label: 'Foundation and anchor engineering', family: 'geotechnics-foundations', summary: 'Translate site evidence into foundation, anchor and soil-structure design decisions.', disciplines: ['geotechnics','structures'], lifecycleStages: ['pre-feed','feed','construction'], projectArchetypes: ['fixed-offshore-wind','floating-offshore-wind','marine-infrastructure'], methodExamples: ['foundation feasibility','anchor design','soil-structure interaction'], providerTypes: ['Foundation engineering consultancy','Anchor designer'] },
-  { id: 'mooring-engineering', label: 'Mooring and station-keeping engineering', family: 'geotechnics-foundations', summary: 'Design and integrate mooring systems, anchors and station-keeping interfaces for floating assets.', disciplines: ['structures','marine-operations'], lifecycleStages: ['pre-feed','feed','construction','operations'], projectArchetypes: ['floating-offshore-wind','offshore-field-development'], methodExamples: ['mooring analysis','anchor integration','station-keeping design'], providerTypes: ['Mooring engineering consultancy','Floating systems designer'] },
-  { id: 'floating-structures', label: 'Floating offshore structures', family: 'geotechnics-foundations', summary: 'Engineer floating substructures and their structural interfaces across fabrication, installation and operation.', disciplines: ['structures'], lifecycleStages: ['pre-feed','feed','construction','operations'], projectArchetypes: ['floating-offshore-wind','offshore-field-development'], methodExamples: ['floater design','structural integration','fabrication support'], providerTypes: ['Floating-structure designer','Offshore structural consultancy'] },
+  {
+    id: 'mooring-engineering', label: 'Mooring and station-keeping engineering', family: 'geotechnics-foundations',
+    summary: 'Design and integrate mooring systems, anchors and station-keeping interfaces for floating assets.',
+    disciplines: ['structures','marine-operations'], lifecycleStages: ['pre-feed','feed','construction','operations'],
+    projectArchetypes: ['floating-offshore-wind','offshore-field-development'],
+    methodExamples: ['mooring analysis','anchor integration','station-keeping design'],
+    providerTypes: ['Mooring engineering consultancy','Floating systems designer'],
+    operationalEnvelope: {
+      waterDepthTiers: ['deepwater', 'ultra-deepwater'],
+      coreAssets: ['Mooring dynamic simulation software', 'Chain/synthetic rope test bench'],
+      deliveryRegions: ['North Sea', 'APAC', 'Mediterranean', 'US West Coast']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Designed taut, semi-taut or catenary mooring systems for floating wind or deepwater floaters.',
+      deliverableExample: 'Mooring analysis report, line tension ULS/FLS verification and anchor load interface dossier.'
+    }
+  },
+  {
+    id: 'floating-structures', label: 'Floating offshore structures', family: 'geotechnics-foundations',
+    summary: 'Engineer floating substructures and their structural interfaces across fabrication, installation and operation.',
+    disciplines: ['structures'], lifecycleStages: ['pre-feed','feed','construction','operations'],
+    projectArchetypes: ['floating-offshore-wind','offshore-field-development'],
+    methodExamples: ['floater design','structural integration','fabrication support'],
+    providerTypes: ['Floating-structure designer','Offshore structural consultancy'],
+    operationalEnvelope: {
+      waterDepthTiers: ['deepwater', 'ultra-deepwater'],
+      coreAssets: ['Coupled aero-hydro structural FEA toolchains', 'Hydrodynamic wave tank test validation'],
+      deliveryRegions: ['Global']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Engineered semi-submersible, spar or tension-leg floating foundations for offshore energy.',
+      deliverableExample: 'Substructure detailed design drawings, stability booklet and class approval dossier.'
+    }
+  },
   { id: 'offshore-foundation-installation', label: 'Offshore foundation installation', family: 'marine-construction', summary: 'Plan and execute offshore foundation installation with marine and as-built controls.', disciplines: ['marine-operations','structures'], lifecycleStages: ['construction'], projectArchetypes: ['fixed-offshore-wind','marine-infrastructure'], methodExamples: ['monopile installation','foundation positioning'], providerTypes: ['Foundation installation contractor','Marine construction company'] },
-  { id: 'subsea-cable-engineering', label: 'Subsea power cable engineering', family: 'subsea-electrical', summary: 'Design static and dynamic subsea cable systems, routes, burial and mechanical interfaces.', disciplines: ['electrical','subsea-engineering'], lifecycleStages: ['feasibility','pre-feed','feed','construction','operations'], projectArchetypes: ['fixed-offshore-wind','floating-offshore-wind','subsea-corridor','marine-infrastructure'], methodExamples: ['cable route engineering','dynamic cable design','burial risk assessment'], providerTypes: ['Subsea cable engineer','Cable system designer'] },
+  {
+    id: 'subsea-cable-engineering', label: 'Subsea power cable engineering', family: 'subsea-electrical',
+    summary: 'Design static and dynamic subsea cable systems, routes, burial and mechanical interfaces.',
+    disciplines: ['electrical','subsea-engineering'], lifecycleStages: ['feasibility','pre-feed','feed','construction','operations'],
+    projectArchetypes: ['fixed-offshore-wind','floating-offshore-wind','subsea-corridor','marine-infrastructure'],
+    methodExamples: ['cable route engineering','dynamic cable design','burial risk assessment'],
+    providerTypes: ['Subsea cable engineer','Cable system designer'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater', 'ultra-deepwater'],
+      coreAssets: ['Cable thermal rating calculation suite', 'Dynamic cable global FEA simulation'],
+      deliveryRegions: ['Global']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Engineered dynamic inter-array or static HVDC/HVAC export subsea cable systems.',
+      deliverableExample: 'Cable Route Engineering Report, Cable Burial Risk Assessment (CBRA) and bend stiffener specification.'
+    }
+  },
   { id: 'subsea-cable-installation', label: 'Subsea cable installation and protection', family: 'marine-construction', summary: 'Execute cable lay, burial, protection and offshore connection scopes.', disciplines: ['electrical','marine-operations'], lifecycleStages: ['construction'], projectArchetypes: ['fixed-offshore-wind','floating-offshore-wind','subsea-corridor','marine-infrastructure'], methodExamples: ['cable lay','burial/protection','route preparation'], providerTypes: ['Cable installation contractor','Trenching contractor'] },
   { id: 'offshore-electrical-engineering', label: 'Offshore electrical engineering', family: 'subsea-electrical', summary: 'Engineer offshore electrical interfaces, host-facility modifications and commissioning systems.', disciplines: ['electrical'], lifecycleStages: ['pre-feed','feed','construction','operations'], projectArchetypes: ['fixed-offshore-wind','floating-offshore-wind','marine-infrastructure','offshore-field-development'], methodExamples: ['offshore network design','platform electrical modification','interface testing'], providerTypes: ['Offshore electrical consultancy','Electrical EPC'] },
   { id: 'marine-heavy-lift', label: 'Marine heavy-lift engineering', family: 'marine-construction', summary: 'Engineer and execute heavy offshore lifts with load, motion and landing controls.', disciplines: ['marine-operations','structures'], lifecycleStages: ['construction','closure'], projectArchetypes: ['offshore-field-development','fixed-offshore-wind','floating-offshore-wind','decommissioning'], methodExamples: ['lift analysis','rigging design','heavy-lift execution'], providerTypes: ['Heavy-lift contractor','Marine engineering consultancy'] },
@@ -45,10 +158,56 @@ export const capabilities: Capability[] = [
   { id: 'tow-marine-operations', label: 'Tow and floating-asset marine operations', family: 'marine-construction', summary: 'Plan tow-out, disconnect, sheltered-base intervention and return-to-service operations for floating assets.', disciplines: ['marine-operations','inspection-integrity'], lifecycleStages: ['construction','operations'], projectArchetypes: ['floating-offshore-wind','offshore-field-development'], methodExamples: ['tow planning','disconnect/reconnect','base intervention'], providerTypes: ['Tow contractor','Marine operations consultancy'] },
   { id: 'offshore-platform-installation', label: 'Offshore platform installation', family: 'marine-construction', summary: 'Install jackets, topsides, bridges and related offshore structures within integrated marine programmes.', disciplines: ['marine-operations','structures'], lifecycleStages: ['construction'], projectArchetypes: ['offshore-field-development','offshore-ccs','marine-infrastructure'], methodExamples: ['jacket installation','topsides lift','bridge installation'], providerTypes: ['Offshore installation contractor','Heavy-lift EPCI'] },
   { id: 'subsea-production-systems', label: 'Subsea production systems', family: 'subsea-electrical', summary: 'Engineer and install subsea templates, trees, flowlines, spools, umbilicals and tie-ins.', disciplines: ['subsea-engineering'], lifecycleStages: ['feed','construction','operations'], projectArchetypes: ['offshore-field-development','offshore-ccs'], methodExamples: ['template installation','spool installation','umbilical installation','ROV tie-in'], providerTypes: ['Subsea production system supplier','Subsea EPCI'] },
-  { id: 'pipeline-route-engineering', label: 'Pipeline and corridor route engineering', family: 'subsea-electrical', summary: 'Use survey and geohazard evidence to select, prepare and manage subsea routes.', disciplines: ['geophysics','subsea-engineering'], lifecycleStages: ['feasibility','pre-feed','feed','construction'], projectArchetypes: ['subsea-corridor','offshore-field-development','offshore-ccs'], methodExamples: ['route selection','geohazard assessment','seabed intervention planning'], providerTypes: ['Route engineering consultancy','Subsea pipeline engineer'] },
-  { id: 'autonomous-subsea-survey', label: 'Autonomous subsea survey and inspection', family: 'inspection-integrity', summary: 'Use AUV, USV or autonomous systems for repeatable offshore survey and inspection.', disciplines: ['inspection-integrity','hydrography','geophysics'], lifecycleStages: ['operations','monitoring'], projectArchetypes: ['subsea-corridor','offshore-field-development','fixed-offshore-wind','floating-offshore-wind'], methodExamples: ['AUV pipeline tracking','autonomous bathymetry','remote inspection'], providerTypes: ['AUV/USV operator','Autonomy technology provider'] },
+  {
+    id: 'pipeline-route-engineering', label: 'Pipeline and corridor route engineering', family: 'subsea-electrical',
+    summary: 'Use survey and geohazard evidence to select, prepare and manage subsea routes.',
+    disciplines: ['geophysics','subsea-engineering'], lifecycleStages: ['feasibility','pre-feed','feed','construction'],
+    projectArchetypes: ['subsea-corridor','offshore-field-development','offshore-ccs'],
+    methodExamples: ['route selection','geohazard assessment','seabed intervention planning'],
+    providerTypes: ['Route engineering consultancy','Subsea pipeline engineer'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater', 'ultra-deepwater'],
+      deliveryRegions: ['Global']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Selected and optimized deepwater pipeline/cable corridor crossing rugged terrain or active geohazards.',
+      deliverableExample: 'Route Alignment Sheets, Geohazard Risk Register and Pre-lay Seabed Intervention Plan.'
+    }
+  },
+  {
+    id: 'autonomous-subsea-survey', label: 'Autonomous subsea survey and inspection', family: 'inspection-integrity',
+    summary: 'Use AUV, USV or autonomous systems for repeatable offshore survey and inspection.',
+    disciplines: ['inspection-integrity','hydrography','geophysics'], lifecycleStages: ['operations','monitoring'],
+    projectArchetypes: ['subsea-corridor','offshore-field-development','fixed-offshore-wind','floating-offshore-wind'],
+    methodExamples: ['AUV pipeline tracking','autonomous bathymetry','remote inspection'],
+    providerTypes: ['AUV/USV operator','Autonomy technology provider'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater', 'ultra-deepwater'],
+      coreAssets: ['Long-endurance Deepwater AUV (3000m)', 'High-resolution Synthetic Aperture Sonar (SAS)'],
+      deliveryRegions: ['Global']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Completed autonomous pipeline/cable tracking and contact-free cathodic protection inspection.',
+      deliverableExample: 'Multi-sensor georeferenced survey dataset, 3D point cloud and automated anomaly register.'
+    }
+  },
   { id: 'geospatial-change-detection', label: 'Geospatial change detection', family: 'inspection-integrity', summary: 'Compare repeat offshore observations to quantify seabed, route or asset-condition change.', disciplines: ['inspection-integrity','data-integration','hydrography'], lifecycleStages: ['operations','monitoring','closure'], projectArchetypes: ['subsea-corridor','offshore-field-development','fixed-offshore-wind','floating-offshore-wind','decommissioning'], methodExamples: ['repeat-survey alignment','4D bathymetric change detection','asset-risk integration'], providerTypes: ['Geospatial analytics provider','Survey data processor'] },
-  { id: 'subsea-integrity-engineering', label: 'Subsea integrity engineering', family: 'inspection-integrity', summary: 'Translate observed pipeline or cable condition into structural, stability and intervention decisions.', disciplines: ['inspection-integrity','subsea-engineering'], lifecycleStages: ['operations','monitoring','closure'], projectArchetypes: ['subsea-corridor','offshore-field-development','offshore-ccs','fixed-offshore-wind','floating-offshore-wind'], methodExamples: ['free-span assessment','VIV/fatigue screening','on-bottom stability'], providerTypes: ['Pipeline integrity consultancy','Cable integrity engineer'] },
+  {
+    id: 'subsea-integrity-engineering', label: 'Subsea integrity engineering', family: 'inspection-integrity',
+    summary: 'Translate observed pipeline or cable condition into structural, stability and intervention decisions.',
+    disciplines: ['inspection-integrity','subsea-engineering'], lifecycleStages: ['operations','monitoring','closure'],
+    projectArchetypes: ['subsea-corridor','offshore-field-development','offshore-ccs','fixed-offshore-wind','floating-offshore-wind'],
+    methodExamples: ['free-span assessment','VIV/fatigue screening','on-bottom stability'],
+    providerTypes: ['Pipeline integrity consultancy','Cable integrity engineer'],
+    operationalEnvelope: {
+      waterDepthTiers: ['shallow', 'deepwater', 'ultra-deepwater'],
+      deliveryRegions: ['Global']
+    },
+    evidenceTriadGuidance: {
+      referenceProjectExample: 'Performed pipeline free span, lateral buckling and vortex-induced vibration (VIV) integrity assessments.',
+      deliverableExample: 'Integrity Assessment Report, Remaining Fatigue Life calculation and Intervention Matrix.'
+    }
+  },
   { id: 'marine-civil-engineering', label: 'Marine civil engineering', family: 'marine-construction', summary: 'Engineer large marine civil works, reclamation, caissons and offshore hub structures.', disciplines: ['structures','environment','marine-operations'], lifecycleStages: ['feasibility','pre-feed','feed','construction'], projectArchetypes: ['marine-infrastructure'], methodExamples: ['caisson design','reclamation planning','marine civil construction'], providerTypes: ['Marine civil EPC','Coastal engineering consultancy'] },
   { id: 'decommissioning-engineering', label: 'Offshore decommissioning engineering', family: 'decommissioning', summary: 'Develop and assess removal, leave-in-place, trenching, protection and closure options for offshore assets.', disciplines: ['data-integration','subsea-engineering','marine-operations'], lifecycleStages: ['closure'], projectArchetypes: ['decommissioning'], methodExamples: ['option engineering','asset condition assessment','removal planning'], providerTypes: ['Decommissioning consultancy','Removal contractor'] },
   { id: 'risk-comparative-assessment', label: 'Risk and comparative assessment', family: 'decommissioning', summary: 'Compare technical, safety, environmental, societal and economic evidence across credible offshore options.', disciplines: ['data-integration','environment'], lifecycleStages: ['feasibility','feed','closure'], projectArchetypes: ['decommissioning','marine-infrastructure','offshore-ccs'], methodExamples: ['risk assessment','comparative assessment','option selection'], providerTypes: ['Risk consultancy','Decision-analysis consultancy'] }
